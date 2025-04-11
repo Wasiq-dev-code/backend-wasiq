@@ -7,18 +7,18 @@ dotenv.config({
 });
 const port = process.env.PORT || 3000;
 
-app.on("error", (err) => {
-  console.log("Error while starting the server", err);
-  process.exit(1);
-});
-
 connectMongo()
   .then(() => {
+    app.on("error", (err) => {
+      console.error("Error while starting the server:", err);
+      process.exit(1);
+    });
+
     app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
+      console.log(`Server is running at http://localhost:${port}`);
     });
   })
   .catch((err) => {
-    console.log("err while connecting mongo", err);
-    throw err;
+    console.error("Error while connecting to Mongo:", err);
+    process.exit(1); // good practice to exit if DB fails
   });

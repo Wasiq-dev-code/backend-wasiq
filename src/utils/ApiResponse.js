@@ -1,3 +1,5 @@
+/// @param {ApiResponse} handling manually response of api and returning success flag
+
 class ApiResponse {
   constructor(statusCode, data = [], message = "Success") {
     this.statusCode = statusCode;
