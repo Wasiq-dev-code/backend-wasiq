@@ -1,10 +1,7 @@
+import "../dotenv.js";
 import app from "./app.js";
 import connectMongo from "./db/index.js";
-import dotenv from "dotenv";
 
-dotenv.config({
-  path: "./.env",
-});
 const port = process.env.PORT || 3000;
 
 connectMongo()

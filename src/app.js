@@ -28,5 +28,5 @@ app.use(cookieParser());
 // import routes
 import router from "./routes/user.routes.js";
 
-app.use("/api/erx/", router);
+app.use("/api", router);
 export default app;

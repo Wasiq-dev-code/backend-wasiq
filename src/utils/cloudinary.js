@@ -11,17 +11,29 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-/// @param {uploadOnCloudinary} containing local system path and uploading at cloudinary, scenerio of facing error, unlink the file locally
-
 const uploadOnCloudinary = async (localFilePath) => {
-  if (!localFilePath) return null;
   try {
+    if (!localFilePath) return null;
+
+    // Check if file exists
+    if (!fs.existsSync(localFilePath)) {
+      console.error("File not found at path:", localFilePath);
+      return null;
+    }
+
+    // Upload file to cloudinary
+    console.log("Attempting to upload to Cloudinary:");
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
+      resource_type: "auto", // automatically detect file type
     });
-    console.log("file successfully uploaded at cloudinary", response.url);
+    // console.log(response);
+
+    // Remove the locally saved file
+    fs.unlinkSync(localFilePath);
+
     return response;
   } catch (error) {
+    // Don't delete the file on error so you can debug
     fs.unlinkSync(localFilePath);
     return null;
   }
