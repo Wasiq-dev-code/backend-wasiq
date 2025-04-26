@@ -3,17 +3,25 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/User.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 
 const generateAcessAndRefreshAtoken = async (userId) => {
   try {
     const user = await User.findById(userId);
+
     if (!user) throw new ApiError(500, "error while creating tokens");
 
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
+    if (!accessToken || !refreshToken) {
+      throw new ApiError(500, "Token generation failed");
+    }
+
     user.refreshToken = refreshToken;
-    await user.save();
+    await user.save({
+      validateBeforeSave: true,
+    });
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -21,7 +29,7 @@ const generateAcessAndRefreshAtoken = async (userId) => {
   }
 };
 
-export const register = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   // console.log("req.files", req.files || req.files);
   // get user details
   const { username, email, password, fullname } = req.body;
@@ -74,6 +82,8 @@ export const register = asyncHandler(async (req, res) => {
     coverImg: coverImgUpload?.url || "",
   });
 
+  if (!user) throw new ApiError(500, "server issue");
+
   // check if user not exist in db
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
@@ -89,13 +99,10 @@ export const register = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, createdUser, "sucessful response"));
 });
 
-export const Login = asyncHandler(async (req, res) => {
-  // take data through req.body
-  // check username or email exist?
-  // check password is same or not
+const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if (!email || !username || !password) {
+  if (!(email || username) || !password) {
     throw new ApiError(401, "fill your given fields");
   }
 
@@ -116,7 +123,6 @@ export const Login = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateAcessAndRefreshAtoken(
     user._id
   );
-
   if (!accessToken || !refreshToken) {
     throw new ApiError(500, "error while fetching tokens");
   }
@@ -134,7 +140,7 @@ export const Login = asyncHandler(async (req, res) => {
   };
 
   return res
-    .status(201)
+    .status(200)
     .cookie("accessToken", accessToken, option)
     .cookie("refreshToken", refreshToken, option)
     .json(
@@ -149,3 +155,85 @@ export const Login = asyncHandler(async (req, res) => {
       )
     );
 });
+
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const option = {
+    httpOnly: true,
+    secure: true,
+    // sameSite: "strict",
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", option)
+    .clearCookie("refreshToken", option)
+    .json(new ApiResponse(200, {}, "logout user"));
+});
+
+const generateAccessToken = asyncHandler(async (req, res) => {
+  const rawRefreshToken = req.cookies?.refreshToken || req.body.refreshToken;
+
+  if (!rawRefreshToken) {
+    throw new ApiError(401, "user is unauthorized");
+  }
+
+  try {
+    const encodedRefreshToken = jwt.verify(
+      rawRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(encodedRefreshToken._id);
+
+    if (!user) {
+      throw new ApiError("false database Call");
+    }
+
+    if (rawRefreshToken !== user.refreshToken) {
+      throw new ApiError(401, "token is not matching");
+    }
+
+    const { accessToken, newRefreshToken } =
+      await generateAcessAndRefreshAtoken(user._id);
+
+    if (!accessToken || !newRefreshToken) {
+      throw new ApiError(500, "error while creating tokens");
+    }
+    const option = {
+      httpOnly: true,
+      secure: true,
+      // sameSite: "strict",
+    };
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, option)
+      .cookie("refreshToken", newRefreshToken, option)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            accessToken,
+            refreshToken: newRefreshToken,
+          },
+          "token generated successfully"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(500, error?.message || "server crash ");
+  }
+});
+
+export { registerUser, loginUser, logoutUser, generateAccessToken };
