@@ -20,7 +20,7 @@ const generateAcessAndRefreshAtoken = async (userId) => {
 
     user.refreshToken = refreshToken;
     await user.save({
-      validateBeforeSave: true,
+      validateBeforeSave: false,
     });
 
     return { accessToken, refreshToken };
@@ -51,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // check avatar and cover photo is available?
 
   const avatarLocalPath = await req.files?.avatar[0]?.path;
-  const coverImgLocalPath = req.files?.coverImg?.[0]?.path || "";
+  const coverImgLocalPath = (await req.files?.coverImg?.[0]?.path) || "";
 
   if (!avatarLocalPath) {
     throw new ApiError(409, "avatar is not available");
@@ -102,8 +102,8 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if (!(email || username) || !password) {
-    throw new ApiError(401, "fill your given fields");
+  if (!email || !username || !password) {
+    throw new ApiError(400, "please fill all required fields");
   }
 
   const user = await User.findOne({
@@ -158,7 +158,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
-    req.user._id,
+    req.user?._id,
     {
       $set: {
         refreshToken: undefined,
@@ -183,7 +183,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const generateAccessToken = asyncHandler(async (req, res) => {
-  const rawRefreshToken = req.cookies?.refreshToken || req.body.refreshToken;
+  const rawRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
   if (!rawRefreshToken) {
     throw new ApiError(401, "user is unauthorized");
@@ -208,7 +208,7 @@ const generateAccessToken = asyncHandler(async (req, res) => {
     const { accessToken, newRefreshToken } =
       await generateAcessAndRefreshAtoken(user._id);
 
-    if (!accessToken || !newRefreshToken) {
+    if (!(accessToken || newRefreshToken)) {
       throw new ApiError(500, "error while creating tokens");
     }
     const option = {
@@ -217,7 +217,7 @@ const generateAccessToken = asyncHandler(async (req, res) => {
       // sameSite: "strict",
     };
 
-    res
+    return res
       .status(200)
       .cookie("accessToken", accessToken, option)
       .cookie("refreshToken", newRefreshToken, option)
@@ -236,4 +236,151 @@ const generateAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, generateAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  if (!(oldPassword || newPassword)) {
+    throw new ApiError(401, "fill all the fields");
+  }
+
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(500, "database error");
+  }
+
+  const checkedPassword = await user.isPasswordCorrect(oldPassword);
+
+  if (!checkedPassword) {
+    throw new ApiError(401, "your old password is not matched");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "password is changed successfully"));
+});
+
+const getUser = asyncHandler(async (req, res) => {
+  return res.status(200).json(200, req.user, "user is successfully fetched");
+});
+
+const updateFields = asyncHandler(async (req, res) => {
+  const { fullname, email } = req.body;
+
+  if (!(fullname || email)) {
+    throw new ApiError(
+      400,
+      "please provide at least one field (fullname or email)"
+    );
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    { $set: { fullname, email } },
+    { new: true, runValidators: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new ApiError(401, "database error");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "fields change successfully"));
+});
+
+const changeAvatar = asyncHandler(async (req, res) => {
+  let avatarLocalPath;
+  if (
+    req.file &&
+    Array.isArray(req.file.avatar) &&
+    req.file.avatar[0] &&
+    req.file.avatar[0].path
+  ) {
+    avatarLocalPath = req.file.avatar[0].path;
+  }
+
+  if (!avatarLocalPath) {
+    throw new ApiError(401, "avatar is not found");
+  }
+
+  const avatarUploadOnCloudinary = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!(avatarUploadOnCloudinary || avatarUploadOnCloudinary.url)) {
+    throw new ApiError(500, "server issue while cloudinary ");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatarUploadOnCloudinary.url,
+      },
+    },
+    { new: true, runValidators: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new ApiError(500, "server issue while operating Database");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "avatar changed successfully"));
+});
+
+const changeCoverImg = asyncHandler(async (req, res) => {
+  let coverImgLocalPath;
+  if (
+    req.file &&
+    Array.isArray(req.file.coverImg) &&
+    req.file.coverImg[0] &&
+    req.file.coverImg[0].path
+  ) {
+    coverImgLocalPath = req.file.coverImg[0].path;
+  }
+
+  if (!coverImgLocalPath) {
+    throw new ApiError(401, "avatar is not found");
+  }
+
+  const coverImgUploadOnCloudinary =
+    await uploadOnCloudinary(coverImgLocalPath);
+
+  if (!(coverImgUploadOnCloudinary || coverImgUploadOnCloudinary.url)) {
+    throw new ApiError(500, "server issue while cloudinary ");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        coverImg: coverImgUploadOnCloudinary.url,
+      },
+    },
+    { new: true, runValidators: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new ApiError(500, "server issue while operating Database");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "avatar changed successfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  generateAccessToken,
+  changeCurrentPassword,
+  getUser,
+  updateFields,
+  changeAvatar,
+  changeCoverImg,
+};
