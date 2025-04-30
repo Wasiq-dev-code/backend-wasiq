@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/User.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
@@ -62,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const avatarUpload = await uploadOnCloudinary(avatarLocalPath);
   // console.log("avatarUpload", avatarUpload);
 
-  if (!avatarUpload || !avatarUpload.url) {
+  if (!avatarUpload || !avatarUpload.url || !avatarUpload.public_id) {
     throw new ApiError(400, "avatar upload failed");
   }
 
@@ -79,7 +79,9 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     fullname,
     avatar: avatarUpload.url,
+    avatar_publicId: avatarUpload.public_id,
     coverImg: coverImgUpload?.url || "",
+    coverImg_publicId: coverImgUpload?.public_id || "",
   });
 
   if (!user) throw new ApiError(500, "server issue");
@@ -264,7 +266,9 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const getUser = asyncHandler(async (req, res) => {
-  return res.status(200).json(200, req.user, "user is successfully fetched");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "user is successfully fetched"));
 });
 
 const updateFields = asyncHandler(async (req, res) => {
@@ -289,7 +293,7 @@ const updateFields = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { user }, "fields change successfully"));
+    .json(new ApiResponse(200, user, "fields change successfully"));
 });
 
 const changeAvatar = asyncHandler(async (req, res) => {
@@ -307,10 +311,22 @@ const changeAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(401, "avatar is not found");
   }
 
+  const userObject = await User.findById(req.user?._id);
+
+  if (!userObject) {
+    throw new ApiError(500, "userObject is not found server issue");
+  }
+
+  const old_public_id = userObject.avatar_publicId;
+
   const avatarUploadOnCloudinary = await uploadOnCloudinary(avatarLocalPath);
 
   if (!(avatarUploadOnCloudinary || avatarUploadOnCloudinary.url)) {
     throw new ApiError(500, "server issue while cloudinary ");
+  }
+
+  if (old_public_id) {
+    await deleteOnCloudinary(old_public_id);
   }
 
   const user = await User.findByIdAndUpdate(
@@ -318,6 +334,7 @@ const changeAvatar = asyncHandler(async (req, res) => {
     {
       $set: {
         avatar: avatarUploadOnCloudinary.url,
+        avatar_publicId: avatarUploadOnCloudinary.public_id,
       },
     },
     { new: true, runValidators: true }
@@ -347,11 +364,25 @@ const changeCoverImg = asyncHandler(async (req, res) => {
     throw new ApiError(401, "avatar is not found");
   }
 
+  const userObject = await User.findById(req.user?._id);
+  if (!userObject) {
+    throw new ApiError(500, "userObject is not found server issue");
+  }
+
+  const old_public_id = userObject.coverImg_publicId;
+
   const coverImgUploadOnCloudinary =
     await uploadOnCloudinary(coverImgLocalPath);
 
-  if (!(coverImgUploadOnCloudinary || coverImgUploadOnCloudinary.url)) {
+  if (
+    !coverImgUploadOnCloudinary?.url ||
+    !coverImgUploadOnCloudinary?.public_id
+  ) {
     throw new ApiError(500, "server issue while cloudinary ");
+  }
+
+  if (old_public_id) {
+    await deleteOnCloudinary(old_public_id);
   }
 
   const user = await User.findByIdAndUpdate(
@@ -359,6 +390,7 @@ const changeCoverImg = asyncHandler(async (req, res) => {
     {
       $set: {
         coverImg: coverImgUploadOnCloudinary.url,
+        coverImg_publicId: coverImgUploadOnCloudinary.public_id,
       },
     },
     { new: true, runValidators: true }

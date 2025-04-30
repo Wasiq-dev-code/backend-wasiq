@@ -32,6 +32,9 @@ const userSchema = new Schema(
     coverImg: {
       type: String, //using cloudinary
     },
+    coverImg_publicId: {
+      type: String,
+    },
     watchHistory: [
       {
         type: Schema.Types.ObjectId,
@@ -40,6 +43,10 @@ const userSchema = new Schema(
     ],
     avatar: {
       type: String, //using cloudinary
+      required: true,
+    },
+    avatar_publicId: {
+      type: String,
       required: true,
     },
     refreshToken: {
