@@ -534,4 +534,5 @@ export {
   changeAvatar,
   changeCoverImg,
   getUserChannelProfile,
+  getUserHistory,
 };
