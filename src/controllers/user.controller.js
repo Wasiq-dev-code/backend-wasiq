@@ -104,6 +104,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
+  console.log(email, username, password);
 
   if (!email || !username || !password) {
     throw new ApiError(400, "please fill all required fields");
@@ -163,8 +164,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user?._id,
     {
-      $set: {
-        refreshToken: undefined,
+      $unset: {
+        refreshToken: null,
       },
     },
     {
@@ -298,16 +299,17 @@ const updateFields = asyncHandler(async (req, res) => {
 });
 
 const changeAvatar = asyncHandler(async (req, res) => {
-  let avatarLocalPath;
-  if (
-    req.file &&
-    Array.isArray(req.file.avatar) &&
-    req.file.avatar[0] &&
-    req.file.avatar[0].path
-  ) {
-    avatarLocalPath = req.file.avatar[0].path;
-  }
-
+  // let avatarLocalPath;
+  // if (
+  //   req.file &&
+  //   Array.isArray(req.file.avatar) &&
+  //   req.file.avatar[0] &&
+  //   req.file.avatar[0].path
+  // ) {
+  //   avatarLocalPath = await req.file.avatar[0].path;
+  // }
+  const avatarLocalPath = await req.file?.path;
+  console.log(req.file);
   if (!avatarLocalPath) {
     throw new ApiError(401, "avatar is not found");
   }
@@ -351,15 +353,16 @@ const changeAvatar = asyncHandler(async (req, res) => {
 });
 
 const changeCoverImg = asyncHandler(async (req, res) => {
-  let coverImgLocalPath;
-  if (
-    req.file &&
-    Array.isArray(req.file.coverImg) &&
-    req.file.coverImg[0] &&
-    req.file.coverImg[0].path
-  ) {
-    coverImgLocalPath = req.file.coverImg[0].path;
-  }
+  // let coverImgLocalPath;
+  // if (
+  //   req.file &&
+  //   Array.isArray(req.file.coverImg) &&
+  //   req.file.coverImg[0] &&
+  //   req.file.coverImg[0].path
+  // ) {
+  //   coverImgLocalPath = await req.file.coverImg[0].path;
+  // }
+  const coverImgLocalPath = await req.file?.path;
 
   if (!coverImgLocalPath) {
     throw new ApiError(401, "avatar is not found");
@@ -403,8 +406,10 @@ const changeCoverImg = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { user }, "avatar changed successfully"));
+    .json(new ApiResponse(200, { user }, "coverImage changed successfully"));
 });
+
+/// @param: Completed The Authentication Operations
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
