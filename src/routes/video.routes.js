@@ -18,4 +18,5 @@ videoRouter.route("/video/upload-video").post(
   ]),
   videoUploader
 );
+
 export default videoRouter;
