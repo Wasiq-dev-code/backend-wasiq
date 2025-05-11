@@ -3,6 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { Video } from "../models/Video.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
+import { User } from "../models/User.model.js";
 
 const videoUploader = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
@@ -63,4 +65,96 @@ const videoUploader = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, createdVideo, "Video uploaded successfully"));
 });
 
-export { videoUploader };
+const getAllVideos = asyncHandler(async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page || 1));
+    const limit = Math.min(20, Math.max(1, parseInt(req.query.limit || 10)));
+
+    const pipeline = [
+      {
+        $match: { isPublished: true },
+      },
+      {
+        $project: {
+          videoFile_publicId: 0,
+          thumbnail_publicId: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {
+              $project: {
+                avatar: 1,
+                username: 1,
+                _id: 1,
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $addFields: {
+          owner: { $first: "$owner" },
+          totalViews: { $ifNull: ["$views", 0] },
+          uploadedAt: {
+            $dateToString: {
+              format: "%Y-%m-%d %H:%M",
+              date: "$createdAt",
+            },
+          },
+        },
+      },
+
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ];
+
+    const videos = await Video.aggregatePaginate(Video.aggregate(pipeline), {
+      page,
+      limit,
+      customLabels: {
+        docs: "videos",
+        totalDocs: "totalVideos",
+      },
+      lean: true,
+      // cache: true,
+    });
+
+    if (!videos?.videos?.length) {
+      return res.status(200).json(new ApiResponse(200, [], "No videos found"));
+    }
+
+    const response = {
+      videos: videos.videos,
+      totalVideos: videos.totalVideos,
+      currentPage: videos.page,
+      totalPages: videos.totalPages,
+      hasNextPage: videos.hasNextPage,
+      hasPrevPage: videos.hasPrevPage,
+    };
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, response, "Successfully fetching all the videos")
+      );
+  } catch (error) {
+    console.error("getAllVideos erroring", error?.stack || error);
+
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Error while fetching Videos"
+    );
+  }
+});
+
+export { videoUploader, getAllVideos };
