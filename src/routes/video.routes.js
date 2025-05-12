@@ -6,11 +6,12 @@ import {
   videoUploader,
 } from "../controllers/Video.controller";
 import { JWTVerify } from "../middlewares/auth.middleware.js";
+import viewRateLimiter from "../middlewares/rateLimiting.middleware.js";
 const videoRouter = Router();
 
 /// Public Routes
-videoRouter.route("/").get(getAllVideos);
-videoRouter.route("/c/:videoId").get(getVideoById);
+videoRouter.route("/").get(viewRateLimiter, getAllVideos);
+videoRouter.route("/c/:videoId").get(viewRateLimiter, getVideoById);
 
 /// Secure Routes
 videoRouter.route("/video/upload").post(

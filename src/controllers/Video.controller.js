@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import { User } from "../models/User.model.js";
+import trackVideoView from "../utils/trackVideoView.js";
 
 const videoUploader = asyncHandler(async (req, res) => {
   try {
@@ -176,11 +177,11 @@ const getVideoById = asyncHandler(async (req, res) => {
       throw new ApiError(500, "videoId is required");
     }
 
-    await Video.findByIdAndUpdate(videoId, {
-      $inc: {
-        views: 1,
-      },
-    });
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+      throw new ApiError(400, "Invalid videoId format");
+    }
+
+    await trackVideoView(videoId, req.ip);
 
     const video = await Video.aggregate([
       {
