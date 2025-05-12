@@ -168,4 +168,91 @@ const getAllVideos = asyncHandler(async (req, res) => {
   }
 });
 
-export { videoUploader, getAllVideos };
+const getVideoById = asyncHandler(async (req, res) => {
+  try {
+    const { videoId } = req.params;
+
+    if (!videoId?.trim()) {
+      throw new ApiError(500, "videoId is required");
+    }
+
+    await Video.findByIdAndUpdate(videoId, {
+      $inc: {
+        views: 1,
+      },
+    });
+
+    const video = await Video.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(videoId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {
+              $project: {
+                username: 1,
+                fullname: 1,
+                avatar: 1,
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $lookup: {
+          from: "subscriptions",
+          localField: "owner._id",
+          foreignField: "channel",
+          as: "totalSubscribers",
+        },
+      },
+
+      {
+        $addFields: {
+          owner: { $first: "$owner" },
+          totalSubscribers: {
+            $size: "$totalSubscribers",
+          },
+          uploadedAt: {
+            $dateToString: {
+              format: "%Y-%m-%d %H:%M",
+              date: "$createdAt",
+            },
+          },
+        },
+      },
+
+      {
+        $project: {
+          videoFile_publicId: 0,
+          thumbnail_publicId: 0,
+          subscriber: 0,
+        },
+      },
+    ]);
+
+    if (!video?.[0]) {
+      throw new ApiError("Video not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, video[0], "video successfully fetched"));
+  } catch (error) {
+    console.error("Error at getVideoById", error?.stack || error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Error while implementing controller"
+    );
+  }
+});
+
+export { videoUploader, getAllVideos, getVideoById };
