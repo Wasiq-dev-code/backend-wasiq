@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const app = express();
+app.set("trust proxy", true);
 
 app.use(
   cors({
@@ -31,4 +32,14 @@ import videoRouter from "./routes/video.routes.js";
 
 app.use("/api", router);
 app.use("/api", videoRouter);
+
+app.use((_, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+app.use((err, _, res, _) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal Server Error" });
+});
+
 export default app;
