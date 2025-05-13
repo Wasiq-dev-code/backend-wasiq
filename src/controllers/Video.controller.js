@@ -268,7 +268,9 @@ const deleteVideo = asyncHandler(async (req, res) => {
       throw new ApiError(400, "VideoId is not a object id");
     }
 
-    const video = await Video.findById(videoId);
+    const video = await Video.findById(videoId).select(
+      "videoFile_publicId thumbnail_publicId"
+    );
 
     if (!video) {
       throw new ApiError(404, "Video not found");
