@@ -5,7 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import { User } from "../models/User.model.js";
-import trackVideoView from "../utils/trackVideoView.js";
+import trackVideoView from "../services/trackVideoView.js";
 
 const videoUploader = asyncHandler(async (req, res) => {
   try {
