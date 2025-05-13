@@ -258,22 +258,10 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
   try {
-    const { videoId } = req.params;
+    const video = req.video;
 
-    if (!videoId?.trim()) {
-      throw new ApiError(400, "invalid videoId");
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(videoId)) {
-      throw new ApiError(400, "VideoId is not a object id");
-    }
-
-    const video = await Video.findById(videoId).select(
-      "videoFile_publicId thumbnail_publicId"
-    );
-
-    if (!video) {
-      throw new ApiError(404, "Video not found");
+    if (!video?.videoFile_publicId || !video?.thumbnail_publicId) {
+      throw new ApiError(404, "Invalid video data");
     }
 
     try {
@@ -297,7 +285,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, {}, "Sucessful to delete the video"));
   } catch (error) {
     console.error("Error on deleteVideo", {
-      videoId: req.params.videoId,
+      video: req.video,
       error: error?.stack || error,
     });
     throw new ApiError(

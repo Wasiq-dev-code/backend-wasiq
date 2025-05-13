@@ -10,9 +10,7 @@ export const verifyVideo = asyncHandler(async (req, _, next) => {
       throw new ApiError(400, "Video ID is required");
     }
 
-    const video = await Video.findById(videoId).select(
-      "-videoFile_publicId -thumbnail_publicId"
-    );
+    const video = await Video.findById(videoId);
 
     if (!video) {
       throw new ApiError(404, "Video not found");
