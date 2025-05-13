@@ -11,6 +11,14 @@ client.on("error", function (error) {
   throw error;
 });
 
-await client.connect();
+let isconnected = false;
+
+const redisconnect = async () => {
+  if (!isconnected) {
+    await client.connect();
+    isconnected = true;
+  }
+};
+await redisconnect();
 
 export default client;

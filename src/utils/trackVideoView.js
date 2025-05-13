@@ -9,10 +9,9 @@ const trackVideoView = async (videoId, ip) => {
     }
 
     const sanitizedVideoId = videoId.trim();
-    const sanitizedIp = ip.trim().replace((/[^a-zA-Z0-9.]/g, ""));
+    const sanitizedIp = ip.trim().replace((/[^a-zA-Z0-9:.]/g, ""));
 
     const redisKey = `view:${sanitizedVideoId}:${sanitizedIp}`;
-
     const alreadyViewed = await client.exists(redisKey);
 
     if (!alreadyViewed) {
