@@ -1,11 +1,28 @@
 import rateLimit from "express-rate-limit";
 
-const viewRateLimiter = rateLimit({
+// Video views limiter
+export const viewRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 20, // 20 requests per IP per minute
-  message: "Too many requests. Try again later.",
-  standardHeaders: true, // Adds RateLimit-* headers
-  legacyHeaders: false, // Disable X-RateLimit-* headers (optional)
+  max: 20, // 20 requests per IP
+  message: "Too many video requests. Please wait a minute.",
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
-export default viewRateLimiter;
+// Auth limiter (login/register)
+export const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts
+  message: "Too many login attempts. Please try again in 15 minutes.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Upload limiter
+export const uploadRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 uploads
+  message: "Upload limit reached. Please try again in an hour.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});

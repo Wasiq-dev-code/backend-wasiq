@@ -6,7 +6,11 @@ import {
   videoUploader,
 } from "../controllers/Video.controller";
 import { JWTVerify } from "../middlewares/auth.middleware.js";
-import viewRateLimiter from "../middlewares/rateLimiting.middleware.js";
+import {
+  uploadRateLimiter,
+  viewRateLimiter,
+} from "../middlewares/rateLimiting.middleware.js";
+
 const videoRouter = Router();
 
 /// Public Routes
@@ -16,6 +20,7 @@ videoRouter.route("/c/:videoId").get(viewRateLimiter, getVideoById);
 /// Secure Routes
 videoRouter.route("/video/upload").post(
   JWTVerify,
+  uploadRateLimiter,
   upload.fields([
     { name: "videoFile", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 },
