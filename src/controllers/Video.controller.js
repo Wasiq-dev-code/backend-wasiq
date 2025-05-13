@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Video } from "../models/Video.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import { User } from "../models/User.model.js";
@@ -256,4 +256,53 @@ const getVideoById = asyncHandler(async (req, res) => {
   }
 });
 
-export { videoUploader, getAllVideos, getVideoById };
+const deleteVideo = asyncHandler(async (req, res) => {
+  try {
+    const { videoId } = req.params;
+
+    if (!videoId?.trim()) {
+      throw new ApiError(400, "invalid videoId");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+      throw new ApiError(400, "VideoId is not a object id");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      throw new ApiError(404, "Video not found");
+    }
+
+    try {
+      await Promise.all([
+        deleteOnCloudinary(video.videoFile_publicId),
+        deleteOnCloudinary(video.thumbnail_publicId),
+      ]);
+    } catch (error) {
+      console.error("Cloudinary deletion error", error);
+      throw new ApiError(500, "Error while deleting media files");
+    }
+
+    const deletedVideo = await Video.findByIdAndDelete(videoId);
+
+    if (!deletedVideo) {
+      throw new ApiError(500, "Error while deleting video on Database");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Sucessful to delete the video"));
+  } catch (error) {
+    console.error("Error on deleteVideo", {
+      videoId: req.params.videoId,
+      error: error?.stack || error,
+    });
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Failed to deleteVideo"
+    );
+  }
+});
+
+export { videoUploader, getAllVideos, getVideoById, deleteVideo };

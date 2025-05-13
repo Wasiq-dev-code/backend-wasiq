@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import {
+  deleteVideo,
   getAllVideos,
   getVideoById,
   videoUploader,
@@ -10,6 +11,7 @@ import {
   uploadRateLimiter,
   viewRateLimiter,
 } from "../middlewares/rateLimiting.middleware.js";
+import { verifyVideo } from "../middlewares/videoSecurity.middleware.js";
 
 const videoRouter = Router();
 
@@ -27,5 +29,9 @@ videoRouter.route("/video/upload").post(
   ]),
   videoUploader
 );
+
+videoRouter
+  .route("/video/delete/:videoId")
+  .delete(JWTVerify, verifyVideo, deleteVideo);
 
 export default videoRouter;
