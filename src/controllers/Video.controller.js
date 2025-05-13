@@ -269,12 +269,12 @@ const deleteVideo = asyncHandler(async (req, res) => {
         deleteOnCloudinary(video.videoFile_publicId),
         deleteOnCloudinary(video.thumbnail_publicId),
       ]);
-    } catch (error) {
-      console.error("Cloudinary deletion error", error);
+    } catch (cloudinaryError) {
+      console.error("Cloudinary deletion error", cloudinaryError);
       throw new ApiError(500, "Error while deleting media files");
     }
 
-    const deletedVideo = await Video.findByIdAndDelete(videoId);
+    const deletedVideo = await Video.findByIdAndDelete(video?._id);
 
     if (!deletedVideo) {
       throw new ApiError(500, "Error while deleting video on Database");
