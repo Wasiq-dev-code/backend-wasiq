@@ -4,6 +4,7 @@ import {
   deleteVideo,
   getAllVideos,
   getVideoById,
+  updateVideo,
   videoUploader,
 } from "../controllers/Video.controller";
 import { JWTVerify } from "../middlewares/auth.middleware.js";
@@ -33,5 +34,9 @@ videoRouter.route("/video/upload").post(
 videoRouter
   .route("/video/delete/:videoId")
   .delete(JWTVerify, verifyVideo, deleteVideo);
+
+videoRouter
+  .route("/video/update/:videoId")
+  .patch(JWTVerify, verifyVideo, upload.single("thumbnail"), updateVideo);
 
 export default videoRouter;

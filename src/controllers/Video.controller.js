@@ -4,7 +4,6 @@ import { Video } from "../models/Video.model.js";
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
-// import { User } from "../models/User.model.js";
 import trackVideoView from "../services/trackVideoView.js";
 import filterObject from "../utils/filterObject.js";
 
