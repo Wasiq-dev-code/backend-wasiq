@@ -309,7 +309,7 @@ const changeAvatar = asyncHandler(async (req, res) => {
   //   avatarLocalPath = await req.file.avatar[0].path;
   // }
   const avatarLocalPath = await req.file?.path;
-  console.log(req.file);
+  // console.log(req.file);
   if (!avatarLocalPath) {
     throw new ApiError(401, "avatar is not found");
   }

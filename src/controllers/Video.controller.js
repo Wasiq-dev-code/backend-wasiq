@@ -4,8 +4,9 @@ import { Video } from "../models/Video.model.js";
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
-import { User } from "../models/User.model.js";
+// import { User } from "../models/User.model.js";
 import trackVideoView from "../services/trackVideoView.js";
+import filterObject from "../utils/filterObject.js";
 
 const videoUploader = asyncHandler(async (req, res) => {
   try {
@@ -28,8 +29,13 @@ const videoUploader = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Video and thumbnail files are required");
     }
 
-    const videoOnCloudinary = await uploadOnCloudinary(videoLocalPath);
-    const thumbnailOnCloudinary = await uploadOnCloudinary(thumbnailLocalPath);
+    const [videoOnCloudinary, thumbnailOnCloudinary] = await Promise.all([
+      uploadOnCloudinary(videoLocalPath),
+      uploadOnCloudinary(thumbnailLocalPath),
+    ]).catch((error) => {
+      console.error("uploading issue on cloudinary", error);
+      throw new ApiError(500, "issue in cloudinary while uploading files");
+    });
 
     if (!videoOnCloudinary?.url || !thumbnailOnCloudinary?.url) {
       console.error("Cloudinary upload failed", {
@@ -54,17 +60,57 @@ const videoUploader = asyncHandler(async (req, res) => {
       throw new ApiError(500, "database issue");
     }
 
-    const createdVideo = await Video.findById(video._id).select(
-      "-videoFile_publicId -thumbnail_publicId"
-    );
+    const videoObj = await Video.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(video._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                username: 1,
+                fullname: 1,
+                avatar: 1,
+              },
+            },
+          ],
+        },
+      },
 
-    if (!createdVideo) {
-      throw new ApiError(500, "database issue");
+      {
+        $addFields: {
+          owner: {
+            $first: "$owner",
+            $dateToString: {
+              format: "%Y-%m-%d %H:%M",
+              date: "$createdAt",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          videoFile_publicId: 0,
+          thumbnail_publicId: 0,
+        },
+      },
+    ]);
+
+    if (videoObj?.length === 0) {
+      throw new ApiError(404, "video not found");
     }
 
     return res
       .status(201)
-      .json(new ApiResponse(201, createdVideo, "Video uploaded successfully"));
+      .json(new ApiResponse(201, videoObj[0], "Video uploaded successfully"));
   } catch (error) {
     console.error(
       "Occuring error while uploading video",
@@ -295,4 +341,82 @@ const deleteVideo = asyncHandler(async (req, res) => {
   }
 });
 
-export { videoUploader, getAllVideos, getVideoById, deleteVideo };
+const updateVideo = asyncHandler(async (req, res) => {
+  try {
+    const allowedFields = ["title", "description"];
+    const updateData = filterObject(req?.body, allowedFields);
+
+    if (Object.keys(updateData).length === 0) {
+      throw new ApiError(400, "Nothing to change");
+    }
+
+    const thumbnailpublicId = req?.video?.thumbnail_publicId;
+
+    if (!thumbnailpublicId) {
+      throw new ApiError(400, "thumbnail public id cant get");
+    }
+
+    let updateThumbnail = {};
+
+    if (req.file) {
+      const thumbnailLocalPath = req.file?.path;
+
+      if (!thumbnailLocalPath) {
+        throw new ApiError(400, "thumbnail not found");
+      }
+
+      const thumbnailUploadedOnCloudinary =
+        await uploadOnCloudinary(thumbnailLocalPath);
+
+      if (
+        !thumbnailUploadedOnCloudinary.url ||
+        !thumbnailUploadedOnCloudinary.public_id
+      ) {
+        throw new ApiError(500, "cloudinary issue");
+      }
+
+      try {
+        await deleteOnCloudinary(thumbnailpublicId);
+      } catch (error) {
+        throw new ApiError(500, "Error while deleting file on cloudinary");
+      }
+
+      updateThumbnail = {
+        thumbnail: thumbnailUploadedOnCloudinary.url,
+        thumbnail_publicId: thumbnailUploadedOnCloudinary.public_id,
+      };
+    }
+
+    const updateVideo = await Video.findByIdAndUpdate(
+      req?.video?._id,
+      {
+        $set: {
+          ...updateData,
+          ...updateThumbnail,
+        },
+      },
+      {
+        new: true,
+      }
+    ).select("-thumbnail_publicId -videoFile_publicId");
+
+    if (!updateVideo) {
+      throw new ApiError(404, "Database issue");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updateVideo, "Successfully updated"));
+  } catch (error) {
+    console.error("Error on updateVideo", {
+      body: req.body,
+      error: error?.stack || error,
+    });
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Error while executing updateVideo Controller"
+    );
+  }
+});
+
+export { videoUploader, getAllVideos, getVideoById, deleteVideo, updateVideo };
