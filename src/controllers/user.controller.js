@@ -299,16 +299,7 @@ const updateFields = asyncHandler(async (req, res) => {
 });
 
 const changeAvatar = asyncHandler(async (req, res) => {
-  // let avatarLocalPath;
-  // if (
-  //   req.file &&
-  //   Array.isArray(req.file.avatar) &&
-  //   req.file.avatar[0] &&
-  //   req.file.avatar[0].path
-  // ) {
-  //   avatarLocalPath = await req.file.avatar[0].path;
-  // }
-  const avatarLocalPath = await req.file?.path;
+  const avatarLocalPath = req.file?.path;
   // console.log(req.file);
   if (!avatarLocalPath) {
     throw new ApiError(401, "avatar is not found");
@@ -353,16 +344,7 @@ const changeAvatar = asyncHandler(async (req, res) => {
 });
 
 const changeCoverImg = asyncHandler(async (req, res) => {
-  // let coverImgLocalPath;
-  // if (
-  //   req.file &&
-  //   Array.isArray(req.file.coverImg) &&
-  //   req.file.coverImg[0] &&
-  //   req.file.coverImg[0].path
-  // ) {
-  //   coverImgLocalPath = await req.file.coverImg[0].path;
-  // }
-  const coverImgLocalPath = await req.file?.path;
+  const coverImgLocalPath = req.file?.path;
 
   if (!coverImgLocalPath) {
     throw new ApiError(401, "avatar is not found");
