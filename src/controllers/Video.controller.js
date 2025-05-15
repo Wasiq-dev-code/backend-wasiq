@@ -89,8 +89,10 @@ const videoUploader = asyncHandler(async (req, res) => {
           owner: {
             $first: "$owner",
             $dateToString: {
-              format: "%Y-%m-%d %H:%M",
-              date: "$createdAt",
+              createdAt: {
+                format: "%Y-%m-%d %H:%M",
+                date: "$createdAt",
+              },
             },
           },
         },
@@ -374,11 +376,12 @@ const updateVideo = asyncHandler(async (req, res) => {
         throw new ApiError(500, "cloudinary issue");
       }
 
-      try {
-        await deleteOnCloudinary(thumbnailpublicId);
-      } catch (error) {
-        throw new ApiError(500, "Error while deleting file on cloudinary");
-      }
+      await deleteOnCloudinary(thumbnailpublicId).catch((error) => {
+        throw new ApiError(
+          error?.statusCode || 500,
+          error?.message || "Error while deleting file on cloudinary"
+        );
+      });
 
       updateThumbnail = {
         thumbnail: thumbnailUploadedOnCloudinary.url,
@@ -397,15 +400,68 @@ const updateVideo = asyncHandler(async (req, res) => {
       {
         new: true,
       }
-    ).select("-thumbnail_publicId -videoFile_publicId");
+    );
 
     if (!updateVideo) {
       throw new ApiError(404, "Database issue");
     }
 
+    const completedUpdatedVideo = Video.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(updateVideo?._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                username: 1,
+                fullname: 1,
+                avatar: 1,
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $addFields: {
+          owner: {
+            $first: "$owner",
+          },
+          updatedAt: {
+            $dateToString: {
+              format: "%Y-%m-%d %H:%M",
+              date: "$updatedAt",
+            },
+          },
+        },
+      },
+
+      {
+        $project: {
+          videoFile_publicId: 0,
+          thumbnail_publicId: 0,
+        },
+      },
+    ]);
+
+    if (!completedUpdatedVideo?.[0]) {
+      throw new ApiError(404, "video not found");
+    }
+
     return res
       .status(200)
-      .json(new ApiResponse(200, updateVideo, "Successfully updated"));
+      .json(
+        new ApiResponse(200, completedUpdatedVideo[0], "Successfully updated")
+      );
   } catch (error) {
     console.error("Error on updateVideo", {
       body: req.body,
