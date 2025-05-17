@@ -4,8 +4,10 @@ import crypto from "crypto";
 const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
   const rawkey = `${prefix}:${req.originalUrl}`;
   const key = `${prefix}:${crypto.createHash("md5").update(rawkey).digest("hex")}`;
+
   try {
     const cached = await client.get(key);
+
     if (cached) {
       return res.json(JSON.parse(cached));
     }
@@ -16,6 +18,11 @@ const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
       await client.setEx(key, duration, JSON.stringify(body)).catch((err) => {
         console.error("Error while set data", err);
       });
+
+      if (prefix.startsWith("videos:page")) {
+        await client.sAdd("videoListKeys", key);
+      }
+
       return originalResponse.call(this, body);
     };
     next();
