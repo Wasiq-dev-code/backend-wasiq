@@ -22,3 +22,5 @@ const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
     next();
   }
 };
+
+export default cacheFromRedis;
