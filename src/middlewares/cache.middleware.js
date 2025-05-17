@@ -1,7 +1,9 @@
 import client from "../config/redis";
+import crypto from "crypto";
 
 const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
-  const key = `${prefix}:${req.originalUrl}`;
+  const rawkey = `${prefix}:${req.originalUrl}`;
+  const key = `${prefix}:${crypto.createHash("md5").update(rawkey).digest("hex")}`;
   try {
     const cached = await client.get(key);
     if (cached) {

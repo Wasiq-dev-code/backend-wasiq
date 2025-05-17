@@ -1,11 +1,5 @@
 import client from "../config/redis";
 
-const CACHE_DURATIONS = {
-  VIDEO: 3600, // 1 hour
-  VIDEO_LIST: 1800, // 30 minutes
-  USER: 3600, // 1 hour
-};
-
 export const cacheKeys = {
   video: (id) => `video:${id}`,
   videoList: (page) => `videos:page:${page}`,
