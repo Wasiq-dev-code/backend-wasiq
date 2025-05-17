@@ -1,5 +1,5 @@
-import { asyncHandler } from "../utils/asyncHandler";
 import client from "../config/redis";
+
 const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
   const key = `${prefix}:${req.originalUrl}`;
   try {
