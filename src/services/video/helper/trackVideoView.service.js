@@ -1,6 +1,6 @@
-import client from "../config/redis.js";
-import { Video } from "../models/Video.model.js";
-import { ApiError } from "../utils/ApiError.js";
+import client from "../../../config/redis.js";
+import { ApiError } from "../../../utils/ApiError.js";
+import { Video } from "../../../models/Video.model.js";
 
 const trackVideoView = async (videoId, ip) => {
   try {
