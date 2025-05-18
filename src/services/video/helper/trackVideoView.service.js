@@ -1,6 +1,8 @@
 import client from "../../../config/redis.js";
 import { ApiError } from "../../../utils/ApiError.js";
 import { Video } from "../../../models/Video.model.js";
+import { ONE_DAY_IN_SECONDS } from "../../../constants.js";
+import { clearVideoCache } from "./redisChachingKeyStructure.service.js";
 
 const trackVideoView = async (videoId, ip) => {
   try {
@@ -9,7 +11,7 @@ const trackVideoView = async (videoId, ip) => {
     }
 
     const sanitizedVideoId = videoId.trim();
-    const sanitizedIp = ip.trim().replace((/[^a-zA-Z0-9:.]/g, ""));
+    const sanitizedIp = ip.trim().replace(/[^a-zA-Z0-9:.]/g, "");
 
     const redisKey = `view:${sanitizedVideoId}:${sanitizedIp}`;
     const alreadyViewed = await client.exists(redisKey);
@@ -31,7 +33,8 @@ const trackVideoView = async (videoId, ip) => {
         throw new ApiError(404, "Video not found");
       }
 
-      await client.set(redisKey, "1", { EX: 86400, NX: true });
+      await client.set(redisKey, "1", { EX: ONE_DAY_IN_SECONDS, NX: true });
+      await clearVideoCache(videoId);
       return true;
     }
     return false;
