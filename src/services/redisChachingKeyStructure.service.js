@@ -30,7 +30,7 @@ export const clearUserCache = async (userId) => {
 
 export const clearVideoListCache = async () => {
   try {
-    const key = await client.keys("videos:page*");
+    const key = await client.sMembers("videoListKeys");
     if (key.length >= 1) await client.del(key);
     return true;
   } catch (error) {
