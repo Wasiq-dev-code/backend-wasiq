@@ -1,8 +1,8 @@
 import client from "../../../config/redis.js";
 import { ApiError } from "../../../utils/ApiError.js";
 import { Video } from "../../../models/Video.model.js";
-import { ONE_DAY_IN_SECONDS } from "../../../constants.js";
 import { clearVideoCache } from "./redisChachingKeyStructure.service.js";
+import { TTL } from "../../../constants.js";
 
 const trackVideoView = async (videoId, ip) => {
   try {
@@ -33,7 +33,7 @@ const trackVideoView = async (videoId, ip) => {
         throw new ApiError(404, "Video not found");
       }
 
-      await client.set(redisKey, "1", { EX: ONE_DAY_IN_SECONDS, NX: true });
+      await client.set(redisKey, "1", { EX: TTL.ONE_DAY, NX: true });
       await clearVideoCache(videoId);
       return true;
     }
