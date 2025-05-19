@@ -1,16 +1,16 @@
 import { Router } from "express";
 import {
-  changeAvatar,
-  changeCoverImg,
-  changeCurrentPassword,
-  generateAccessToken,
-  getUser,
-  getUserChannelProfile,
-  getUserHistory,
-  loginUser,
-  logoutUser,
-  registerUser,
-  updateFields,
+  changeAvatarController,
+  changeCoverImgController,
+  changeCurrentPasswordController,
+  generateAccessTokenController,
+  getUserChannelProfileController,
+  getUserController,
+  getUserHistoryController,
+  loginUserController,
+  logoutUserController,
+  registerUserController,
+  updateFieldsController,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { JWTVerify } from "../middlewares/auth.middleware.js";
@@ -35,39 +35,52 @@ router.route("/user/register").post(
       maxCount: 1,
     },
   ]),
-  registerUser
+  registerUserController
 );
 
-router.route("/user/login").post(authRateLimiter, loginUser);
-router.route("/user/refresh-token").post(authRateLimiter, generateAccessToken);
+router.route("/user/login").post(authRateLimiter, loginUserController);
+router
+  .route("/user/refresh-token")
+  .post(authRateLimiter, generateAccessTokenController);
 
 // PROTECTED ROUTES
-router.route("/user/logout").post(JWTVerify, authRateLimiter, logoutUser);
+router
+  .route("/user/logout")
+  .post(JWTVerify, authRateLimiter, logoutUserController);
 router
   .route("/user/change-password")
-  .post(JWTVerify, authRateLimiter, changeCurrentPassword);
-router.route("/user/get-user").get(JWTVerify, authRateLimiter, getUser);
+  .post(JWTVerify, authRateLimiter, changeCurrentPasswordController);
+router
+  .route("/user/get-user")
+  .get(JWTVerify, authRateLimiter, getUserController);
 router
   .route("/user/update-fields")
-  .patch(JWTVerify, uploadRateLimiter, updateFields);
+  .patch(JWTVerify, uploadRateLimiter, updateFieldsController);
 router
   .route("/user/change-avatar")
-  .patch(JWTVerify, uploadRateLimiter, upload.single("avatar"), changeAvatar);
+  .patch(
+    JWTVerify,
+    uploadRateLimiter,
+    upload.single("avatar"),
+    changeAvatarController
+  );
 router
   .route("/user/change-coverImg")
   .patch(
     JWTVerify,
     uploadRateLimiter,
     upload.single("coverImg"),
-    changeCoverImg
+    changeCoverImgController
   );
 
 //PRTECTED CHANEEL AND HISTORY ROUTES
 router
   .route("/user/channel-profile/:username")
-  .get(JWTVerify, viewRateLimiter, getUserChannelProfile);
+  .get(JWTVerify, viewRateLimiter, getUserChannelProfileController);
 s;
 
-router.route("/user/history").get(JWTVerify, viewRateLimiter, getUserHistory);
+router
+  .route("/user/history")
+  .get(JWTVerify, viewRateLimiter, getUserHistoryController);
 
 export default router;

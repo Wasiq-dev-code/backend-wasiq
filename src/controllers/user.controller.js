@@ -11,6 +11,8 @@ import { changeCurrentPassword } from "../services/user/changeCurrentPassword.se
 import { updateFields } from "../services/user/updateFields.service.js";
 import { changeAvatar } from "../services/user/changeAvatar.service.js";
 import { changeCoverImg } from "../services/user/changeCoverImg.service.js";
+import { getUserChannelProfile } from "../services/user/getUserChannelProfile.service.js";
+import { getUserHistory } from "../services/user/getUserHistory.service.js";
 
 const registerUserController = asyncHandler(async (req, res) => {
   try {
@@ -296,121 +298,63 @@ const changeCoverImgController = asyncHandler(async (req, res) => {
 
 /// @param: Completed The Authentication Operations
 
-const getUserChannelProfile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+const getUserChannelProfileController = asyncHandler(async (req, res) => {
+  try {
+    const { username } = req.params;
 
-  if (!username.trim()) {
-    throw new ApiError(400, "username should be pass through URL");
+    if (!username.trim()) {
+      throw new ApiError(400, "username should be pass through URL");
+    }
+
+    const channel = await getUserChannelProfile({
+      username,
+    });
+
+    if (!channel.length) {
+      throw new ApiError(400, "channel is not provided");
+    }
+
+    return res
+      .status()
+      .json(new ApiResponse(200, channel[0], "channel is provided"));
+  } catch (error) {
+    console.error(
+      "Error while executing getUserChannelProfileController",
+      error?.stack || error
+    );
+    throw new ApiError(
+      500,
+      "Server is down due to getUserChannelProfileController"
+    );
   }
-
-  const channel = await User.aggregate([
-    {
-      $match: {
-        username: username?.toLowerCase(),
-      },
-    },
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id", //must read about
-        foreignField: "channel",
-        as: "Totalsubscribers",
-      },
-    },
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "subscriber",
-        as: "SubscribeTo",
-      },
-    },
-    {
-      $addFields: {
-        subscribersCount: {
-          $size: "$Totalsubscribers",
-        },
-        subscribeToCount: {
-          $size: "$SubscribeTo",
-        },
-        isSubscribed: {
-          $cond: {
-            if: { $in: [req.user?._id, "$Totalsubscribers.subscriber"] },
-            then: true,
-            else: false,
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        username: 1,
-        email: 1,
-        fullname: 1,
-        coverImg: 1,
-        avatar: 1,
-        subscribersCount: 1,
-        subscribeToCount: 1,
-        isSubscribed: 1,
-      },
-    },
-  ]);
-
-  if (!channel.length) {
-    throw new ApiError(400, "channel is not provided");
-  }
-
-  return res
-    .status()
-    .json(new ApiResponse(200, channel[0], "channel is provided"));
 });
 
-const getUserHistory = asyncHandler(async (req, res) => {
-  const userHistory = User.aggregate([
-    {
-      $match: {
-        _id: mongoose.Types.ObjectId(req.user._id),
-      },
-    },
-    {
-      $lookup: {
-        from: "videos",
-        localField: "watchHistory",
-        foreignField: "_id",
-        as: "watchHistory",
-        pipeline: [
-          {
-            $lookup: {
-              from: "users",
-              localField: "owner",
-              foreignField: "_id",
-              as: "owner",
-              pipeline: [
-                {
-                  $project: {
-                    fullname: 1,
-                    username: 1,
-                    avatar: 1,
-                  },
-                },
-              ],
-            },
-          },
-          {
-            $addFields: {
-              owner: {
-                $first: "$owner",
-              },
-            },
-          },
-        ],
-      },
-    },
-  ]);
+const getUserHistoryController = asyncHandler(async (req, res) => {
+  try {
+    const { user } = req;
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, userHistory.watchHistory, "userWatchHistory"));
+    if (!user) {
+      throw new ApiError(400, "Unauthorized REQ");
+    }
+
+    const userHistory = await getUserHistory({
+      user,
+    });
+
+    if (!userHistory.watchHistory) {
+      throw new ApiError(404, "User history is empty");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, userHistory.watchHistory, "userWatchHistory"));
+  } catch (error) {
+    console.error(
+      "Error while executing getUserHistoryController",
+      error?.stack || error
+    );
+    throw new ApiError(500, "Server is down due to getUserHistoryController");
+  }
 });
 
 export {
@@ -423,6 +367,6 @@ export {
   updateFieldsController,
   changeAvatarController,
   changeCoverImgController,
-  getUserChannelProfile,
-  getUserHistory,
+  getUserChannelProfileController,
+  getUserHistoryController,
 };
