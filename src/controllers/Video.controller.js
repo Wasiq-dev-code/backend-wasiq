@@ -6,6 +6,10 @@ import { deleteVideo } from "../services/video/deleteVideo.service.js";
 import { getVideoById } from "../services/video/getVideoById.service.js";
 import { getAllVideos } from "../services/video/getAllVideos.service.js";
 import { videoUploader } from "../services/video/videoUploader.service.js";
+import {
+  clearVideoCache,
+  clearVideoListCache,
+} from "../services/video/helper/redisChachingKeyStructure.service.js";
 
 const videoUploaderController = asyncHandler(async (req, res) => {
   try {
@@ -26,6 +30,8 @@ const videoUploaderController = asyncHandler(async (req, res) => {
     if (!videoObj) {
       throw new ApiError(400, "Error while creating Video");
     }
+
+    await clearVideoListCache();
 
     return res
       .status(201)
@@ -122,9 +128,11 @@ const deleteVideoController = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Video not found");
     }
 
-    await deleteVideo({
-      video,
-    });
+    await Promise.all([
+      deleteVideo({ video }),
+      clearVideoCache(video?._id),
+      clearVideoListCache(),
+    ]);
 
     return res
       .status(200)
@@ -158,6 +166,13 @@ const updateVideoController = asyncHandler(async (req, res) => {
     if (!updatedVideo) {
       throw new ApiError(404, "video not found");
     }
+
+    await Promise.all([
+      clearVideoCache(updatedVideo?._id),
+      clearVideoListCache(),
+    ]).catch((Error) => {
+      throw new ApiError(500, "Error while chaching data");
+    });
 
     return res
       .status(200)

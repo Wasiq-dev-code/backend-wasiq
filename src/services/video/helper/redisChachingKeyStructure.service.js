@@ -2,7 +2,7 @@ import client from "../../../config/redis.js";
 
 export const cacheKeys = {
   video: (id) => `video:${id}`,
-  videoList: (page) => `videos:page:${page}`,
+  // videoList: (page) => `videos:page:${page}`,
   user: (id) => `user:${id}`,
 };
 
