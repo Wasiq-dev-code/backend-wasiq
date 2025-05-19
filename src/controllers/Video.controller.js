@@ -31,7 +31,14 @@ const videoUploaderController = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Error while creating Video");
     }
 
-    await clearVideoListCache();
+    try {
+      await clearVideoListCache();
+    } catch (error) {
+      console.error(
+        "Error while caching videolist in uploadingVideoController",
+        error?.stack || error
+      );
+    }
 
     return res
       .status(201)
