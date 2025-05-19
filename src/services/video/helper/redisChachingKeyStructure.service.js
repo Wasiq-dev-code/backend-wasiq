@@ -31,7 +31,10 @@ export const clearUserCache = async (userId) => {
 export const clearVideoListCache = async () => {
   try {
     const key = await client.sMembers("videoListKeys");
-    if (key.length >= 1) await client.del(key);
+    if (key.length >= 1) {
+      await client.del(...key);
+      await client.del("videoListKeys");
+    }
     return true;
   } catch (error) {
     console.error("Error while deleting the key on redis", error);

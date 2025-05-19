@@ -21,7 +21,7 @@ const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
         console.error("Error while set data", err);
       }
 
-      if (prefix.startsWith("videos:page")) {
+      if (prefix.startsWith("videosList")) {
         await client.sAdd("videoListKeys", key);
       }
 
