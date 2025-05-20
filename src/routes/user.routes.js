@@ -73,7 +73,7 @@ router
     changeCoverImgController
   );
 
-//PRTECTED CHANEEL AND HISTORY ROUTES
+//PROTECTED CHANNEL AND HISTORY ROUTES
 router
   .route("/user/channel-profile/:username")
   .get(JWTVerify, viewRateLimiter, getUserChannelProfileController);

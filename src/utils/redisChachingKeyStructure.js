@@ -1,4 +1,4 @@
-import client from "../../../config/redis.js";
+import client from "../config/redis.js";
 
 export const cacheKeys = {
   video: (id) => `video:${id}`,

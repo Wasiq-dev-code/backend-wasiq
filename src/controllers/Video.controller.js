@@ -9,7 +9,7 @@ import { videoUploader } from "../services/video/videoUploader.service.js";
 import {
   clearVideoCache,
   clearVideoListCache,
-} from "../services/video/helper/redisChachingKeyStructure.service.js";
+} from "../utils/redisChachingKeyStructure.js";
 
 const videoUploaderController = asyncHandler(async (req, res) => {
   try {

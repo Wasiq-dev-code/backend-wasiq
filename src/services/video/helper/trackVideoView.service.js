@@ -1,7 +1,7 @@
 import client from "../../../config/redis.js";
 import { ApiError } from "../../../utils/ApiError.js";
 import { Video } from "../../../models/Video.model.js";
-import { clearVideoCache } from "./redisChachingKeyStructure.service.js";
+import { clearVideoCache } from "../../../utils/redisChachingKeyStructure.js";
 import { TTL } from "../../../constants.js";
 
 const trackVideoView = async (videoId, ip) => {

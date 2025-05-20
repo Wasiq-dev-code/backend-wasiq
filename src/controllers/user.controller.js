@@ -77,6 +77,12 @@ const loginUserController = asyncHandler(async (req, res) => {
       secure: true,
     };
 
+    // try {
+    //   await
+    // } catch (error) {
+
+    // }
+
     return res
       .status(200)
       .cookie("accessToken", accessToken, option)
