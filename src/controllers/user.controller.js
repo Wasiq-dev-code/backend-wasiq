@@ -1,8 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/User.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import mongoose from "mongoose";
 import { resgisterUser } from "../services/user/registerUser.service.js";
 import { loginUser } from "../services/user/loginUser.service.js";
 import { logoutUser } from "../services/user/logoutUser.service.js";
@@ -13,6 +11,7 @@ import { changeAvatar } from "../services/user/changeAvatar.service.js";
 import { changeCoverImg } from "../services/user/changeCoverImg.service.js";
 import { getUserChannelProfile } from "../services/user/getUserChannelProfile.service.js";
 import { getUserHistory } from "../services/user/getUserHistory.service.js";
+import { clearUserCache } from "../utils/redisChachingKeyStructure.js";
 
 const registerUserController = asyncHandler(async (req, res) => {
   try {
@@ -77,11 +76,14 @@ const loginUserController = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    // try {
-    //   await
-    // } catch (error) {
-
-    // }
+    try {
+      await clearUserCache(isLoggedIn?._id);
+    } catch (error) {
+      console.error(
+        "Error while caching user after login",
+        error?.stack || error
+      );
+    }
 
     return res
       .status(200)
@@ -116,6 +118,15 @@ const logoutUserController = asyncHandler(async (req, res) => {
     // sameSite: "strict",
   };
 
+  try {
+    await clearUserCache(req?.user?._id);
+  } catch (error) {
+    console.error(
+      "Error while caching user after logout",
+      error?.stack || error
+    );
+  }
+
   return res
     .status(200)
     .clearCookie("accessToken", option)
@@ -145,6 +156,15 @@ const generateAccessTokenController = asyncHandler(async (req, res) => {
       secure: true,
       // sameSite: "strict",
     };
+
+    try {
+      await clearUserCache(req?.user?._id);
+    } catch (error) {
+      console.error(
+        "Error while caching after providing tokens",
+        error?.stack || error
+      );
+    }
 
     return res
       .status(200)
@@ -191,6 +211,15 @@ const changeCurrentPasswordController = asyncHandler(async (req, res) => {
       newPassword,
     });
 
+    try {
+      await clearUserCache(req?.user?._id);
+    } catch (error) {
+      console.error(
+        "Error while caching after update password",
+        error?.stack || error
+      );
+    }
+
     return res
       .status(200)
       .json(new ApiResponse(200, {}, "password is changed successfully"));
@@ -232,6 +261,15 @@ const updateFieldsController = asyncHandler(async (req, res) => {
       throw new ApiError(401, "database error");
     }
 
+    try {
+      await clearUserCache(user?._id);
+    } catch (error) {
+      console.error(
+        "Error while caching after update fields",
+        error?.stack || error
+      );
+    }
+
     return res
       .status(200)
       .json(new ApiResponse(200, user, "fields change successfully"));
@@ -261,6 +299,15 @@ const changeAvatarController = asyncHandler(async (req, res) => {
       throw new ApiError(500, "server issue while operating Database");
     }
 
+    try {
+      await clearUserCache(userobj?._id);
+    } catch (error) {
+      console.error(
+        "Error while caching user after avatar change",
+        error?.stack || error
+      );
+    }
+
     return res
       .status(200)
       .json(new ApiResponse(200, userobj, "avatar changed successfully"));
@@ -288,6 +335,15 @@ const changeCoverImgController = asyncHandler(async (req, res) => {
 
     if (!userobj) {
       throw new ApiError(500, "server issue while operating Database");
+    }
+
+    try {
+      await clearUserCache(userobj?._id);
+    } catch (error) {
+      console.error(
+        "Error while caching user after changing coverimage",
+        error?.stack || error
+      );
     }
 
     return res
