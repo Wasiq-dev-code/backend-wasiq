@@ -24,7 +24,7 @@ const cacheMiddleware = (prefix, duration, option) => {
 
   checkRedisConnection();
 
-  setInterval(checkRedisConnection(), 30000);
+  setInterval(checkRedisConnection, 30000);
 
   const generateCacheKey = (req) => {
     const baseUrl = req.path;
@@ -52,28 +52,42 @@ const cacheMiddleware = (prefix, duration, option) => {
 
     if (!redisAvailable) return next();
 
-    if (req.header[bypassHeader]) return next();
+    if (req.headers[bypassHeader]) return next();
+
+    const key = generateCacheKey(req);
 
     try {
-      const cached = await client.get(key);
+      const lock = `lock:${key}`;
+      const isLock = await client.get(lock);
 
-      if (cached) {
-        return res.json(JSON.parse(cached));
+      if (isLock) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        const afterCache = await client.get(key);
+        if (afterCache) {
+          return res.json(processData.decompress(afterCache));
+        }
       }
 
-      const key = generateCacheKey(req);
+      await client.setEx(lock, 30, "1");
 
       const originalResponse = res.json;
 
       res.json = async function (body) {
         try {
-          await client.setEx(key, duration, JSON.stringify(body));
+          if (res.statusCode < 400) {
+            const cacheData = processData.compress(body);
+
+            await client.setEx(key, duration, cacheData);
+
+            if (prefix === "videosList") {
+              await client.sAdd("videoListKeys", key);
+            }
+
+            await client.del(lock);
+          }
         } catch (err) {
           console.error("Error while set data", err);
-        }
-
-        if (prefix === "videosList") {
-          await client.sAdd("videoListKeys", key);
+          await client.del(lock).catch(() => {});
         }
 
         return originalResponse.call(this, body);
