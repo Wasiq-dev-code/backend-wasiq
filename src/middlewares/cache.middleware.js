@@ -1,9 +1,14 @@
 import client from "../config/redis";
 import crypto from "crypto";
+import { getSortedQuery } from "../utils/getSortedQuery";
 
-const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
-  const rawkey = `${prefix}:${req.originalUrl}`;
-  const key = `${prefix}:${crypto.createHash("md5").update(rawkey).digest("hex")}`;
+const cacheMiddleware = (prefix, duration) => async (req, res, next) => {
+  if (req.method !== "GET") return next();
+
+  const baseUrl = req.path;
+  const sortedQuery = getSortedQuery(req.query);
+  const rawKey = `${prefix}${baseUrl}${sortedQuery}`;
+  const key = `${prefix}:${crypto.createHash("md5").update(rawKey).digest("hex")}`;
 
   try {
     const cached = await client.get(key);
@@ -34,4 +39,4 @@ const cacheFromRedis = (prefix, duration) => async (req, res, next) => {
   }
 };
 
-export default cacheFromRedis;
+export default cacheMiddleware;
