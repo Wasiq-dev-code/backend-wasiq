@@ -1,100 +1,84 @@
-import client from "../config/redis";
-import crypto from "crypto";
-import { getSortedQuery } from "../utils/getSortedQuery";
+import client from "../config/redis.js";
+import { checkRedisConnection } from "../utils/checkRedisConnection.js";
+import { acquireLock } from "../utils/AquireLock.js";
+import { waitForData } from "../utils/waitForData.js";
+import { processData } from "../utils/processData.js";
+import { generateCacheKey } from "../utils/generateCacheKey.js";
 
 const cacheMiddleware = (prefix, duration, option) => {
   const { compressData = false, bypassHeader = "x-bypass-cache" } = option;
 
-  let redisAvailable = true;
+  let redisStatus = { available: true };
 
-  const checkRedisConnection = async () => {
-    try {
-      await client.ping();
-      if (!redisAvailable) {
-        console.log("redis connection re establish");
-      }
-      redisAvailable = true;
-    } catch (error) {
-      if (redisAvailable) {
-        console.log("connection lost", error);
-      }
-      redisAvailable = false;
-    }
-  };
-
-  checkRedisConnection();
-
-  setInterval(checkRedisConnection, 30000);
-
-  const generateCacheKey = (req) => {
-    const baseUrl = req.path;
-    const sortedQuery = getSortedQuery(req.query);
-    const rawKey = `${prefix}${baseUrl}${sortedQuery}`;
-    return `${prefix}:${crypto.createHash("md5").update(rawKey).digest("hex")}`;
-  };
-
-  const processData = {
-    compress: (data) => {
-      return compressData
-        ? Buffer.from(JSON.stringify(data)).toString("base64")
-        : JSON.stringify(data);
-    },
-
-    decompress: (data) => {
-      return compressData
-        ? JSON.parse(Buffer.from(data, "base64").toString())
-        : JSON.parse(data);
-    },
-  };
+  checkRedisConnection(redisStatus);
+  const refreshRedis = setInterval(checkRedisConnection, 30000);
+  process.on("SIGTERM", () => clearTimeout(refreshRedis));
+  process.on("SIGINT", () => clearTimeout(refreshRedis));
 
   return async (req, res, next) => {
-    if (req.method !== "GET") return next();
-
-    if (!redisAvailable) return next();
-
-    if (req.headers[bypassHeader]) return next();
+    if (
+      req.method !== "GET" ||
+      !redisStatus.available ||
+      req.headers[bypassHeader]
+    )
+      return next();
 
     const key = generateCacheKey(req);
+    const lockKey = `lock:${key}`;
 
     try {
-      const lock = `lock:${key}`;
-      const isLock = await client.get(lock);
-
-      if (isLock) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        const afterCache = await client.get(key);
-        if (afterCache) {
-          return res.json(processData.decompress(afterCache));
+      const cacheData = await client.get(key);
+      if (cacheData) {
+        const decompressedData = processData.decompress(
+          cacheData,
+          compressData
+        );
+        return res.json(decompressedData);
+      }
+      const islock = await acquireLock(lockKey);
+      if (islock) {
+        const waited = await waitForData(lockKey, key);
+        if (waited) {
+          return res.json(waited);
         }
       }
 
-      await client.setEx(lock, 30, "1");
+      const originalJson = res.json.bind(res);
+      const originalSend = res.send.bind(res);
 
-      const originalResponse = res.json;
-
-      res.json = async function (body) {
+      const cacheAndRespond = async (body, sender) => {
         try {
-          if (res.statusCode < 400) {
-            const cacheData = processData.compress(body);
+          const cachedData = processData.compress(body, compressData);
+          await client.setEx(key, duration, cachedData);
 
-            await client.setEx(key, duration, cacheData);
-
-            if (prefix === "videosList") {
-              await client.sAdd("videoListKeys", key);
-            }
-
-            await client.del(lock);
+          if (prefix === "videosList") {
+            await client.sAdd("videoListKeys", key);
           }
         } catch (err) {
-          console.error("Error while set data", err);
-          await client.del(lock).catch(() => {});
+          console.log("Error in cacheAndRespond", err);
+        } finally {
+          if (islock) {
+            await client.del(lockKey).catch(() => {});
+          }
         }
-
-        return originalResponse.call(this, body);
+        return sender(body);
       };
+
+      res.json = (body) => cacheAndRespond(body, originalJson);
+      res.send = (body) => {
+        if (
+          typeof body === "object" ||
+          (typeof body === "string" && body.trim().startsWith("{"))
+        ) {
+          return cacheAndRespond(body, originalSend);
+        }
+        return originalSend(body);
+      };
+
       next();
     } catch (error) {
       console.error("Occuring while running cacheMiddleware");
+      await client.del(lockKey).catch(() => {});
       next();
     }
   };

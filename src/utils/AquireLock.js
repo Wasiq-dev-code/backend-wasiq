@@ -1,0 +1,10 @@
+import client from "../config/redis";
+
+export const acquireLock = async (lockKey, timeOut = 30) => {
+  try {
+    const result = await client.setEx(lockKey, "1", "PX", timeOut * 1000, "NX");
+    return result === "OK";
+  } catch {
+    return false;
+  }
+};
