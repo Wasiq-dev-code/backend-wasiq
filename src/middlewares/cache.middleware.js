@@ -77,7 +77,7 @@ const cacheMiddleware = (prefix, duration, option) => {
 
       next();
     } catch (error) {
-      console.error("Occuring while running cacheMiddleware");
+      console.error("Error while running cacheMiddleware:", error);
       await client.del(lockKey).catch(() => {});
       next();
     }
