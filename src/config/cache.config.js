@@ -1,8 +1,4 @@
 export const CACHE_CONFIG = {
-  DURATIONS: {
-    VIDEO: 3600, // 1 hour
-    VIDEO_LIST: 1800, // 30 minutes
-  },
   MAX_ITEMS: 1000,
   COMPRESSION_THRESHOLD: 1024, // 1KB
   HEALTH_CHECK_INTERVAL: 30000, // 30 seconds
