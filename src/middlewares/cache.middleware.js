@@ -5,6 +5,7 @@ import { waitForData } from "../utils/waitForData.js";
 import { processData } from "../utils/processData.js";
 import { generateCacheKey } from "../utils/generateCacheKey.js";
 import { CacheMonitor } from "../utils/cacheMonitoring.js";
+import { checkMemoryLimits } from "../utils/checkMemoryLimits.js";
 
 const monitor = new CacheMonitor();
 
@@ -56,11 +57,17 @@ const cacheMiddleware = (prefix, duration, option) => {
 
       const cacheAndRespond = async (body, sender) => {
         try {
-          const cachedData = processData.compress(body, compressData);
-          await client.setEx(key, duration, cachedData);
+          const canCache = await checkMemoryLimits(client);
+          if (canCache) {
+            const cachedData = processData.compress(body, compressData);
+            await client.setEx(key, duration, cachedData);
 
-          if (prefix === "videosList") {
-            await client.sAdd("videoListKeys", key);
+            if (prefix === "videosList") {
+              await client.sAdd("videoListKeys", key);
+            }
+          } else {
+            await client.flushDb();
+            console.warn("Cache cleared due to memory limits");
           }
         } catch (err) {
           console.log("Error in cacheAndRespond", err);
