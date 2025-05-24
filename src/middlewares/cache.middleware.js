@@ -14,7 +14,10 @@ const cacheMiddleware = (prefix, duration, option) => {
   let redisStatus = { available: true };
 
   checkRedisConnection(redisStatus);
-  const refreshRedis = setInterval(checkRedisConnection, 30000);
+  const refreshRedis = setInterval(
+    checkRedisConnection,
+    process.env.HEALTH_CHECK_INTERVAL
+  );
   process.on("SIGTERM", () => clearTimeout(refreshRedis));
   process.on("SIGINT", () => clearTimeout(refreshRedis));
 
