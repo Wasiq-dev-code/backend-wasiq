@@ -4,6 +4,9 @@ import { acquireLock } from "../utils/AquireLock.js";
 import { waitForData } from "../utils/waitForData.js";
 import { processData } from "../utils/processData.js";
 import { generateCacheKey } from "../utils/generateCacheKey.js";
+import { CacheMonitor } from "../utils/cacheMonitoring.js";
+
+const monitor = new CacheMonitor();
 
 const cacheMiddleware = (prefix, duration, option) => {
   const { compressData = false, bypassHeader = "x-bypass-cache" } = option;
@@ -29,12 +32,14 @@ const cacheMiddleware = (prefix, duration, option) => {
     try {
       const cacheData = await client.get(key);
       if (cacheData) {
+        monitor.recordHit();
         const decompressedData = processData.decompress(
           cacheData,
           compressData
         );
         return res.json(decompressedData);
       }
+      monitor.recordMiss();
       const islock = await acquireLock(lockKey);
       if (islock) {
         const waited = await waitForData(lockKey, key);
