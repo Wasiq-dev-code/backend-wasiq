@@ -18,21 +18,23 @@ import cacheMiddleware from "../middlewares/cache.middleware.js";
 const videoRouter = Router();
 
 /// Public Routes
-videoRouter
-  .route("/Videos")
-  .get(
-    cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST),
-    viewRateLimiter,
-    getAllVideosController
-  );
-videoRouter
-  .route("/Video/:videoId")
-  .get(
-    cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO),
-    viewRateLimiter,
-    uploadRateLimiter,
-    getVideoByIdController
-  );
+videoRouter.route("/Videos").get(
+  viewRateLimiter,
+  cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
+    bypassHeader: "x-bypass-cache",
+    compressData: false,
+  }),
+  getAllVideosController
+);
+videoRouter.route("/Video/:videoId").get(
+  viewRateLimiter,
+  uploadRateLimiter,
+  cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
+    bypassHeader: "x-bypass-cache",
+    compressData: false,
+  }),
+  getVideoByIdController
+);
 
 /// Secure Routes
 videoRouter.route("/video/upload").post(

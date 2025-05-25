@@ -6,6 +6,7 @@ import { processData } from "../utils/processData.js";
 import { generateCacheKey } from "../utils/generateCacheKey.js";
 import { CacheMonitor } from "../utils/cacheMonitoring.js";
 import { checkMemoryLimits } from "../utils/checkMemoryLimits.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const monitor = new CacheMonitor();
 
@@ -14,10 +15,14 @@ const cacheMiddleware = (prefix, duration, option) => {
 
   let redisStatus = { available: true };
 
+  if (!redisStatus) {
+    throw new ApiError.CachingError("redisStatus", redisStatus);
+  }
+
   checkRedisConnection(redisStatus);
   const refreshRedis = setInterval(
     checkRedisConnection,
-    process.env.HEALTH_CHECK_INTERVAL
+    process?.env?.HEALTH_CHECK_INTERVAL
   );
   process.on("SIGTERM", () => clearTimeout(refreshRedis));
   process.on("SIGINT", () => clearTimeout(refreshRedis));
@@ -31,7 +36,16 @@ const cacheMiddleware = (prefix, duration, option) => {
       return next();
 
     const key = generateCacheKey(req);
+
+    if (!key) {
+      throw new ApiError.CachingError("while generating key", key);
+    }
+
     const lockKey = `lock:${key}`;
+
+    if (!lockKey) {
+      throw new ApiError.CachingError("while generating lockkey", lockKey);
+    }
 
     try {
       const cacheData = await client.get(key);
@@ -41,6 +55,13 @@ const cacheMiddleware = (prefix, duration, option) => {
           cacheData,
           compressData
         );
+        if (!decompressedData) {
+          throw new ApiError.CachingError(
+            "while decompressing data",
+            decompressedData
+          );
+        }
+
         return res.json(decompressedData);
       }
       monitor.recordMiss();
@@ -60,6 +81,12 @@ const cacheMiddleware = (prefix, duration, option) => {
           const canCache = await checkMemoryLimits(client);
           if (canCache) {
             const cachedData = processData.compress(body, compressData);
+            if (!cacheData) {
+              throw new ApiError.CachingError(
+                "while compressing data",
+                cacheData
+              );
+            }
             await client.setEx(key, duration, cachedData);
 
             if (prefix === "videosList") {
@@ -94,7 +121,7 @@ const cacheMiddleware = (prefix, duration, option) => {
     } catch (error) {
       console.error("Error while running cacheMiddleware:", error);
       await client.del(lockKey).catch(() => {});
-      next();
+      next(new ApiError.CachingError("middleware failure", error.message));
     }
   };
 };
