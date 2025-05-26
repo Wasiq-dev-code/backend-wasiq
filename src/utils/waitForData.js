@@ -1,4 +1,4 @@
-import client from "../config/redis";
+import client from "../config/redis.js";
 
 export const waitForData = async (lockKey, key, maxAttempts = 5) => {
   for (let i = 0; i < maxAttempts; i++) {

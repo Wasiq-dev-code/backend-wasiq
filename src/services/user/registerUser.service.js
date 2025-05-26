@@ -1,6 +1,6 @@
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
-import { uploadOnCloudinary } from "../../utils/cloudinary";
+import { User } from "../../models/User.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 
 export const resgisterUser = async ({
   username,
@@ -64,7 +64,7 @@ export const resgisterUser = async ({
 
     // check if user not exist in db
     const createdUser = await User.findById(user._id).select(
-      "-password -refreshToken"
+      "-_id -password -refreshToken -avatar_publicId -coverImg_publicId"
     );
 
     if (!createdUser) {

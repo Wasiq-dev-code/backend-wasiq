@@ -1,4 +1,4 @@
-import client from "../config/redis";
+import client from "../config/redis.js";
 
 export const checkRedisConnection = async (redisStatus) => {
   try {
@@ -8,9 +8,9 @@ export const checkRedisConnection = async (redisStatus) => {
     }
     redisStatus.available = true;
   } catch (error) {
-    if (redisAvailable) {
+    if (redisStatus) {
+      redisStatus.available = false;
       console.log("connection lost", error);
     }
-    redisStatus.available = false;
   }
 };

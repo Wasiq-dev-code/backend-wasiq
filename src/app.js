@@ -33,11 +33,11 @@ import videoRouter from "./routes/video.routes.js";
 app.use("/api", router);
 app.use("/api", videoRouter);
 
-app.use((_, res) => {
+app.use((res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-app.use((err, _, res, _) => {
+app.use((err, res) => {
   console.error(err.stack);
   res.status(500).json({ message: "Internal Server Error" });
 });

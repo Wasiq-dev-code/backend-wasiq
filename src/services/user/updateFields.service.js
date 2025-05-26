@@ -1,5 +1,5 @@
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
+import { User } from "../../models/User.model.js";
+import { ApiError } from "../../utils/ApiError.js";
 
 export const updateFields = async ({ fullname, email }) => {
   try {

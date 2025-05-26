@@ -77,8 +77,6 @@ router
 router
   .route("/user/channel-profile/:username")
   .get(JWTVerify, viewRateLimiter, getUserChannelProfileController);
-s;
-
 router
   .route("/user/history")
   .get(JWTVerify, viewRateLimiter, getUserHistoryController);

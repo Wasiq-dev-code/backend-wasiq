@@ -1,6 +1,7 @@
-import { Video } from "../../models/Video.model";
-import { ApiError } from "../../utils/ApiError";
-import { uploadOnCloudinary } from "../../utils/cloudinary";
+import mongoose from "mongoose";
+import { Video } from "../../models/Video.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 
 export const videoUploader = async ({ user, files, title, description }) => {
   try {
@@ -55,7 +56,7 @@ export const videoUploader = async ({ user, files, title, description }) => {
     const videoObj = await Video.aggregate([
       {
         $match: {
-          _id: mongoose.Types.ObjectId(video._id),
+          _id: new mongoose.Types.ObjectId(video._id),
         },
       },
       {
@@ -81,11 +82,11 @@ export const videoUploader = async ({ user, files, title, description }) => {
         $addFields: {
           owner: {
             $first: "$owner",
+          },
+          createdAt: {
             $dateToString: {
-              createdAt: {
-                format: "%Y-%m-%d %H:%M",
-                date: "$createdAt",
-              },
+              format: "%Y-%m-%d %H:%M",
+              date: "$createdAt",
             },
           },
         },

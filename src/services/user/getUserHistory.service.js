@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
+import { User } from "../../models/User.model.js";
+import { ApiError } from "../../utils/ApiError.js";
 
 export const getUserHistory = async ({ user }) => {
   try {

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
-import { generateAcessAndRefreshAtoken } from "./helper/generatingJWTTokens.service";
+import { User } from "../../models/User.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { generateAcessAndRefreshAtoken } from "./helper/generatingJWTTokens.service.js";
 
 export const generateAccessToken = async ({ body, cookies }) => {
   try {

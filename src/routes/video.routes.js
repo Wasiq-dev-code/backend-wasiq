@@ -6,7 +6,7 @@ import {
   getVideoByIdController,
   updateVideoController,
   videoUploaderController,
-} from "../controllers/Video.controller";
+} from "../controllers/Video.controller.js";
 import { JWTVerify } from "../middlewares/auth.middleware.js";
 import {
   uploadRateLimiter,

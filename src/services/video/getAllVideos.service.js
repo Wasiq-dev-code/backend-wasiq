@@ -1,5 +1,5 @@
-import { Video } from "../../models/Video.model";
-import { ApiError } from "../../utils/ApiError";
+import { Video } from "../../models/Video.model.js";
+import { ApiError } from "../../utils/ApiError.js";
 
 export const getAllVideos = async ({ page, limit }) => {
   try {

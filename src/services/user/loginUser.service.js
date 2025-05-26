@@ -1,6 +1,6 @@
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
-import { generateAcessAndRefreshAtoken } from "./helper/generatingJWTTokens.service";
+import { User } from "../../models/User.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { generateAcessAndRefreshAtoken } from "./helper/generatingJWTTokens.service.js";
 
 export const loginUser = async ({ email, username, password }) => {
   try {
@@ -30,7 +30,7 @@ export const loginUser = async ({ email, username, password }) => {
     }
     // returning current object values accept password and refreshtoken
     const isLoggedIn = await User.findById(user._id).select(
-      "-password -refreshToken"
+      "-_id -password -refreshToken -avatar_publicId -coverImg_publicId"
     );
 
     if (!isLoggedIn) throw new ApiError(500, "Api not found");

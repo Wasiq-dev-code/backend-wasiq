@@ -1,6 +1,6 @@
-import { Video } from "../../models/Video.model";
-import { ApiError } from "../../utils/ApiError";
-import { deleteOnCloudinary } from "../../utils/cloudinary";
+import { Video } from "../../models/Video.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { deleteOnCloudinary } from "../../utils/cloudinary.js";
 
 export const deleteVideo = async ({ video }) => {
   try {

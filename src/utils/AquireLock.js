@@ -1,4 +1,4 @@
-import client from "../config/redis";
+import client from "../config/redis.js";
 
 export const acquireLock = async (lockKey, timeOut = 30) => {
   try {

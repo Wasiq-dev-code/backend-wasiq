@@ -1,6 +1,9 @@
-import { User } from "../../models/User.model";
-import { ApiError } from "../../utils/ApiError";
-import { deleteOnCloudinary, uploadOnCloudinary } from "../../utils/cloudinary";
+import { User } from "../../models/User.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import {
+  deleteOnCloudinary,
+  uploadOnCloudinary,
+} from "../../utils/cloudinary.js";
 
 export const changeAvatar = async ({ file, user }) => {
   try {

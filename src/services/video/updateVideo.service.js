@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
-import { Video } from "../../models/Video.model";
-import { ApiError } from "../../utils/ApiError";
-import { deleteOnCloudinary, uploadOnCloudinary } from "../../utils/cloudinary";
-import filterObject from "../../utils/filterObject";
+import { Video } from "../../models/Video.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import {
+  deleteOnCloudinary,
+  uploadOnCloudinary,
+} from "../../utils/cloudinary.js";
+import filterObject from "../../utils/filterObject.js";
 
 export const updateVideo = async ({ body, file, video }) => {
   try {
