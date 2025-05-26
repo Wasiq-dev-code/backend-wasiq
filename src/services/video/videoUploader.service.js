@@ -38,6 +38,20 @@ export const videoUploader = async ({ user, files, title, description }) => {
       throw new ApiError(500, "Failed to upload files to Cloudinary");
     }
 
+    const existedVideo = await Video.findOne({
+      $or: [
+        { videoFile: videoOnCloudinary.url },
+        { thumbnail: thumbnailOnCloudinary.url },
+      ],
+    });
+
+    if (existedVideo) {
+      throw new ApiError(
+        400,
+        "This Video Or Thumbnail Are Uploaded By Someone"
+      );
+    }
+
     const video = await Video.create({
       title,
       description,
