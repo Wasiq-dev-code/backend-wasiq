@@ -11,6 +11,11 @@ const videoSchema = new Schema(
       type: String,
       required: true,
     },
+    videoFile_etag: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     thumbnail: {
       type: String,
       required: true,
@@ -18,6 +23,11 @@ const videoSchema = new Schema(
     thumbnail_publicId: {
       type: String,
       required: true,
+    },
+    thumbnail_etag: {
+      type: String,
+      required: true,
+      unique: true,
     },
     title: {
       type: String,

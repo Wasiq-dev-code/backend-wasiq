@@ -30,6 +30,8 @@ export const videoUploader = async ({ user, files, title, description }) => {
       throw new ApiError(500, "issue in cloudinary while uploading files");
     });
 
+    console.log(videoOnCloudinary);
+
     if (!videoOnCloudinary?.url || !thumbnailOnCloudinary?.url) {
       console.error("Cloudinary upload failed", {
         video: videoOnCloudinary,
@@ -38,18 +40,8 @@ export const videoUploader = async ({ user, files, title, description }) => {
       throw new ApiError(500, "Failed to upload files to Cloudinary");
     }
 
-    const existedVideo = await Video.findOne({
-      $or: [
-        { videoFile: videoOnCloudinary.url },
-        { thumbnail: thumbnailOnCloudinary.url },
-      ],
-    });
-
-    if (existedVideo) {
-      throw new ApiError(
-        400,
-        "This Video Or Thumbnail Are Uploaded By Someone"
-      );
+    if (!videoOnCloudinary.etag || !thumbnailOnCloudinary.etag) {
+      throw new ApiError(500, "Failed to upload files to Cloudinary");
     }
 
     const video = await Video.create({
@@ -57,8 +49,10 @@ export const videoUploader = async ({ user, files, title, description }) => {
       description,
       videoFile: videoOnCloudinary.url,
       videoFile_publicId: videoOnCloudinary.public_id,
+      videoFile_etag: videoOnCloudinary.etag,
       thumbnail: thumbnailOnCloudinary.url,
       thumbnail_publicId: thumbnailOnCloudinary.public_id,
+      thumbnail_etag: thumbnailOnCloudinary.etag,
       duration: videoOnCloudinary?.duration || 0,
       owner: userId,
     });
@@ -123,6 +117,14 @@ export const videoUploader = async ({ user, files, title, description }) => {
       "Occuring error while uploading video",
       error?.stack || error
     );
+    if (error.code === 11000) {
+      if (error.keyPattern?.videoFile_etag) {
+        throw new ApiError(400, "This video has already been uploaded");
+      }
+      if (error.keyPattern?.thumbnail_etag) {
+        throw new ApiError(400, "This thumbnail has already been uploaded");
+      }
+    }
     throw new ApiError(
       error?.statusCode || 500,
       error?.message || "Server is down"
