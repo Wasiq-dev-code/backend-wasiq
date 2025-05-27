@@ -30,7 +30,7 @@ export const videoUploader = async ({ user, files, title, description }) => {
       throw new ApiError(500, "issue in cloudinary while uploading files");
     });
 
-    console.log(videoOnCloudinary);
+    // console.log(videoOnCloudinary);
 
     if (!videoOnCloudinary?.url || !thumbnailOnCloudinary?.url) {
       console.error("Cloudinary upload failed", {
@@ -42,6 +42,20 @@ export const videoUploader = async ({ user, files, title, description }) => {
 
     if (!videoOnCloudinary.etag || !thumbnailOnCloudinary.etag) {
       throw new ApiError(500, "Failed to upload files to Cloudinary");
+    }
+
+    const existedFiles = await Video.findOne({
+      $or: [
+        { videoFile_etag: videoOnCloudinary.etag },
+        { thumbnail_etag: thumbnailOnCloudinary.etag },
+      ],
+    });
+
+    if (existedFiles) {
+      throw new ApiError(
+        400,
+        "This video or thumbnail has already been uploaded"
+      );
     }
 
     const video = await Video.create({

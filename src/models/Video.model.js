@@ -14,7 +14,6 @@ const videoSchema = new Schema(
     videoFile_etag: {
       type: String,
       required: true,
-      unique: true,
     },
     thumbnail: {
       type: String,
@@ -27,7 +26,6 @@ const videoSchema = new Schema(
     thumbnail_etag: {
       type: String,
       required: true,
-      unique: true,
     },
     title: {
       type: String,

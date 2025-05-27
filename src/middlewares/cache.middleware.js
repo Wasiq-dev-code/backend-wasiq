@@ -11,7 +11,9 @@ import { ApiError } from "../utils/ApiError.js";
 const monitor = new CacheMonitor();
 
 const cacheMiddleware = (prefix, duration, option) => {
-  const { compressData = false, bypassHeader = "x-bypass-cache" } = option;
+  const { compressData = true, bypassHeader = "x-bypass-cache" } = option;
+
+  // console.log(prefix, duration, option);
 
   let redisStatus = { available: true };
 
@@ -61,8 +63,9 @@ const cacheMiddleware = (prefix, duration, option) => {
             decompressedData
           );
         }
+        const finalData = JSON.parse(decompressedData);
 
-        return res.json(decompressedData);
+        return res.json(finalData);
       }
       monitor.recordMiss();
       const islock = await acquireLock(lockKey);
@@ -77,17 +80,23 @@ const cacheMiddleware = (prefix, duration, option) => {
       const originalSend = res.send.bind(res);
 
       const cacheAndRespond = async (body, sender) => {
+        // console.log(body, duration);
         try {
           const canCache = await checkMemoryLimits(client);
           if (canCache) {
             const cachedData = processData.compress(body, compressData);
-            if (!cacheData) {
-              throw new ApiError.CachingError(
-                "while compressing data",
-                cacheData
-              );
+            const ttl = parseInt(duration, 10);
+            if (isNaN(ttl) || ttl < 0) {
+              throw new Error(`Invalid TTL duration: ${duration}`);
             }
-            await client.setEx(key, duration, cachedData);
+            if (ttl > 2147483647) {
+              throw new Error(`TTL too large: ${ttl}`);
+            }
+            console.log(ttl, "wasiq is bad asss");
+
+            // console.log(key, ttl, cacheAndRespond);
+
+            await client.setEx(key, ttl, cachedData);
 
             if (prefix === "videosList") {
               await client.sAdd("videoListKeys", key);

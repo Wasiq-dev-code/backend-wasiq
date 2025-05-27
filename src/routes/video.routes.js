@@ -22,7 +22,7 @@ videoRouter.route("/Videos").get(
   viewRateLimiter,
   cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
     bypassHeader: "x-bypass-cache",
-    compressData: false,
+    compressData: true,
   }),
   getAllVideosController
 );
