@@ -33,8 +33,7 @@ const trackVideoView = async (videoId, ip) => {
         throw new ApiError(404, "Video not found");
       }
 
-      await client.set(redisKey, "1", { EX: TTL.ONE_DAY, NX: true });
-      await clearVideoCache(videoId);
+      await client.set(redisKey, "1", { EX: TTL.SHORT, NX: true });
       return true;
     }
     return false;

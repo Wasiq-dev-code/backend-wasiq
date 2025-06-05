@@ -21,7 +21,7 @@ export const authRateLimiter = rateLimit({
 // Upload limiter
 export const uploadRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // 10 uploads
+  max: 2, // 2 uploads
   message: "Upload limit reached. Please try again in an hour.",
   standardHeaders: true,
   legacyHeaders: false,

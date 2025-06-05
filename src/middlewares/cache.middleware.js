@@ -37,7 +37,7 @@ const cacheMiddleware = (prefix, duration, option) => {
     )
       return next();
 
-    const key = generateCacheKey(req);
+    const key = generateCacheKey(req, prefix);
 
     if (!key) {
       throw new ApiError.CachingError("while generating key", key);
@@ -64,6 +64,8 @@ const cacheMiddleware = (prefix, duration, option) => {
           );
         }
         const finalData = JSON.parse(decompressedData);
+
+        console.log("giving response from redis");
 
         return res.json(finalData);
       }
@@ -92,14 +94,30 @@ const cacheMiddleware = (prefix, duration, option) => {
             if (ttl > 2147483647) {
               throw new Error(`TTL too large: ${ttl}`);
             }
-            console.log(ttl, "wasiq is bad asss");
+            console.log(ttl, "First time uploading on redis");
 
             // console.log(key, ttl, cacheAndRespond);
 
             await client.setEx(key, ttl, cachedData);
 
-            if (prefix === "videosList") {
-              await client.sAdd("videoListKeys", key);
+            if (prefix === "videosList" && Array.isArray(body?.videos)) {
+              for (const video of body.videos) {
+                const setKey = `videoCacheKey:${video._id}`;
+
+                const existedKey = await client.sMembers(setKey);
+
+                if (existedKey.length >= 5) {
+                  console.log(
+                    `Skipping cache for video ${video._id}, already in 5 pages.`
+                  );
+                  continue;
+                }
+
+                const pipeline = client.multi();
+                pipeline.sAdd(setKey, key);
+                pipeline.expire(setKey, ttl);
+                await pipeline.exec();
+              }
             }
           } else {
             await client.flushDb();

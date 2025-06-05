@@ -28,16 +28,27 @@ export const clearUserCache = async (userId) => {
   }
 };
 
-export const clearVideoListCache = async () => {
+export const clearVideoListCache = async (videoId) => {
   try {
-    const key = await client.sMembers("videoListKeys");
-    if (key.length >= 1) {
-      await client.del(...key);
-      await client.del("videoListKeys");
+    const setKey = `videoCacheKey:${videoId}`;
+
+    const existedKey = await client.sMembers(setKey);
+
+    if (existedKey.length >= 1) {
+      const pipeline = client.multi();
+
+      for (const key of existedKey) {
+        pipeline.del(key);
+      }
+
+      pipeline.del(setKey);
+
+      await pipeline.exec();
     }
+
     return true;
   } catch (error) {
-    console.error("Error while deleting the key on redis", error);
+    console.error("Error while deleting the key in redis", error);
     return false;
   }
 };
