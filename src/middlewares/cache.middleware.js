@@ -7,6 +7,7 @@ import { generateCacheKey } from "../utils/generateCacheKey.js";
 import { CacheMonitor } from "../utils/cacheMonitoring.js";
 import { checkMemoryLimits } from "../utils/checkMemoryLimits.js";
 import { ApiError } from "../utils/ApiError.js";
+import { getVideoViews } from "../utils/getVideoViews.js";
 
 const monitor = new CacheMonitor();
 
@@ -30,6 +31,12 @@ const cacheMiddleware = (prefix, duration, option) => {
   process.on("SIGINT", () => clearTimeout(refreshRedis));
 
   return async (req, res, next) => {
+    const { videoId } = req.params;
+
+    if (!videoId?.trim()) {
+      throw new ApiError(500, "ip is required");
+    }
+
     if (
       req.method !== "GET" ||
       !redisStatus.available ||
@@ -86,14 +93,23 @@ const cacheMiddleware = (prefix, duration, option) => {
         try {
           const canCache = await checkMemoryLimits(client);
           if (canCache) {
+            if (prefix === "Video") {
+              const view = await getVideoViews(videoId);
+              body.views = view;
+            }
+
             const cachedData = processData.compress(body, compressData);
+
             const ttl = parseInt(duration, 10);
+
             if (isNaN(ttl) || ttl < 0) {
               throw new Error(`Invalid TTL duration: ${duration}`);
             }
+
             if (ttl > 2147483647) {
               throw new Error(`TTL too large: ${ttl}`);
             }
+
             console.log(ttl, "First time uploading on redis");
 
             // console.log(key, ttl, cacheAndRespond);
@@ -101,26 +117,37 @@ const cacheMiddleware = (prefix, duration, option) => {
             await client.setEx(key, ttl, cachedData);
 
             if (prefix === "videosList" && Array.isArray(body?.videos)) {
-              for (const video of body.videos) {
-                const setKey = `videoCacheKey:${video._id}`;
+              try {
+                for (const video of body.videos) {
+                  const setKey = `videoCacheKey:${video._id}`;
 
-                const existedKey = await client.sMembers(setKey);
+                  const existedKey = await client.sMembers(setKey);
 
-                if (existedKey.length >= 5) {
-                  console.log(
-                    `Skipping cache for video ${video._id}, already in 5 pages.`
-                  );
-                  continue;
+                  if (existedKey.length >= 5) {
+                    console.log(
+                      `Skipping cache for video ${video._id}, already in 5 pages.`
+                    );
+                    continue;
+                  }
+
+                  const pipeline = client.multi();
+
+                  pipeline.sAdd(setKey, key);
+
+                  pipeline.expire(setKey, ttl);
+
+                  await pipeline.exec();
                 }
-
-                const pipeline = client.multi();
-                pipeline.sAdd(setKey, key);
-                pipeline.expire(setKey, ttl);
-                await pipeline.exec();
+              } catch (error) {
+                throw ApiError.CachingError(
+                  error,
+                  "Error while conditioning of videolist"
+                );
               }
             }
           } else {
             await client.flushDb();
+
             console.warn("Cache cleared due to memory limits");
           }
         } catch (err) {
@@ -148,7 +175,7 @@ const cacheMiddleware = (prefix, duration, option) => {
     } catch (error) {
       console.error("Error while running cacheMiddleware:", error);
       await client.del(lockKey).catch(() => {});
-      next(new ApiError.CachingError("middleware failure", error.message));
+      next(new ApiError.CachingError(error, error.message));
     }
   };
 };

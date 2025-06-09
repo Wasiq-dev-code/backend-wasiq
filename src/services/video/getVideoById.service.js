@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import { ApiError } from "../../utils/ApiError.js";
 import { Video } from "../../models/Video.model.js";
-import trackVideoView from "./helper/trackVideoView.service.js";
 
-export const getVideoById = async ({ videoId, ip }) => {
+export const getVideoById = async ({ videoId }) => {
   try {
     if (!videoId?.trim()) {
       throw new ApiError(500, "videoId is required");
@@ -12,8 +11,6 @@ export const getVideoById = async ({ videoId, ip }) => {
     if (!mongoose.Types.ObjectId.isValid(videoId)) {
       throw new ApiError(400, "Invalid videoId format");
     }
-
-    await trackVideoView(videoId, ip);
 
     const video = await Video.aggregate([
       {

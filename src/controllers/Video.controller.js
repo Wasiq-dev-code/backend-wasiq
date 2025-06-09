@@ -96,19 +96,13 @@ const getAllVideosController = asyncHandler(async (req, res) => {
 const getVideoByIdController = asyncHandler(async (req, res) => {
   try {
     const { videoId } = req.params;
-    const { ip } = req;
 
     if (!videoId) {
       throw new ApiError(404, "VideoId is not found");
     }
 
-    if (!ip) {
-      throw new ApiError(500, "Ip address not found");
-    }
-
     const getVideo = await getVideoById({
       videoId,
-      ip,
     });
 
     if (!getVideo) {

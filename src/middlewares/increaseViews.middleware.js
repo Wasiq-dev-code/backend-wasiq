@@ -1,0 +1,46 @@
+import client from "../config/redis.js";
+import { ApiError } from "../utils/ApiError.js";
+import { TTL } from "../constants.js";
+
+export const trackVideoView = async (req, _, next) => {
+  try {
+    const { videoId } = req.params;
+    const { ip } = req;
+
+    if (!videoId) {
+      throw new ApiError(404, "VideoId is not found");
+    }
+
+    if (!ip?.trim()) {
+      throw new ApiError(400, "Invalid ip address or videoId");
+    }
+
+    const sanitizedIp = ip.trim().replace(/[^a-zA-Z0-9:.]/g, "");
+
+    const redisKey = `view:${sanitizedIp}:${videoId}`;
+
+    const videoViewKey = `video:${videoId}:views`;
+
+    const alreadyViewed = await client.exists(redisKey);
+
+    if (!alreadyViewed) {
+      await client.set(redisKey, "1", { EX: TTL.SHORT, NX: true });
+
+      await client.incr(videoViewKey);
+    }
+    next();
+  } catch (error) {
+    console.error("Error while tracking the views", {
+      ip,
+      error: error?.message || error,
+    });
+
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    throw new ApiError(500, "Unsucessfull to execute trackVideoView");
+  }
+};
+
+export default trackVideoView;
