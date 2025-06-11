@@ -21,7 +21,7 @@ viewSyncQueue.on("failed", (job, err) => {
 });
 
 viewSyncQueue.on("ready", () => {
-  console.log(`[bull] view sync queue is ready to execute`);
+  console.log(`[bull] ready to execute`);
 });
 
 export default viewSyncQueue;
