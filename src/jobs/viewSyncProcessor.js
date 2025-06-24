@@ -14,8 +14,9 @@ export const viewSyncProcessor = async (job, done) => {
         "COUNT",
         100
       );
-      cursor = result[0];
-      keys.push(...result[1]);
+      // console.log(result);
+      cursor = result.cursor;
+      keys.push(...result.keys);
     } while (cursor !== "0");
 
     const values = await client.mGet(...keys);
@@ -49,6 +50,9 @@ export const viewSyncProcessor = async (job, done) => {
       usedKeys.forEach((key) => pipeline.set(key, 0));
       await pipeline.exec();
     }
+    console.log("Job initallize once");
+    const now = new Date();
+    console.log(now);
 
     done();
   } catch (err) {

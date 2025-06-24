@@ -146,7 +146,7 @@ const cacheMiddleware = (prefix, duration, option) => {
               }
             }
           } else {
-            await client.flushDb();
+            // await client.flushDb();
 
             console.warn("Cache cleared due to memory limits");
           }

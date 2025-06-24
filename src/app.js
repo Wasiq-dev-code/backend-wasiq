@@ -33,17 +33,16 @@ import videoRouter from "./routes/video.routes.js";
 import BasicAuth from "express-basic-auth";
 import serverAdapter from "./dashboard/bullDashboard.js";
 
+app.use("/api", router);
+app.use("/api", videoRouter);
 app.use(
-  "/admin/queue",
+  "/wasiq/admin/queue",
   BasicAuth({
     users: { admin: process.env.BASIC_AUTH_PASSWORD },
     challenge: true,
   }),
   serverAdapter.getRouter()
 );
-
-app.use("/api", router);
-app.use("/api", videoRouter);
 
 app.use((res) => {
   res.status(404).json({ message: "Route not found" });

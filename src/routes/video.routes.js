@@ -14,6 +14,7 @@ import {
 } from "../middlewares/rateLimiting.middleware.js";
 import { verifyVideo } from "../middlewares/videoSecurity.middleware.js";
 import cacheMiddleware from "../middlewares/cache.middleware.js";
+import trackVideoView from "../middlewares/increaseViews.middleware.js";
 
 const videoRouter = Router();
 
@@ -27,6 +28,7 @@ videoRouter.route("/Videos").get(
   getAllVideosController
 );
 videoRouter.route("/Video/:videoId").get(
+  trackVideoView,
   viewRateLimiter,
   uploadRateLimiter,
   cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
