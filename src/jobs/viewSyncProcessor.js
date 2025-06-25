@@ -7,7 +7,7 @@ export const viewSyncProcessor = async (job, done) => {
     let cursor = "0";
 
     do {
-      const result = await client.scan(
+      const [nextCursor, matchedKeys] = await client.scan(
         cursor,
         "MATCH",
         "videoSync:*",
@@ -15,11 +15,19 @@ export const viewSyncProcessor = async (job, done) => {
         100
       );
       // console.log(result);
-      cursor = result.cursor;
-      keys.push(...result.keys);
+      console.log("result Data error");
+      cursor = nextCursor;
+      keys.push(...matchedKeys);
     } while (cursor !== "0");
 
-    const values = await client.mGet(...keys);
+    let values = [];
+
+    if (keys.length > 0) {
+      values = await client.mget(...keys);
+    } else {
+      console.log("⚠️ No keys found to sync.");
+      return done(); // graceful exit
+    }
 
     const bulkOps = [];
     const usedKeys = [];

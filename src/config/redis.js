@@ -1,6 +1,11 @@
 import Redis from "ioredis";
 
-const client = new Redis(process.env.REDIS_URL);
+const client = new Redis({
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT),
+  username: "default", // most Redis Cloud setups need this
+  password: process.env.REDIS_PASSWORD,
+});
 
 client.on("connect", () => {
   console.log("✅ Redis client connected");

@@ -1,14 +1,14 @@
+// bullscheduler.js ya scheduler file me
 import viewSyncQueue from "../queues/viewSyncQueue.js";
 
-if (process.env.NODE_ENV === "production") {
-  viewSyncQueue.add(
-    {},
-    {
-      repeat: {
-        cron: "*/5 * * * *",
-      },
-      removeOnComplete: true,
-      removeOnFail: false,
-    }
-  );
-}
+viewSyncQueue.add(
+  { source: "test" }, // optional: custom test data
+  {
+    repeat: {
+      cron: "*/1 * * * *", // every minute
+    },
+    removeOnComplete: true,
+    removeOnFail: true,
+    jobId: "test-sync-every-minute", // avoid duplicate jobs
+  }
+);

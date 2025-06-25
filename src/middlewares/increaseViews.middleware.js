@@ -26,7 +26,7 @@ export const trackVideoView = async (req, _, next) => {
     const alreadyViewed = await client.exists(redisKey);
 
     if (!alreadyViewed) {
-      await client.set(redisKey, "1", { EX: TTL.SHORT, NX: true });
+      await client.set(redisKey, "1", { EX: TTL.MEDIUM, NX: true });
 
       await client.incr(videoViewKey);
       await client.incr(videoSync);

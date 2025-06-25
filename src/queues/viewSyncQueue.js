@@ -1,12 +1,10 @@
 import Queue from "bull";
 import { viewSyncProcessor } from "../jobs/viewSyncProcessor.js";
-// import "../../dotenv.js"; // Make sure this is uncommented if you need it
 
 const viewSyncQueue = new Queue("Sync-data-into-mongo", {
-  redis: process.env.REDIS_URL.replace("redis://", "rediss://"),
-
+  redis: process.env.REDIS_URL,
   //  {
-  //   port: parseInt(process.env.REDIS_PORT) || 6379, // Convert to number
+  //   port: parseInt(process.env.REDIS_PORT) || 10080, // Convert to number
   //   host: process.env.REDIS_HOST,
   //   password: process.env.REDIS_PASSWORD,
   //   tls: {},
