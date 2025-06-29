@@ -26,7 +26,7 @@ export const trackVideoView = async (req, _, next) => {
     const alreadyViewed = await client.exists(redisKey);
 
     if (!alreadyViewed) {
-      await client.set(redisKey, "1", { EX: TTL.MEDIUM, NX: true });
+      await client.set(redisKey, "1", "EX", TTL.MEDIUM, "NX");
 
       await client.incr(videoViewKey);
       await client.incr(videoSync);
@@ -34,7 +34,6 @@ export const trackVideoView = async (req, _, next) => {
     next();
   } catch (error) {
     console.error("Error while tracking the views", {
-      ip,
       error: error?.message || error,
     });
 

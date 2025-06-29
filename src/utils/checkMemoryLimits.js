@@ -1,6 +1,6 @@
 export const checkMemoryLimits = async (client) => {
   try {
-    const keysInRedis = await client.dbSize();
+    const keysInRedis = await client.dbsize();
     const keysLimit = parseInt(process.env.MAX_KEYS, 10);
     if (keysInRedis > keysLimit) {
       console.warn(`cache keys ${keysInRedis} exceeded limits${keysLimit}`);
@@ -9,9 +9,9 @@ export const checkMemoryLimits = async (client) => {
 
     const info = await client.info("memory");
     const memoryLine = info
-      ?.split("/n")
+      ?.split("\n")
       .find((line) => line.startsWith("used_memory:"));
-    const usedmemory = parseInt(memoryLine?.split(":")[0] || "0", 10);
+    const usedmemory = parseInt(memoryLine?.split(":")[1] || "0", 10);
 
     const memoryUsageLimit =
       parseInt(process.env.MAX_MEMORY_MB, 10) * 1024 * 1024;

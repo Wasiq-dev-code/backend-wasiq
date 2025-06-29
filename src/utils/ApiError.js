@@ -26,16 +26,6 @@ class ApiError extends Error {
       Error.captureStackTrace(this, this.constructor);
     }
   }
-
-  static CachingError(operation, detail) {
-    return new ApiError(
-      500,
-      `Caching Error ${operation}`,
-      [detail],
-      "",
-      CACHE_ERROR_CODES[operation] || "CACHE_999"
-    );
-  }
 }
 
 export { ApiError };

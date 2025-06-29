@@ -31,10 +31,6 @@ app.use(cookieParser());
 import router from "./routes/user.routes.js";
 import videoRouter from "./routes/video.routes.js";
 import BasicAuth from "express-basic-auth";
-
-app.use("/api", router);
-app.use("/api", videoRouter);
-
 import serverAdapter from "./dashboard/bullDashboard.js";
 app.use(
   "/wasiq/admin/queue",
@@ -44,6 +40,9 @@ app.use(
   }),
   serverAdapter.getRouter()
 );
+
+app.use("/api", router);
+app.use("/api", videoRouter);
 
 app.use((res) => {
   res.status(404).json({ message: "Route not found" });

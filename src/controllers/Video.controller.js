@@ -57,6 +57,7 @@ const videoUploaderController = asyncHandler(async (req, res) => {
 
 const getAllVideosController = asyncHandler(async (req, res) => {
   try {
+    // console.log("giving response directly throw mongoose");
     const page = Math.max(1, parseInt(req.query.page || 1));
     const limit = Math.min(20, Math.max(1, parseInt(req.query.limit || 10)));
 

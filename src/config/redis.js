@@ -3,8 +3,19 @@ import Redis from "ioredis";
 const client = new Redis({
   host: process.env.REDIS_HOST,
   port: parseInt(process.env.REDIS_PORT),
-  username: "default", // most Redis Cloud setups need this
   password: process.env.REDIS_PASSWORD,
+
+  lazyConnect: true,
+  maxRetriesPerRequest: 5,
+  reconnectOnError: (err) => {
+    console.warn("🔁 Reconnect on error:", err.message);
+    return true;
+  },
+  retryStrategy: (times) => {
+    const delay = Math.min(times * 200, 2000);
+    console.log(`♻️ Retry Redis connection in ${delay}ms`);
+    return delay;
+  },
 });
 
 client.on("connect", () => {
@@ -17,13 +28,3 @@ client.on("error", (error) => {
 });
 
 export default client;
-
-// let isconnected = false;
-
-// const redisconnect = async () => {
-//   if (!isconnected) {
-//     await client.connect();
-//     isconnected = true;
-//   }
-// };
-// await redisconnect();

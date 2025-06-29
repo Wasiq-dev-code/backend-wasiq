@@ -31,12 +31,6 @@ const cacheMiddleware = (prefix, duration, option) => {
   process.on("SIGINT", () => clearTimeout(refreshRedis));
 
   return async (req, res, next) => {
-    const { videoId } = req.params;
-
-    if (!videoId?.trim()) {
-      throw new ApiError(500, "ip is required");
-    }
-
     if (
       req.method !== "GET" ||
       !redisStatus.available ||
@@ -70,13 +64,35 @@ const cacheMiddleware = (prefix, duration, option) => {
             decompressedData
           );
         }
-        const finalData = JSON.parse(decompressedData);
+        // console.log(decompressedData);
+
+        // const finalData = JSON.parse(decompressedData);
+        // console.log(finalData);
 
         console.log("giving response from redis");
 
-        return res.json(finalData);
+        if (prefix === "Video") {
+          const { videoId } = req.params;
+          const view = await getVideoViews(videoId);
+          decompressedData.data.views = view;
+          return res.json(decompressedData);
+        }
+
+        if (prefix === "videosList") {
+          const sortedData = JSON.parse(decompressedData);
+
+          const updatedData = await Promise.all(
+            sortedData.data.videos.map(async (video) => {
+              const view = await getVideoViews(video._id);
+              return { ...video, views: view };
+            })
+          );
+
+          return res.json(updatedData);
+        }
       }
       monitor.recordMiss();
+      console.log("giving mongoose");
       const islock = await acquireLock(lockKey);
       if (islock) {
         const waited = await waitForData(lockKey, key);
@@ -90,12 +106,15 @@ const cacheMiddleware = (prefix, duration, option) => {
 
       const cacheAndRespond = async (body, sender) => {
         // console.log(body, duration);
+        // console.log("giving response directly throw mongoose");
         try {
           const canCache = await checkMemoryLimits(client);
           if (canCache) {
             if (prefix === "Video") {
+              const { videoId } = req.params;
               const view = await getVideoViews(videoId);
-              body.views = view;
+              console.log(view);
+              body.data.views = view;
             }
 
             const cachedData = processData.compress(body, compressData);
@@ -110,15 +129,20 @@ const cacheMiddleware = (prefix, duration, option) => {
               throw new Error(`TTL too large: ${ttl}`);
             }
 
-            console.log(ttl, "First time uploading on redis");
+            // console.log(ttl, "First time uploading on redis");
 
             // console.log(key, ttl, cacheAndRespond);
 
-            await client.setEx(key, ttl, cachedData);
+            await client.set(key, cachedData, "EX", ttl);
 
             if (prefix === "videosList" && Array.isArray(body?.videos)) {
               try {
                 for (const video of body.videos) {
+                  const idOfVideos = video._id;
+                  const view = await getVideoViews(idOfVideos);
+                  console.log(view);
+                  video.views = view;
+
                   const setKey = `videoCacheKey:${video._id}`;
 
                   const existedKey = await client.sMembers(setKey);
@@ -132,7 +156,7 @@ const cacheMiddleware = (prefix, duration, option) => {
 
                   const pipeline = client.multi();
 
-                  pipeline.sAdd(setKey, key);
+                  pipeline.sadd(setKey, key);
 
                   pipeline.expire(setKey, ttl);
 
@@ -175,7 +199,7 @@ const cacheMiddleware = (prefix, duration, option) => {
     } catch (error) {
       console.error("Error while running cacheMiddleware:", error);
       await client.del(lockKey).catch(() => {});
-      next(new ApiError.CachingError(error, error.message));
+      // next(ApiError.CachingError(error, error.message));
     }
   };
 };
