@@ -1,9 +1,9 @@
 import { ApiError } from "../../utils/ApiError.js";
 import { Like } from "../../models/Likes.model.js";
 
-export const likeAdded = async (videoID, commentID, UserID) => {
+export const likeAdded = async (commentID, UserID) => {
   try {
-    if (!videoID) {
+    if (!commentID) {
       throw new ApiError(
         400,
         "Data has containing error from likeAddedContr0ller"
@@ -17,12 +17,12 @@ export const likeAdded = async (videoID, commentID, UserID) => {
       );
     }
 
-    const safeVideoId = mongoose.Types.ObjectId(videoID);
-    const safeCommentId = mongoose.Types.ObjectId(commentID);
+    const safecommentID = commentID
+      ? mongoose.Types.ObjectId(commentID)
+      : undefined;
 
     const liked = await Like.create({
-      video: safeVideoId,
-      comment: safeCommentId || "",
+      comment: safecommentID,
       userliked: UserID,
     });
 
