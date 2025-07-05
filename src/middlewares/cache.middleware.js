@@ -81,6 +81,8 @@ const cacheMiddleware = (prefix, duration, option) => {
         if (prefix === "videosList") {
           const sortedData = JSON.parse(decompressedData);
 
+          console.log(sortedData);
+
           const updatedData = await Promise.all(
             sortedData.data.videos.map(async (video) => {
               const view = await getVideoViews(video._id);
@@ -112,9 +114,17 @@ const cacheMiddleware = (prefix, duration, option) => {
           if (canCache) {
             if (prefix === "Video") {
               const { videoId } = req.params;
+
+              if (!videoId) {
+                throw new ApiError(400, "videoId is required");
+              }
               const view = await getVideoViews(videoId);
+
               console.log(view);
-              body.data.views = view;
+
+              body.data.views = isNaN(parseInt(view, 10))
+                ? 0
+                : parseInt(view, 10);
             }
 
             const cachedData = processData.compress(body, compressData);
@@ -138,6 +148,7 @@ const cacheMiddleware = (prefix, duration, option) => {
             if (prefix === "videosList" && Array.isArray(body?.videos)) {
               try {
                 for (const video of body.videos) {
+                  console.log(video);
                   const idOfVideos = video._id;
                   const view = await getVideoViews(idOfVideos);
                   console.log(view);
