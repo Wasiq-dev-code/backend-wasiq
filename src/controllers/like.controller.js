@@ -1,6 +1,8 @@
 import { commentLikeAdded } from "../services/like/commentLikeAdded.service.js";
 import { commentLikeDelete } from "../services/like/commentLikeDelete.service.js";
 import { isLikeByUser } from "../services/like/isLikedByUser.service.js";
+import { totalCommentLikes } from "../services/like/totalCommentLikes.service.js";
+import { totalVideoLikes } from "../services/like/totalVideoLikes.service.js";
 import { videoLikeAdded } from "../services/like/videoLikeAdded.service.js";
 import { videoLikeDelete } from "../services/like/videoLikeDelete.service.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -129,9 +131,54 @@ const isLikedByUserController = asyncHandler(async (req, res) => {
   }
 });
 
+const totalCommentLikesController = asyncHandler(async (req, res) => {
+  try {
+    const { commentId } = req?.params;
+
+    if (!commentId) {
+      throw new ApiError(400, "Comment ID is required");
+    }
+
+    validateObjectId(commentId, "Comment ID");
+
+    const commentLikes = await totalCommentLikes(commentId);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, commentLikes, "Total Comment Likes"));
+  } catch (error) {
+    console.error(error.message || "Error in totalCommentLikesController");
+    throw new ApiError(500, "Server error while counting comment likes");
+  }
+});
+
+const totalVideoLikesController = asyncHandler(async (req, res) => {
+  try {
+    const { videoId } = req?.params;
+
+    if (!videoId) {
+      throw new ApiError(400, "video ID is required");
+    }
+
+    validateObjectId(videoId, "Video ID");
+
+    const videoLikes = await totalVideoLikes(videoId);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, videoLikes, "Total Video Likes"));
+  } catch (error) {
+    console.error(error.message || "Error in totalVideoLikesController");
+    throw new ApiError(500, "Server error while counting Video likes");
+  }
+});
+
 export {
   videoLikeAddedController,
   commentLikeAddedController,
   videoLikedeleteController,
   commentLikedeleteController,
+  isLikedByUserController,
+  totalCommentLikesController,
+  totalVideoLikesController,
 };
