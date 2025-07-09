@@ -1,6 +1,7 @@
 import { commentLikeAdded } from "../services/like/commentLikeAdded.service.js";
 import { commentLikeDelete } from "../services/like/commentLikeDelete.service.js";
 import { isLikeByUser } from "../services/like/isLikedByUser.service.js";
+import { toggleLike } from "../services/like/toggleLike.service.js";
 import { totalCommentLikes } from "../services/like/totalCommentLikes.service.js";
 import { totalVideoLikes } from "../services/like/totalVideoLikes.service.js";
 import { videoLikeAdded } from "../services/like/videoLikeAdded.service.js";
@@ -173,6 +174,26 @@ const totalVideoLikesController = asyncHandler(async (req, res) => {
   }
 });
 
+const toggleLikeContoller = asyncHandler(async (req, res) => {
+  const { videoId, commentId } = req?.params;
+  const userId = req?.user?._id;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  if (!videoId && !commentId) {
+    throw new ApiError(401, "Error in params");
+  }
+
+  if (videoId) validateObjectId(videoId, "Video ID");
+  if (commentId) validateObjectId(commentId, "Comment ID");
+
+  await toggleLike(videoId, commentId, userId);
+
+  return res.status(200).json(new ApiResponse(200, _, "operation successfull"));
+});
+
 export {
   videoLikeAddedController,
   commentLikeAddedController,
@@ -181,4 +202,5 @@ export {
   isLikedByUserController,
   totalCommentLikesController,
   totalVideoLikesController,
+  toggleLikeContoller,
 };
