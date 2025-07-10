@@ -10,16 +10,23 @@ export const addSubscriptionToChannel = async (userId, channelId) => {
     if (userId) validateObjectId(userId, "User ID");
     if (channelId) validateObjectId(channelId, "Channel ID");
 
-    const subscription = await Subscription.create({
+    const subscribed = await Subscription.findOne({
       subscriber: userId,
       channel: channelId,
     });
 
-    if (!subscription) {
-      throw new ApiError("Subscription operation failed");
-    }
+    if (!subscribed) {
+      const subscription = await Subscription.create({
+        subscriber: userId,
+        channel: channelId,
+      });
 
-    return subscription;
+      if (!subscription) {
+        throw new ApiError("Subscription operation failed");
+      }
+      return subscription;
+    }
+    return subscribed;
   } catch (error) {
     console.error("ApiError adding subscription:", error);
     throw new ApiError("Failed to add subscription");
