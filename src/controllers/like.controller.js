@@ -189,9 +189,11 @@ const toggleLikeContoller = asyncHandler(async (req, res) => {
   if (videoId) validateObjectId(videoId, "Video ID");
   if (commentId) validateObjectId(commentId, "Comment ID");
 
-  await toggleLike(videoId, commentId, userId);
+  const toggleLikes = await toggleLike(videoId, commentId, userId);
 
-  return res.status(200).json(new ApiResponse(200, _, "operation successfull"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, toggleLikes, "operation successfull"));
 });
 
 export {
