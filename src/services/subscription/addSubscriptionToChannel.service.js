@@ -10,10 +10,7 @@ export const addSubscriptionToChannel = async (userId, channelId) => {
     if (userId) validateObjectId(userId, "User ID");
     if (channelId) validateObjectId(channelId, "Channel ID");
 
-    const subscribed = await Subscription.findOne({
-      subscriber: userId,
-      channel: channelId,
-    });
+    const subscribed = await Subscription.isSubscribed(userId, channelId);
 
     if (!subscribed) {
       const subscription = await Subscription.create({

@@ -12,12 +12,9 @@ export const checkSubscriptionStatus = async (userId, channelId) => {
     if (channelId) validateObjectId(channelId, "Channel ID");
 
     // Check subscription status logic
-    const subscription = await Subscription.findOne({
-      subscriber: userId,
-      channel: channelId,
-    });
+    const subscription = await Subscription.isSubscribed(userId, channelId);
 
-    return !!subscription; // Returns true if subscribed, false otherwise
+    return subscription; // Returns true if subscribed, false otherwise
   } catch (error) {
     console.error("Error checking subscription status:", error);
     throw new ApiError("Failed to check subscription status");

@@ -11,7 +11,12 @@ export const removeSubscriptionFromChannel = async (userId, channelId) => {
     if (userId) validateObjectId(userId, "User ID");
     if (channelId) validateObjectId(channelId, "Channel ID");
 
-    // Remove subscription logic
+    const isSubscribe = await Subscription.isSubscribed(userId, channelId);
+
+    if (!isSubscribe) {
+      throw new ApiError(400, "Subscription does not exists already");
+    }
+
     const subscription = await Subscription.findOneAndDelete({
       subscriber: userId,
       channel: channelId,

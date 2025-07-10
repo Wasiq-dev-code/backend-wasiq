@@ -11,10 +11,7 @@ export const subscriptionToggle = async (userId, channelId) => {
     if (channelId) validateObjectId(channelId, "Channel ID");
 
     // Check if the user is already subscribed
-    const existingSubscription = await Subscription.findOne({
-      subscriber: userId,
-      channel: channelId,
-    });
+    const existingSubscription = await Subscription.findOne(userId, channelId);
 
     !existingSubscription
       ? await Subscription.create({
