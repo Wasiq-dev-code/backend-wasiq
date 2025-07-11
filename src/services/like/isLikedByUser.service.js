@@ -15,13 +15,9 @@ export const isLikeByUser = async (videoId, commentId, userId) => {
     if (videoId) validateObjectId(videoId, "Video ID");
     if (commentId) validateObjectId(commentId, "Comment ID");
 
-    const query = { userliked: userId };
-    if (videoId) query.video = videoId;
-    if (commentId) query.comment = commentId;
+    const LikePresented = await Like.isLiked(videoId, commentId, userId);
 
-    const LikePresented = await Like.findOne(query);
-
-    return !!LikePresented;
+    return LikePresented;
   } catch (error) {
     console.error(error.message || "server is not responding");
     throw new ApiError(500, "server is not responding");

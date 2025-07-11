@@ -23,7 +23,7 @@ export const addSubscriptionToChannel = async (userId, channelId) => {
       }
       return subscription;
     }
-    return subscribed;
+    throw new ApiError(400, "Subscription already exists");
   } catch (error) {
     console.error("ApiError adding subscription:", error);
     throw new ApiError("Failed to add subscription");

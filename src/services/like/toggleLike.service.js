@@ -15,11 +15,7 @@ export const toggleLike = async (videoId, commentId, userId) => {
     if (videoId) validateObjectId(videoId, "Video ID");
     if (commentId) validateObjectId(commentId, "Comment ID");
 
-    const query = { userliked: userId };
-    if (videoId) query.video = videoId;
-    if (commentId) query.comment = commentId;
-
-    const LikePresented = await Like.findOne(query);
+    const LikePresented = await Like.isLiked(videoId, commentId, userId);
 
     !LikePresented
       ? await Like.create(...query)
