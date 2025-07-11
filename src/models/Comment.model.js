@@ -20,12 +20,23 @@ const commentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
       default: null,
-      required: true,
     },
   },
   {
     timestamps: true,
   }
 );
+
+commentSchema.index({ commentedby: 1 });
+commentSchema.index({ commentedvideo: 1 });
+commentSchema.index({ parentcomment: 1 });
+
+commentSchema.set("toJSON", {
+  transform: (_, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    return ret;
+  },
+});
 
 export const Comment = mongoose.model("Comment", commentSchema);
