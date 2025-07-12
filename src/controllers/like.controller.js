@@ -16,7 +16,7 @@ const videoLikeAddedController = asyncHandler(async (req, res) => {
     const videoID = req?.params?.videoId;
     const UserID = req.user._id;
 
-    const likeDone = await videoLikeAdded(videoID, UserID);
+    const likeDone = await videoLikeAdded({ videoID, UserID });
 
     return res
       .status(200)
@@ -32,7 +32,7 @@ const commentLikeAddedController = asyncHandler(async (req, res) => {
     const commentID = req?.params?.commentId;
     const UserID = req?.user?._id;
 
-    const likeDone = await commentLikeAdded(commentID, UserID);
+    const likeDone = await commentLikeAdded({ commentID, UserID });
 
     return res
       .status(200)
@@ -48,7 +48,7 @@ const videoLikedeleteController = asyncHandler(async (req, res) => {
     const videoID = req?.params?.videoId;
     const UserID = req?.user?._id;
 
-    await videoLikeDelete(videoID, UserID);
+    await videoLikeDelete({ videoID, UserID });
 
     return res.status(200).json(new ApiResponse(200, "videoLiked deleted"));
   } catch (error) {
@@ -62,7 +62,7 @@ const commentLikedeleteController = asyncHandler(async (req, res) => {
     const commentID = req?.params?.commentId;
     const UserID = req?.user?._id;
 
-    await commentLikeDelete(commentID, UserID);
+    await commentLikeDelete({ commentID, UserID });
 
     return res.status(200).json(new ApiResponse(200, "commentLiked deleted"));
   } catch (error) {
@@ -76,7 +76,7 @@ const isLikedByUserController = asyncHandler(async (req, res) => {
     const { videoId, commentId } = req?.params;
     const userId = req?.user?._id;
 
-    const likePresented = await isLikeByUser(videoId, commentId, userId);
+    const likePresented = await isLikeByUser({ videoId, commentId, userId });
 
     return res
       .status(200)
@@ -93,7 +93,7 @@ const totalCommentLikesController = asyncHandler(async (req, res) => {
   try {
     const { commentId } = req?.params;
 
-    const commentLikes = await totalCommentLikes(commentId);
+    const commentLikes = await totalCommentLikes({ commentId });
 
     return res
       .status(200)
@@ -108,7 +108,7 @@ const totalVideoLikesController = asyncHandler(async (req, res) => {
   try {
     const { videoId } = req?.params;
 
-    const videoLikes = await totalVideoLikes(videoId);
+    const videoLikes = await totalVideoLikes({ videoId });
 
     return res
       .status(200)
@@ -123,7 +123,7 @@ const toggleLikeContoller = asyncHandler(async (req, res) => {
   const { videoId, commentId } = req?.params;
   const userId = req?.user?._id;
 
-  const toggleLikes = await toggleLike(videoId, commentId, userId);
+  const toggleLikes = await toggleLike({ videoId, commentId, userId });
 
   return res
     .status(200)

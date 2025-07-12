@@ -2,7 +2,7 @@ import { Subscription } from "../../models/Subscription.model";
 import { ApiError } from "../../utils/ApiError";
 import { validateObjectId } from "../../utils/validateObjectId";
 
-export const channelSubscribeOthers = async (channelId) => {
+export const channelSubscribeOthers = async ({ channelId }) => {
   try {
     if (!channelId) throw new ApiError("Channel ID is required");
 

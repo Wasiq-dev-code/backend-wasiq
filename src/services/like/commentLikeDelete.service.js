@@ -2,7 +2,7 @@ import { ApiError } from "../../utils/ApiError.js";
 import { Like } from "../../models/Likes.model.js";
 import mongoose from "mongoose";
 
-export const commentLikeDelete = async (commentID, UserID) => {
+export const commentLikeDelete = async ({ commentID, UserID }) => {
   try {
     if (!commentID) {
       throw new ApiError(400, "Data has containing error");

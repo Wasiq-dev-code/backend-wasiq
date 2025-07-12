@@ -2,7 +2,7 @@ import { Subscription } from "../../models/Subscription.model";
 import { ApiError } from "../../utils/ApiError";
 import { validateObjectId } from "../../utils/validateObjectId";
 
-export const getSubscriberCount = async (userId) => {
+export const getSubscriberCount = async ({ userId }) => {
   try {
     if (!userId) throw new ApiError("User ID is required");
 

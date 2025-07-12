@@ -2,7 +2,7 @@ import { Like } from "../../models/Likes.model";
 import { ApiError } from "../../utils/ApiError";
 import { validateObjectId } from "../../utils/validateObjectId";
 
-export const toggleLike = async (videoId, commentId, userId) => {
+export const toggleLike = async ({ videoId, commentId, userId }) => {
   try {
     if (!userId) {
       throw new ApiError(401, "Unauthorized request");

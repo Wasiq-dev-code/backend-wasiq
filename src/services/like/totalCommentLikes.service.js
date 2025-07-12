@@ -2,7 +2,7 @@ import { Like } from "../../models/Likes.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { validateObjectId } from "../../utils/validateObjectId.js";
 
-export const totalCommentLikes = async (commentId) => {
+export const totalCommentLikes = async ({ commentId }) => {
   try {
     if (!commentId) {
       throw new ApiError(400, "Comment ID is required");

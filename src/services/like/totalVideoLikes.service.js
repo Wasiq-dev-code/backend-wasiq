@@ -2,7 +2,7 @@ import { Like } from "../../models/Likes.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { validateObjectId } from "../../utils/validateObjectId.js";
 
-export const totalVideoLikes = async (videoId) => {
+export const totalVideoLikes = async ({ videoId }) => {
   try {
     if (!videoId) {
       throw new ApiError(400, "Video ID is required");

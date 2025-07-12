@@ -16,7 +16,7 @@ const addSubscriptionToChannelController = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
     const userId = req.user._id;
 
-    const subscription = await addSubscriptionToChannel(userId, channelId);
+    const subscription = await addSubscriptionToChannel({ userId, channelId });
 
     return res
       .status(200)
@@ -35,7 +35,7 @@ const removeSubscriptionFromChannelController = asyncHandler(
       const { channelId } = req.params;
       const userId = req.user._id;
 
-      await removeSubscriptionFromChannel(userId, channelId);
+      await removeSubscriptionFromChannel({ userId, channelId });
 
       return res
         .status(200)
@@ -52,7 +52,7 @@ const subscriberCountController = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
 
     // Assuming you have a service to get subscriber count
-    const count = await getSubscriberCount(channelId);
+    const count = await getSubscriberCount({ channelId });
 
     return res
       .status(200)
@@ -77,7 +77,7 @@ const checkSubscriptionStatusController = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
     // Assuming you have a service to check subscription status
-    const isSubscribed = await checkSubscriptionStatus(userId, channelId);
+    const isSubscribed = await checkSubscriptionStatus({ userId, channelId });
 
     return res
       .status(200)
@@ -99,7 +99,7 @@ const subscriptionToggleController = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
     const userId = req.user._id;
 
-    const isSubscribed = await subscriptionToggle(userId, channelId);
+    const isSubscribed = await subscriptionToggle({ userId, channelId });
     return res
       .status(200)
       .json(
@@ -120,7 +120,7 @@ const channelSubscribeOthersController = asyncHandler(async (req, res) => {
     const userId = req?.user?._id;
 
     // Assuming you have a service to get subscriber count
-    const count = await channelSubscribeOthers(userId);
+    const count = await channelSubscribeOthers({ userId });
 
     return res
       .status(200)

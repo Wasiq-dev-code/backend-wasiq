@@ -1,7 +1,7 @@
 import { Subscription } from "../../models/Subscription.model";
 import { ApiError } from "../../utils/ApiError";
 
-export const subscriptionToggle = async (userId, channelId) => {
+export const subscriptionToggle = async ({ userId, channelId }) => {
   try {
     if (!userId) throw new ApiError("User ID is required");
     if (!channelId) throw new ApiError("Channel ID is required");

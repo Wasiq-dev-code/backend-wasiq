@@ -2,7 +2,7 @@ import { Subscription } from "../../models/Subscription.model";
 import { ApiError } from "../../utils/ApiError";
 import { validateObjectId } from "../../utils/validateObjectId";
 
-export const removeSubscriptionFromChannel = async (userId, channelId) => {
+export const removeSubscriptionFromChannel = async ({ userId, channelId }) => {
   try {
     if (!userId) throw new ApiError("User ID is required");
     if (!channelId) throw new ApiError("Channel ID is required");

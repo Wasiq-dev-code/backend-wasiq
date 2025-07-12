@@ -2,7 +2,7 @@ import { ApiError } from "../../utils/ApiError.js";
 import { Like } from "../../models/Likes.model.js";
 import mongoose from "mongoose";
 
-export const commentLikeAdded = async (commentID, UserID) => {
+export const commentLikeAdded = async ({ commentID, UserID }) => {
   try {
     if (!commentID) {
       throw new ApiError(
