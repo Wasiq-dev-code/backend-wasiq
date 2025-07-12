@@ -16,20 +16,12 @@ const videoUploaderController = asyncHandler(async (req, res) => {
     const { user, files } = req;
     const { title, description } = req?.body;
 
-    if (!user || !files) {
-      throw new ApiError(400, "Problem while implementing middleware");
-    }
-
     const videoObj = await videoUploader({
       user,
       files,
       title,
       description,
     });
-
-    if (!videoObj) {
-      throw new ApiError(400, "Error while creating Video");
-    }
 
     try {
       await clearVideoListCache();
@@ -66,10 +58,6 @@ const getAllVideosController = asyncHandler(async (req, res) => {
       limit,
     });
 
-    if (!videos?.videos?.length) {
-      return res.status(200).json(new ApiResponse(200, [], "No videos found"));
-    }
-
     const response = {
       videos: videos.videos,
       totalVideos: videos.totalVideos,
@@ -98,17 +86,9 @@ const getVideoByIdController = asyncHandler(async (req, res) => {
   try {
     const { videoId } = req.params;
 
-    if (!videoId) {
-      throw new ApiError(404, "VideoId is not found");
-    }
-
     const getVideo = await getVideoById({
       videoId,
     });
-
-    if (!getVideo) {
-      throw new ApiError(404, "Video not found");
-    }
 
     return res
       .status(200)
@@ -125,10 +105,6 @@ const getVideoByIdController = asyncHandler(async (req, res) => {
 const deleteVideoController = asyncHandler(async (req, res) => {
   try {
     const { video } = req;
-
-    if (!video) {
-      throw new ApiError(404, "Video not found");
-    }
 
     await Promise.all([
       deleteVideo({ video }),
@@ -155,19 +131,11 @@ const updateVideoController = asyncHandler(async (req, res) => {
   try {
     const { body, file, video } = req;
 
-    if (!body || !file || !video) {
-      throw new ApiError(400, "Missing required data in request");
-    }
-
     const updatedVideo = await updateVideo({
       body,
       file,
       video,
     });
-
-    if (!updatedVideo) {
-      throw new ApiError(404, "video not found");
-    }
 
     await Promise.all([
       clearVideoCache(updatedVideo?._id),

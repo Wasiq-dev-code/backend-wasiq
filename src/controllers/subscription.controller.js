@@ -16,22 +16,7 @@ const addSubscriptionToChannelController = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
     const userId = req.user._id;
 
-    if (!userId) {
-      throw new ApiError(401, "Unauthorized Request Please Login First");
-    }
-
-    if (!channelId) {
-      throw new ApiError(400, "Channel ID is required");
-    }
-
-    if (channelId) validateObjectId(channelId, "Channel ID");
-    if (userId) validateObjectId(userId, "User ID");
-
     const subscription = await addSubscriptionToChannel(userId, channelId);
-
-    if (!subscription) {
-      throw new ApiError(400, "Subscription operation failed");
-    }
 
     return res
       .status(200)
@@ -50,22 +35,7 @@ const removeSubscriptionFromChannelController = asyncHandler(
       const { channelId } = req.params;
       const userId = req.user._id;
 
-      if (!userId) {
-        throw new ApiError(401, "Unauthorized Request Please Login First");
-      }
-
-      if (!channelId) {
-        throw new ApiError(400, "Channel ID is required");
-      }
-
-      if (channelId) validateObjectId(channelId, "Channel ID");
-      if (userId) validateObjectId(userId, "User ID");
-
-      try {
-        await removeSubscriptionFromChannel(userId, channelId);
-      } catch (error) {
-        console.error("Error removing subscription:", error);
-      }
+      await removeSubscriptionFromChannel(userId, channelId);
 
       return res
         .status(200)
@@ -80,12 +50,6 @@ const removeSubscriptionFromChannelController = asyncHandler(
 const subscriberCountController = asyncHandler(async (req, res) => {
   try {
     const { channelId } = req.params;
-
-    if (!channelId) {
-      throw new ApiError(400, "Channel ID is required");
-    }
-
-    if (channelId) validateObjectId(channelId, "Channel ID");
 
     // Assuming you have a service to get subscriber count
     const count = await getSubscriberCount(channelId);
@@ -112,17 +76,6 @@ const checkSubscriptionStatusController = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
     const userId = req.user._id;
 
-    if (!userId) {
-      throw new ApiError(401, "Unauthorized Request Please Login First");
-    }
-
-    if (!channelId) {
-      throw new ApiError(400, "Channel ID is required");
-    }
-
-    if (channelId) validateObjectId(channelId, "Channel ID");
-    if (userId) validateObjectId(userId, "User ID");
-
     // Assuming you have a service to check subscription status
     const isSubscribed = await checkSubscriptionStatus(userId, channelId);
 
@@ -146,17 +99,6 @@ const subscriptionToggleController = asyncHandler(async (req, res) => {
     const { channelId } = req.params;
     const userId = req.user._id;
 
-    if (!userId) {
-      throw new ApiError(401, "Unauthorized Request Please Login First");
-    }
-
-    if (!channelId) {
-      throw new ApiError(400, "Channel ID is required");
-    }
-
-    if (channelId) validateObjectId(channelId, "Channel ID");
-    if (userId) validateObjectId(userId, "User ID");
-
     const isSubscribed = await subscriptionToggle(userId, channelId);
     return res
       .status(200)
@@ -176,12 +118,6 @@ const subscriptionToggleController = asyncHandler(async (req, res) => {
 const channelSubscribeOthersController = asyncHandler(async (req, res) => {
   try {
     const userId = req?.user?._id;
-
-    if (!userId) {
-      throw new ApiError(400, "Unauthorized request");
-    }
-
-    if (userId) validateObjectId(userId, " User ID");
 
     // Assuming you have a service to get subscriber count
     const count = await channelSubscribeOthers(userId);

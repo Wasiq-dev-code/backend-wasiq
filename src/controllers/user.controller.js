@@ -18,16 +18,6 @@ const registerUserController = asyncHandler(async (req, res) => {
     const { username, email, password, fullname } = req.body;
     const { files } = req;
 
-    if (
-      [username, email, password, fullname].some((val) => val?.trim() === "")
-    ) {
-      throw new ApiError(400, "fill all the fields");
-    }
-
-    if (!files) {
-      throw new ApiError(404, "Files are not uploaded");
-    }
-
     const createdUser = await resgisterUser({
       username,
       email,
@@ -35,10 +25,6 @@ const registerUserController = asyncHandler(async (req, res) => {
       fullname,
       files,
     });
-
-    if (!createdUser) {
-      throw new ApiError(400, "Error while creating User");
-    }
 
     return res
       .status(200)
@@ -55,10 +41,6 @@ const registerUserController = asyncHandler(async (req, res) => {
 const loginUserController = asyncHandler(async (req, res) => {
   try {
     const { email, username, password } = req.body;
-
-    if ([email, username, password].some((val) => val?.trim() === "")) {
-      throw new ApiError(400, "please fill all required fields");
-    }
 
     const { isLoggedIn, accessToken, refreshToken } = await loginUser({
       email,
@@ -138,10 +120,6 @@ const generateAccessTokenController = asyncHandler(async (req, res) => {
   try {
     const { body, cookies } = req;
 
-    if (!body || !cookies) {
-      throw new ApiError(400, "Unauthorized request");
-    }
-
     const { accessToken, newRefreshToken } = await generateAccessToken({
       body,
       cookies,
@@ -197,14 +175,6 @@ const changeCurrentPasswordController = asyncHandler(async (req, res) => {
     const { user } = req;
     const { oldPassword, newPassword } = req.body;
 
-    if (!user) {
-      throw new ApiError(401, "Unauthorized REQ");
-    }
-
-    if (!(oldPassword || newPassword)) {
-      throw new ApiError(401, "fill all the fields");
-    }
-
     await changeCurrentPassword({
       user,
       oldPassword,
@@ -245,21 +215,10 @@ const updateFieldsController = asyncHandler(async (req, res) => {
   try {
     const { fullname, email } = req.body;
 
-    if (!(fullname || email)) {
-      throw new ApiError(
-        400,
-        "please provide at least one field (fullname or email)"
-      );
-    }
-
     const user = await updateFields({
       fullname,
       email,
     });
-
-    if (!user) {
-      throw new ApiError(401, "database error");
-    }
 
     try {
       await clearUserCache(user?._id);
@@ -286,18 +245,10 @@ const changeAvatarController = asyncHandler(async (req, res) => {
   try {
     const { file, user } = req;
 
-    if ((!file, !user)) {
-      throw new ApiError(500, "file or user are not available");
-    }
-
     const userobj = await changeAvatar({
       file,
       user,
     });
-
-    if (!userobj) {
-      throw new ApiError(500, "server issue while operating Database");
-    }
 
     try {
       await clearUserCache(userobj?._id);
@@ -324,18 +275,10 @@ const changeCoverImgController = asyncHandler(async (req, res) => {
   try {
     const { file, user } = req;
 
-    if ((!file, !user)) {
-      throw new ApiError(500, "file or user are not available");
-    }
-
     const userobj = await changeCoverImg({
       file,
       user,
     });
-
-    if (!userobj) {
-      throw new ApiError(500, "server issue while operating Database");
-    }
 
     try {
       await clearUserCache(userobj?._id);
@@ -364,17 +307,9 @@ const getUserChannelProfileController = asyncHandler(async (req, res) => {
   try {
     const { username } = req.params;
 
-    if (!username.trim()) {
-      throw new ApiError(400, "username should be pass through URL");
-    }
-
     const channel = await getUserChannelProfile({
       username,
     });
-
-    if (!channel.length) {
-      throw new ApiError(400, "channel is not provided");
-    }
 
     return res
       .status()
@@ -395,17 +330,9 @@ const getUserHistoryController = asyncHandler(async (req, res) => {
   try {
     const { user } = req;
 
-    if (!user) {
-      throw new ApiError(400, "Unauthorized REQ");
-    }
-
     const userHistory = await getUserHistory({
       user,
     });
-
-    if (!userHistory.watchHistory) {
-      throw new ApiError(404, "User history is empty");
-    }
 
     return res
       .status(200)

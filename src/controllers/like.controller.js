@@ -16,17 +16,7 @@ const videoLikeAddedController = asyncHandler(async (req, res) => {
     const videoID = req?.params?.videoId;
     const UserID = req.user._id;
 
-    if (!UserID) {
-      throw new ApiError(500, "Unauthorized Request Please Login First");
-    }
-
-    validateObjectId(videoID, "Video ID");
-
     const likeDone = await videoLikeAdded(videoID, UserID);
-
-    if (!likeDone) {
-      throw new ApiError(400, "Like operation is failed");
-    }
 
     return res
       .status(200)
@@ -42,17 +32,7 @@ const commentLikeAddedController = asyncHandler(async (req, res) => {
     const commentID = req?.params?.commentId;
     const UserID = req?.user?._id;
 
-    if (!UserID) {
-      throw new ApiError(500, "Unauthorized Request Please Login First");
-    }
-
-    validateObjectId(commentID, "comment ID");
-
     const likeDone = await commentLikeAdded(commentID, UserID);
-
-    if (!likeDone) {
-      throw new ApiError(400, "Like operation is failed");
-    }
 
     return res
       .status(200)
@@ -68,12 +48,6 @@ const videoLikedeleteController = asyncHandler(async (req, res) => {
     const videoID = req?.params?.videoId;
     const UserID = req?.user?._id;
 
-    if (!UserID) {
-      throw new ApiError(500, "Unauthorized Request Please Login First");
-    }
-
-    validateObjectId(videoID, " video ID");
-
     await videoLikeDelete(videoID, UserID);
 
     return res.status(200).json(new ApiResponse(200, "videoLiked deleted"));
@@ -88,12 +62,6 @@ const commentLikedeleteController = asyncHandler(async (req, res) => {
     const commentID = req?.params?.commentId;
     const UserID = req?.user?._id;
 
-    if (!UserID) {
-      throw new ApiError(500, "Unauthorized Request Please Login First");
-    }
-
-    validateObjectId(commentID, "comment ID");
-
     await commentLikeDelete(commentID, UserID);
 
     return res.status(200).json(new ApiResponse(200, "commentLiked deleted"));
@@ -107,17 +75,6 @@ const isLikedByUserController = asyncHandler(async (req, res) => {
   try {
     const { videoId, commentId } = req?.params;
     const userId = req?.user?._id;
-
-    if (!userId) {
-      throw new ApiError(401, "Unauthorized request");
-    }
-
-    if (!videoId && !commentId) {
-      throw new ApiError(401, "Error in params");
-    }
-
-    if (videoId) validateObjectId(videoId, "Video ID");
-    if (commentId) validateObjectId(commentId, "Comment ID");
 
     const likePresented = await isLikeByUser(videoId, commentId, userId);
 
@@ -136,12 +93,6 @@ const totalCommentLikesController = asyncHandler(async (req, res) => {
   try {
     const { commentId } = req?.params;
 
-    if (!commentId) {
-      throw new ApiError(400, "Comment ID is required");
-    }
-
-    validateObjectId(commentId, "Comment ID");
-
     const commentLikes = await totalCommentLikes(commentId);
 
     return res
@@ -157,12 +108,6 @@ const totalVideoLikesController = asyncHandler(async (req, res) => {
   try {
     const { videoId } = req?.params;
 
-    if (!videoId) {
-      throw new ApiError(400, "video ID is required");
-    }
-
-    validateObjectId(videoId, "Video ID");
-
     const videoLikes = await totalVideoLikes(videoId);
 
     return res
@@ -177,17 +122,6 @@ const totalVideoLikesController = asyncHandler(async (req, res) => {
 const toggleLikeContoller = asyncHandler(async (req, res) => {
   const { videoId, commentId } = req?.params;
   const userId = req?.user?._id;
-
-  if (!userId) {
-    throw new ApiError(401, "Unauthorized request");
-  }
-
-  if (!videoId && !commentId) {
-    throw new ApiError(401, "Error in params");
-  }
-
-  if (videoId) validateObjectId(videoId, "Video ID");
-  if (commentId) validateObjectId(commentId, "Comment ID");
 
   const toggleLikes = await toggleLike(videoId, commentId, userId);
 

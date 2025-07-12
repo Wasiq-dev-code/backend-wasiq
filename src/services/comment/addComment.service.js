@@ -1,43 +1,50 @@
-import { Comment } from "../../models/Comment.model";
-import { ApiError } from "../../utils/ApiError";
-import { validateObjectId } from "../../utils/validateObjectId";
+import { Comment } from "../../models/Comment.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { validateObjectId } from "../../utils/validateObjectId.js";
 
-export const addComment = async (properties) => {
+export const addComment = async ({ videoId, userId, content, commentId }) => {
   try {
-    if (!properties.userID) {
-      throw new ApiError(400, "Unauthorized request");
-    }
+    if (!userId) throw new ApiError(401, "Unauthorized request");
+    if (!content?.trim())
+      throw new ApiError(400, "Comment content cannot be empty");
+    if (!videoId) throw new ApiError(400, "Video ID is required");
 
-    if (!properties.content.trim()) {
-      throw new ApiError("content does not trim");
-    }
-
-    if (!properties.videoID) {
-      throw new ApiError(400, "Video id does not found in the params");
-    }
-
-    validateObjectId(properties.userID, "User Id");
-    validateObjectId(properties.videoId, "Video Id");
+    validateObjectId(videoId, "Video ID");
+    validateObjectId(userId, "User ID");
 
     const query = {
-      commentedby: properties.userID,
-      commentedvideo: properties.videoID,
-      content: properties.content,
+      content: content.trim(),
+      commentedvideo: videoId,
+      commentedby: userId,
     };
 
-    if (properties.commentID) {
-      validateObjectId(properties.commentID, "comment Id");
-      query.parentcomment = properties.commentID;
+    // If it's a reply
+    if (commentId) {
+      validateObjectId(commentId, "Comment ID");
+
+      const parentComment = await Comment.findById(commentId);
+      if (!parentComment) {
+        throw new ApiError(404, "Parent comment not found");
+      }
+
+      if (parentComment.commentedvideo.toString() !== videoId) {
+        throw new ApiError(
+          400,
+          "Parent comment does not belong to the same video"
+        );
+      }
+
+      query.parentcomment = commentId;
     }
 
-    const commented = await Comment.create(query);
+    const newComment = await Comment.create(query);
 
-    if (!commented) {
-      throw new ApiError(500, "Commented Operation Failed");
+    if (!newComment) {
+      throw new ApiError(500, "Failed to create comment");
     }
-    return commented;
+
+    return newComment;
   } catch (error) {
-    console.error(error, "server has error");
-    throw new ApiError(500, "Server occured error");
+    console.error(error, "server is not responding");
   }
 };
