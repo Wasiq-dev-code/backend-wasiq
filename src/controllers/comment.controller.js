@@ -3,6 +3,7 @@ import { deleteComment } from "../services/comment/deleteComment.service.js";
 import { editComment } from "../services/comment/editComment.service.js";
 import { getCommentByVideo } from "../services/comment/getCommentByVideo.service.js";
 import { getReplyToComment } from "../services/comment/getReplyToComment.service.js";
+import { myComment } from "../services/comment/myComment.service.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -104,10 +105,26 @@ const editCommentController = asyncHandler(async (req, res) => {
   }
 });
 
+const myCommentController = asyncHandler(async (req, res) => {
+  try {
+    const userId = req?.user?._id;
+
+    const allMyComments = await myComment({ userId });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, allMyComments, "All Your Comments List"));
+  } catch (error) {
+    console.error(error, "server is down");
+    throw new ApiError(500, "Server is not responding");
+  }
+});
+
 export {
   addCommentController,
   deleteCommentController,
   getCommentByVideoController,
   getReplyToCommentController,
   editCommentController,
+  myCommentController,
 };
