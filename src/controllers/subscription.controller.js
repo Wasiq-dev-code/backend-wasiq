@@ -51,7 +51,6 @@ const subscriberCountController = asyncHandler(async (req, res) => {
   try {
     const { channelId } = req.params;
 
-    // Assuming you have a service to get subscriber count
     const count = await getSubscriberCount({ channelId });
 
     return res

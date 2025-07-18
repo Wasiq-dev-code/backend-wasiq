@@ -9,7 +9,6 @@ import { videoLikeDelete } from "../services/like/videoLikeDelete.service.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { validateObjectId } from "../utils/validateObjectId.js";
 
 const videoLikeAddedController = asyncHandler(async (req, res) => {
   try {
