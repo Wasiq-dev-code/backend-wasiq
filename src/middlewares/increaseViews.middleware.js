@@ -17,16 +17,16 @@ export const trackVideoView = async (req, _, next) => {
 
     const sanitizedIp = ip.trim().replace(/[^a-zA-Z0-9:.]/g, "");
 
-    const redisKey = `view:${sanitizedIp}:${videoId}`;
+    const redisKeyViews = `view:${sanitizedIp}:${videoId}`;
 
     const videoViewKey = `video:${videoId}:views`;
 
     const videoSync = `videoSync:${videoId}`;
 
-    const alreadyViewed = await client.exists(redisKey);
+    const alreadyViewed = await client.exists(redisKeyViews);
 
     if (!alreadyViewed) {
-      await client.set(redisKey, "1", "EX", TTL.MEDIUM, "NX");
+      await client.set(redisKeyViews, "1", "EX", TTL.MEDIUM, "NX");
 
       await client.incr(videoViewKey);
       await client.incr(videoSync);

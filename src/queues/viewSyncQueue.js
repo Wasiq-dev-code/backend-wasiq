@@ -3,20 +3,6 @@ import { viewSyncProcessor } from "../jobs/viewSyncProcessor.js";
 
 const viewSyncQueue = new Queue("Sync-data-into-mongo", {
   redis: process.env.REDIS_URL,
-  //  {
-  //   port: parseInt(process.env.REDIS_PORT) || 10080, // Convert to number
-  //   host: process.env.REDIS_HOST,
-  //   password: process.env.REDIS_PASSWORD,
-  //   tls: {},
-  //   connectTimeout: 30000,
-  //   commandTimeout: 10000,
-  //   retryDelayOnFailover: 1000,
-  //   maxRetriesPerRequest: 2,
-  //   enableOfflineQueue: true,
-  //   lazyConnect: false,
-  //   keepAlive: 30000,
-  //   family: 4,
-  // },
 });
 
 // Process jobs with error handling

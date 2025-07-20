@@ -5,4 +5,5 @@ export const TTL = {
   MEDIUM: 60 * 30, // 30 minutes
   LONG: 60 * 60, // 1 hour
   ONE_DAY: 60 * 60 * 24, // 1 day
+  LIKES: 60 * 60 * 24 * 30, // 30 days
 };

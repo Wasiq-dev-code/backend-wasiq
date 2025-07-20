@@ -110,7 +110,7 @@ const cacheMiddleware = (prefix, duration, option) => {
         // console.log(body, duration);
         // console.log("giving response directly throw mongoose");
         try {
-          const canCache = await checkMemoryLimits(client);
+          const canCache = await checkMemoryLimits();
           if (canCache) {
             if (prefix === "Video") {
               const { videoId } = req.params;

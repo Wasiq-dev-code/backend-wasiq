@@ -1,4 +1,6 @@
-export const checkMemoryLimits = async (client) => {
+import client from "../config/redis";
+
+export const checkMemoryLimits = async () => {
   try {
     const keysInRedis = await client.dbsize();
     const keysLimit = parseInt(process.env.MAX_KEYS, 10);
