@@ -27,7 +27,7 @@ likeSchema.index({ userliked: 1 });
 likeSchema.index({ video: 1 });
 likeSchema.index({ comment: 1 });
 
-likeSchema.static.isLiked = async function (videoId, commentId, userId) {
+likeSchema.statics.isLiked = async function (videoId, commentId, userId) {
   if (!videoId && !commentId) {
     throw new Error("Either videoId or commentId must be provided");
   }
@@ -37,6 +37,32 @@ likeSchema.static.isLiked = async function (videoId, commentId, userId) {
   if (commentId) query.comment = commentId;
 
   return await this.exists(query);
+};
+
+likeSchema.statics.createLike = async function (videoId, commentId, userId) {
+  if (!videoId && !commentId) {
+    throw new Error("Either videoId or commentId must be provided");
+  }
+
+  const newLike = await this.create({
+    userliked: userId,
+    ...(videoId && { video: videoId }),
+    ...(commentId && { video: commentId }),
+  });
+
+  return newLike;
+};
+
+likeSchema.statics.deleteLike = async function (videoId, commentId, userId) {
+  if (!videoId && !commentId) {
+    throw new Error("Either videoId or commentId must be provided");
+  }
+
+  await this.deleteOne({
+    userliked: userId,
+    ...(videoId && { video: videoId }),
+    ...(commentId && { video: commentId }),
+  });
 };
 
 likeSchema.set("toJSON", {

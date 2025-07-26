@@ -1,27 +1,20 @@
 import { ApiError } from "../../utils/ApiError.js";
 import { Like } from "../../models/Likes.model.js";
-import mongoose from "mongoose";
 
-export const videoLikeDelete = async ({ videoID, UserID }) => {
+export const videoLikeDelete = async ({ userId, videoId, commentId }) => {
   try {
-    if (!videoID) {
-      throw new ApiError(400, "Data has containing error");
+    if (!videoId && !commentId) {
+      throw new ApiError(400, "Videoid or Commentid should available");
     }
 
-    if (!UserID) {
-      throw new ApiError(400, "User has containing error ");
+    if (!userId) {
+      throw new ApiError(400, "Unauthorized Req");
     }
 
-    const safevideoID = mongoose.Types.ObjectId(videoID);
+    if (videoId) validateObjectId(videoId, "Video ID");
+    if (commentId) validateObjectId(commentId, "Comment ID");
 
-    const deletedLike = await Like.findOneAndDelete({
-      video: safevideoID,
-      userliked: UserID,
-    });
-
-    if (!deletedLike) {
-      return false;
-    }
+    await Like.deletedLike(videoId, commentId, userId);
 
     return true;
   } catch (error) {

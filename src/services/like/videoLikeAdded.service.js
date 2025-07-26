@@ -1,32 +1,24 @@
 import { ApiError } from "../../utils/ApiError.js";
 import { Like } from "../../models/Likes.model.js";
-import mongoose from "mongoose";
+import { validateObjectId } from "../../utils/validateObjectId.js";
 
-export const videoLikeAdded = async ({ videoID, UserID }) => {
+export const videoLikeAdded = async ({ videoId, userId, commentId }) => {
   try {
-    if (!videoID) {
-      throw new ApiError(
-        400,
-        "Data has containing error from likeAddedContr0ller"
-      );
+    if (!videoId && !commentId) {
+      throw new ApiError(400, "Videoid or Commentid should available");
     }
 
-    if (!UserID) {
-      throw new ApiError(
-        400,
-        "User has containing error from likeAddedContr0ller"
-      );
+    if (!userId) {
+      throw new ApiError(400, "Unauthorized Req");
     }
 
-    const safeVideoId = videoID ? mongoose.Types.ObjectId(videoID) : undefined;
+    if (videoId) validateObjectId(videoId, "Video ID");
+    if (commentId) validateObjectId(commentId, "Comment ID");
 
-    const liked = await Like.create({
-      video: safeVideoId,
-      userliked: UserID,
-    });
+    const liked = await Like.createLike(videoId, commentId, userId);
 
     if (!liked) {
-      throw new ApiError(500, "Error Occured while establishing Liked Schema ");
+      throw new ApiError(500, "Like is not added");
     }
 
     return true;

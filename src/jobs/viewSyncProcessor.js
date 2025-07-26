@@ -15,7 +15,7 @@ export const viewSyncProcessor = async (job, done) => {
         100
       );
       // console.log(result);
-      console.log("result Data error");
+      // console.log("result Data error");
       cursor = nextCursor;
       keys.push(...matchedKeys);
     } while (cursor !== "0");

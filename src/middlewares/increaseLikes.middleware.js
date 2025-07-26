@@ -7,20 +7,25 @@ const trackVideoLikes = async (req, _, next) => {
   try {
     const { _id } = req?.user;
     const { videoId } = req?.params;
+    const { commentId } = req?.params;
 
     if (!_id || !validateObjectId(_id)) {
       throw new ApiError(400, "Unauthorized Req");
     }
 
-    if (!videoId || !validateObjectId(videoId)) {
-      throw new ApiError(400, "VideoId is not available");
+    if (
+      !videoId ||
+      (!validateObjectId(videoId) && !commentId) ||
+      !validateObjectId(commentId)
+    ) {
+      throw new ApiError(400, "LikeId is not available");
     }
 
-    const redisKeyLikes = `Likes:${_id}:${videoId}`;
+    const redisKeyLikes = `Likes:${_id}:${videoId || commentId}`;
 
-    const videoLikesKey = `video:${videoId}:Likes`;
+    const videoLikesKey = `video:${_id}:Likes`;
 
-    const videoSyncLikes = `videoSyncLikes:${videoId}`;
+    const videoSyncLikes = `syncLikes:${_id}`;
 
     await client.watch(redisKeyLikes);
 
@@ -29,25 +34,23 @@ const trackVideoLikes = async (req, _, next) => {
     const multi = client.multi();
 
     if (!alreadyLikes) {
-      multi.set(redisKeyLikes, "1", "EX", TTL.LIKES);
-
-      multi.incr(videoLikesKey);
-
-      multi.incr(videoSyncLikes);
+      multi.set(redisKeyLikes);
+      multi.set(videoLikesKey);
+      multi.set(videoSyncLikes);
     } else {
       multi.del(redisKeyLikes);
 
-      const [videoLikeCountRaw, syncLikeCountRaw] = await Promise.all([
-        client.get(videoLikesKey),
-        client.get(videoSyncLikes),
-      ]);
+      // const [videoLikeCountRaw, syncLikeCountRaw] = await Promise.all([
+      //   client.get(videoLikesKey),
+      //   client.get(videoSyncLikes),
+      // ]);
 
-      const videoLikeCount = parseInt(videoLikeCountRaw) || 0;
+      // const videoLikeCount = parseInt(videoLikeCountRaw) || 0;
 
-      const syncLikeCount = parseInt(syncLikeCountRaw) || 0;
+      // const syncLikeCount = parseInt(syncLikeCountRaw) || 0;
 
-      if (videoLikeCount > 0) multi.decr(videoLikesKey);
-      if (syncLikeCount > 0) multi.decr(videoSyncLikes);
+      if (videoLikesKey.length > 0) multi.del(videoLikesKey);
+      if (videoSyncLikes.length > 0) multi.del(videoSyncLikes);
     }
     const execResult = await multi.exec();
 

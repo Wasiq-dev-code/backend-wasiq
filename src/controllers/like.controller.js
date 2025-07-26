@@ -1,4 +1,3 @@
-import { commentLikeAdded } from "../services/like/commentLikeAdded.service.js";
 import { commentLikeDelete } from "../services/like/commentLikeDelete.service.js";
 import { isLikeByUser } from "../services/like/isLikedByUser.service.js";
 import { toggleLike } from "../services/like/toggleLike.service.js";
@@ -10,12 +9,13 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-const videoLikeAddedController = asyncHandler(async (req, res) => {
+const LikeAddedController = asyncHandler(async (req, res) => {
   try {
-    const videoID = req?.params?.videoId;
-    const UserID = req.user._id;
+    const { videoId, commentId } = req?.params;
 
-    const likeDone = await videoLikeAdded({ videoID, UserID });
+    const userId = req.user._id;
+
+    const likeDone = await videoLikeAdded({ videoId, userId, commentId });
 
     return res
       .status(200)
@@ -26,44 +26,14 @@ const videoLikeAddedController = asyncHandler(async (req, res) => {
   }
 });
 
-const commentLikeAddedController = asyncHandler(async (req, res) => {
+const LikedeleteController = asyncHandler(async (req, res) => {
   try {
-    const commentID = req?.params?.commentId;
-    const UserID = req?.user?._id;
+    const { videoId, commentId } = req?.params;
+    const userId = req?.user?._id;
 
-    const likeDone = await commentLikeAdded({ commentID, UserID });
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, likeDone, "Liked Successfully Done"));
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
-  }
-});
-
-const videoLikedeleteController = asyncHandler(async (req, res) => {
-  try {
-    const videoID = req?.params?.videoId;
-    const UserID = req?.user?._id;
-
-    await videoLikeDelete({ videoID, UserID });
+    await videoLikeDelete({ userId, videoId, commentId });
 
     return res.status(200).json(new ApiResponse(200, "videoLiked deleted"));
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
-  }
-});
-
-const commentLikedeleteController = asyncHandler(async (req, res) => {
-  try {
-    const commentID = req?.params?.commentId;
-    const UserID = req?.user?._id;
-
-    await commentLikeDelete({ commentID, UserID });
-
-    return res.status(200).json(new ApiResponse(200, "commentLiked deleted"));
   } catch (error) {
     console.error(error.message || "server is not responding");
     throw new ApiError(500, "server is not responding");
@@ -130,10 +100,8 @@ const toggleLikeContoller = asyncHandler(async (req, res) => {
 });
 
 export {
-  videoLikeAddedController,
-  commentLikeAddedController,
-  videoLikedeleteController,
-  commentLikedeleteController,
+  LikeAddedController,
+  LikedeleteController,
   isLikedByUserController,
   totalCommentLikesController,
   totalVideoLikesController,

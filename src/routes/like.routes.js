@@ -19,15 +19,8 @@ likeRouter
   .post(JWTVerify, viewRateLimiter, videoLikeAddedController);
 
 likeRouter
-  .route("/Like/commentLikeAdded/:commentId")
-  .post(JWTVerify, viewRateLimiter, commentLikeAddedController);
-
-likeRouter
   .route("/Like/videoLikedelete/:videoId")
   .delete(JWTVerify, viewRateLimiter, videoLikedeleteController);
-likeRouter
-  .route("/Like/commentLikedelete/:commentId")
-  .delete(JWTVerify, viewRateLimiter, commentLikedeleteController);
 
 likeRouter
   .route("/Like/isLikedByUser/:videoId/:commentId ")
