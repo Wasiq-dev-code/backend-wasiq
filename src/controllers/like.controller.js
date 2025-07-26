@@ -1,4 +1,3 @@
-import { commentLikeDelete } from "../services/like/commentLikeDelete.service.js";
 import { isLikeByUser } from "../services/like/isLikedByUser.service.js";
 import { toggleLike } from "../services/like/toggleLike.service.js";
 import { totalCommentLikes } from "../services/like/totalCommentLikes.service.js";
@@ -9,7 +8,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-const LikeAddedController = asyncHandler(async (req, res) => {
+const likeAddedController = asyncHandler(async (req, res) => {
   try {
     const { videoId, commentId } = req?.params;
 
@@ -26,7 +25,7 @@ const LikeAddedController = asyncHandler(async (req, res) => {
   }
 });
 
-const LikedeleteController = asyncHandler(async (req, res) => {
+const likedeleteController = asyncHandler(async (req, res) => {
   try {
     const { videoId, commentId } = req?.params;
     const userId = req?.user?._id;
@@ -100,8 +99,8 @@ const toggleLikeContoller = asyncHandler(async (req, res) => {
 });
 
 export {
-  LikeAddedController,
-  LikedeleteController,
+  likeAddedController,
+  likedeleteController,
   isLikedByUserController,
   totalCommentLikesController,
   totalVideoLikesController,

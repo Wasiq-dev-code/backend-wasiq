@@ -2,25 +2,23 @@ import { Router } from "express";
 import { JWTVerify } from "../middlewares/auth.middleware";
 import { viewRateLimiter } from "../middlewares/rateLimiting.middleware";
 import {
-  commentLikeAddedController,
-  commentLikedeleteController,
   isLikedByUserController,
   toggleLikeContoller,
   totalCommentLikesController,
   totalVideoLikesController,
-  videoLikeAddedController,
-  videoLikedeleteController,
+  likeAddedController,
+  likedeleteController,
 } from "../controllers/like.controller";
 
 const likeRouter = Router();
 
 likeRouter
   .route("/Like/videoLikeAdded/:videoId")
-  .post(JWTVerify, viewRateLimiter, videoLikeAddedController);
+  .post(JWTVerify, viewRateLimiter, likeAddedController);
 
 likeRouter
   .route("/Like/videoLikedelete/:videoId")
-  .delete(JWTVerify, viewRateLimiter, videoLikedeleteController);
+  .delete(JWTVerify, viewRateLimiter, likedeleteController);
 
 likeRouter
   .route("/Like/isLikedByUser/:videoId/:commentId ")
