@@ -1,5 +1,8 @@
 import client from "../config/redis.js";
-import { checkRedisConnection } from "../utils/checkRedisConnection.js";
+import {
+  checkRedisConnection,
+  redisAvailable,
+} from "../utils/checkRedisConnection.js";
 import { acquireLock } from "../utils/AquireLock.js";
 import { waitForData } from "../utils/waitForData.js";
 import { processData } from "../utils/processData.js";
@@ -16,21 +19,12 @@ const cacheMiddleware = (prefix, duration, option) => {
 
   // console.log(prefix, duration, option);
 
-  let redisStatus = { available: true };
-
-  if (!redisStatus) {
-    throw new ApiError.CachingError("redisStatus", redisStatus);
-  }
-
-  checkRedisConnection(redisStatus);
-  const refreshRedis = setInterval(
-    checkRedisConnection,
-    process?.env?.HEALTH_CHECK_INTERVAL
-  );
-  process.on("SIGTERM", () => clearTimeout(refreshRedis));
-  process.on("SIGINT", () => clearTimeout(refreshRedis));
-
   return async (req, res, next) => {
+    if (!redisAvailable) {
+      console.log("⚠ Redis DOWN → fallback to MongoDB");
+      next();
+    }
+
     if (
       req.method !== "GET" ||
       !redisStatus.available ||

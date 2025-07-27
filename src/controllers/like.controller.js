@@ -99,7 +99,7 @@ const toggleLikeContoller = asyncHandler(async (req, res) => {
 });
 
 export {
-  likeAddedController,
+  likeAddedController,  
   likedeleteController,
   isLikedByUserController,
   totalCommentLikesController,

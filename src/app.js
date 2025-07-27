@@ -2,8 +2,12 @@ import "./schedulers/snycViewScheduler.js";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { monitorRedis } from "./utils/checkRedisConnection.js";
 
 const app = express();
+
+monitorRedis();
+
 app.set("trust proxy", false);
 
 app.use(
@@ -32,6 +36,7 @@ import router from "./routes/user.routes.js";
 import videoRouter from "./routes/video.routes.js";
 import BasicAuth from "express-basic-auth";
 import serverAdapter from "./dashboard/bullDashboard.js";
+import { monitorRedis } from "./utils/checkRedisConnection.js";
 app.use(
   "/wasiq/admin/queue",
   BasicAuth({
