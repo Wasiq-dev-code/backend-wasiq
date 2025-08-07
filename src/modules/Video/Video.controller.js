@@ -1,6 +1,6 @@
-import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ApiError } from "../../utils/ApiError.js";
-import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 import { updateVideo } from "../../services/video/updateVideo.service.js";
 import { deleteVideo } from "../../services/video/deleteVideo.service.js";
 import { getVideoById } from "../../services/video/getVideoById.service.js";

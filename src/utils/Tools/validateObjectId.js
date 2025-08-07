@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ApiError } from "./ApiError";
+import { ApiError } from "./Api/ApiError";
 
 export const validateObjectId = (id, name) => {
   if (!id || !mongoose.Types.ObjectId(id)) {

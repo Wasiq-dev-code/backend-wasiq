@@ -1,4 +1,4 @@
-import viewSyncQueue from "../queues/viewSyncQueue.js";
+import viewSyncQueue from "../../queues/viewSyncQueue.js";
 
 const getRepeatableJobs = async () => {
   const jobs = await viewSyncQueue.getRepeatableJobs();

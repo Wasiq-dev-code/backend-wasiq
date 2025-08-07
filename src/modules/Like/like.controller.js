@@ -4,9 +4,9 @@ import { totalCommentLikes } from "../../services/like/totalCommentLikes.service
 import { totalVideoLikes } from "../../services/like/totalVideoLikes.service.js";
 import { videoLikeAdded } from "../../services/like/videoLikeAdded.service.js";
 import { videoLikeDelete } from "../../services/like/videoLikeDelete.service.js";
-import { ApiError } from "../../utils/ApiError.js";
-import { ApiResponse } from "../../utils/ApiResponse.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { ApiResponse } from "../../utils/Api/ApiResponse.js";
+import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
 
 const likeAddedController = asyncHandler(async (req, res) => {
   try {
