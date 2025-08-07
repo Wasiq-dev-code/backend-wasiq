@@ -2,8 +2,8 @@ import { isLikeByUser } from "../../services/like/isLikedByUser.service.js";
 import { toggleLike } from "../../services/like/toggleLike.service.js";
 import { totalCommentLikes } from "../../services/like/totalCommentLikes.service.js";
 import { totalVideoLikes } from "../../services/like/totalVideoLikes.service.js";
-import { videoLikeAdded } from "../../services/like/videoLikeAdded.service.js";
-import { videoLikeDelete } from "../../services/like/videoLikeDelete.service.js";
+import { likeAdded } from "../../services/like/videoLikeAdded.service.js";
+import { likeDelete } from "../../services/like/videoLikeDelete.service.js";
 import { ApiError } from "../../utils/Api/ApiError.js";
 import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
@@ -14,7 +14,7 @@ const likeAddedController = asyncHandler(async (req, res) => {
 
     const userId = req.user._id;
 
-    const likeDone = await videoLikeAdded({ videoId, userId, commentId });
+    const likeDone = await likeAdded({ videoId, userId, commentId });
 
     return res
       .status(200)
@@ -30,7 +30,7 @@ const likedeleteController = asyncHandler(async (req, res) => {
     const { videoId, commentId } = req?.params;
     const userId = req?.user?._id;
 
-    await videoLikeDelete({ userId, videoId, commentId });
+    await likeDelete({ userId, videoId, commentId });
 
     return res.status(200).json(new ApiResponse(200, "videoLiked deleted"));
   } catch (error) {
