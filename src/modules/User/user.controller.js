@@ -1,17 +1,17 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { resgisterUser } from "../services/user/registerUser.service.js";
-import { loginUser } from "../services/user/loginUser.service.js";
-import { logoutUser } from "../services/user/logoutUser.service.js";
-import { generateAccessToken } from "../services/user/generateAccessToken.service.js";
-import { changeCurrentPassword } from "../services/user/changeCurrentPassword.service.js";
-import { updateFields } from "../services/user/updateFields.service.js";
-import { changeAvatar } from "../services/user/changeAvatar.service.js";
-import { changeCoverImg } from "../services/user/changeCoverImg.service.js";
-import { getUserChannelProfile } from "../services/user/getUserChannelProfile.service.js";
-import { getUserHistory } from "../services/user/getUserHistory.service.js";
-import { clearUserCache } from "../utils/redisChachingKeyStructure.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { resgisterUser } from "./user/registerUser.service.js";
+import { loginUser } from "./user/loginUser.service.js";
+import { logoutUser } from "./user/logoutUser.service.js";
+import { generateAccessToken } from "./user/generateAccessToken.service.js";
+import { changeCurrentPassword } from "./user/changeCurrentPassword.service.js";
+import { updateFields } from "./user/updateFields.service.js";
+import { changeAvatar } from "./user/changeAvatar.service.js";
+import { changeCoverImg } from "./user/changeCoverImg.service.js";
+import { getUserChannelProfile } from "./user/getUserChannelProfile.service.js";
+import { getUserHistory } from "./user/getUserHistory.service.js";
+import { clearUserCache } from "../../utils/redisChachingKeyStructure.js";
 
 const registerUserController = asyncHandler(async (req, res) => {
   try {

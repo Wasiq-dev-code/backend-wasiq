@@ -1,12 +1,12 @@
-import { isLikeByUser } from "../services/like/isLikedByUser.service.js";
-import { toggleLike } from "../services/like/toggleLike.service.js";
-import { totalCommentLikes } from "../services/like/totalCommentLikes.service.js";
-import { totalVideoLikes } from "../services/like/totalVideoLikes.service.js";
-import { videoLikeAdded } from "../services/like/videoLikeAdded.service.js";
-import { videoLikeDelete } from "../services/like/videoLikeDelete.service.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { isLikeByUser } from "../../services/like/isLikedByUser.service.js";
+import { toggleLike } from "../../services/like/toggleLike.service.js";
+import { totalCommentLikes } from "../../services/like/totalCommentLikes.service.js";
+import { totalVideoLikes } from "../../services/like/totalVideoLikes.service.js";
+import { videoLikeAdded } from "../../services/like/videoLikeAdded.service.js";
+import { videoLikeDelete } from "../../services/like/videoLikeDelete.service.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const likeAddedController = asyncHandler(async (req, res) => {
   try {
@@ -99,7 +99,7 @@ const toggleLikeContoller = asyncHandler(async (req, res) => {
 });
 
 export {
-  likeAddedController,  
+  likeAddedController,
   likedeleteController,
   isLikedByUserController,
   totalCommentLikesController,

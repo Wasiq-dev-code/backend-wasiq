@@ -12,13 +12,13 @@ import {
   registerUserController,
   updateFieldsController,
 } from "../controllers/user.controller.js";
-import { upload } from "../middlewares/multer.middleware.js";
-import { JWTVerify } from "../middlewares/auth.middleware.js";
+import { upload } from "../../middlewares/multer.middleware.js";
+import { JWTVerify } from "../../middlewares/auth.middleware.js";
 import {
   authRateLimiter,
   uploadRateLimiter,
   viewRateLimiter,
-} from "../middlewares/rateLimiting.middleware.js";
+} from "../../middlewares/rateLimiting.middleware.js";
 
 const router = Router();
 

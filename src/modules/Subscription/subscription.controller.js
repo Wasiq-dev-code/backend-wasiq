@@ -1,15 +1,15 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { validateObjectId } from "../utils/validateObjectId.js";
-import { addSubscriptionToChannel } from "../services/subscription/addSubscriptionToChannel.service.js";
-import { removeSubscriptionFromChannel } from "../services/subscription/removeSubscriptionFromChannel.service.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { validateObjectId } from "../../utils/validateObjectId.js";
+import { addSubscriptionToChannel } from "../../services/subscription/addSubscriptionToChannel.service.js";
+import { removeSubscriptionFromChannel } from "../../services/subscription/removeSubscriptionFromChannel.service.js";
 import {
   channelSubscribeOthers,
   getSubscriberCount,
-} from "../services/subscription/getSubscriberCount.service.js";
-import { checkSubscriptionStatus } from "../services/subscription/checkSubscriptionStatus.service.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { subscriptionToggle } from "../services/subscription/subscriptionToggle.service.js";
+} from "../../services/subscription/getSubscriberCount.service.js";
+import { checkSubscriptionStatus } from "../../services/subscription/checkSubscriptionStatus.service.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { subscriptionToggle } from "../../services/subscription/subscriptionToggle.service.js";
 
 const addSubscriptionToChannelController = asyncHandler(async (req, res) => {
   try {

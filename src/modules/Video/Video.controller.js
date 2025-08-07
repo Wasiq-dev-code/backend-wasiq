@@ -1,15 +1,15 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { updateVideo } from "../services/video/updateVideo.service.js";
-import { deleteVideo } from "../services/video/deleteVideo.service.js";
-import { getVideoById } from "../services/video/getVideoById.service.js";
-import { getAllVideos } from "../services/video/getAllVideos.service.js";
-import { videoUploader } from "../services/video/videoUploader.service.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { updateVideo } from "../../services/video/updateVideo.service.js";
+import { deleteVideo } from "../../services/video/deleteVideo.service.js";
+import { getVideoById } from "../../services/video/getVideoById.service.js";
+import { getAllVideos } from "../../services/video/getAllVideos.service.js";
+import { videoUploader } from "../../services/video/videoUploader.service.js";
 import {
   clearVideoCache,
   clearVideoListCache,
-} from "../utils/redisChachingKeyStructure.js";
+} from "../../utils/redisChachingKeyStructure.js";
 
 const videoUploaderController = asyncHandler(async (req, res) => {
   try {

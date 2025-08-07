@@ -1,12 +1,12 @@
-import { addComment } from "../services/comment/addComment.service.js";
-import { deleteComment } from "../services/comment/deleteComment.service.js";
-import { editComment } from "../services/comment/editComment.service.js";
-import { getCommentByVideo } from "../services/comment/getCommentByVideo.service.js";
-import { getReplyToComment } from "../services/comment/getReplyToComment.service.js";
-import { myComment } from "../services/comment/myComment.service.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { addComment } from "../../services/comment/addComment.service.js";
+import { deleteComment } from "../../services/comment/deleteComment.service.js";
+import { editComment } from "../../services/comment/editComment.service.js";
+import { getCommentByVideo } from "../../services/comment/getCommentByVideo.service.js";
+import { getReplyToComment } from "../../services/comment/getReplyToComment.service.js";
+import { myComment } from "../../services/comment/myComment.service.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const addCommentController = asyncHandler(async (req, res) => {
   try {

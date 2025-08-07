@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { JWTVerify } from "../middlewares/auth.middleware";
-import { viewRateLimiter } from "../middlewares/rateLimiting.middleware";
+import { JWTVerify } from "../../middlewares/auth.middleware";
+import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware";
 import {
   addCommentController,
   deleteCommentController,

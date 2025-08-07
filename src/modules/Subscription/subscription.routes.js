@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { JWTVerify } from "../middlewares/auth.middleware";
-import { verifyVideo } from "../middlewares/videoSecurity.middleware";
-import { viewRateLimiter } from "../middlewares/rateLimiting.middleware";
+import { JWTVerify } from "../../middlewares/auth.middleware";
+import { verifyVideo } from "../../middlewares/videoSecurity.middleware";
+import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware";
 import {
   addSubscriptionToChannelController,
   channelSubscribeOthersController,
