@@ -1,6 +1,6 @@
 import "../dotenv.js";
 import app from "./app.js";
-import connectMongo from "./db/index.js";
+import connectMongo from "./config/index.js";
 
 const port = process.env.PORT || 3000;
 
