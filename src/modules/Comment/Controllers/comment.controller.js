@@ -4,8 +4,8 @@ import { editComment } from "../../services/comment/editComment.service.js";
 import { getCommentByVideo } from "../../services/comment/getCommentByVideo.service.js";
 import { getReplyToComment } from "../../services/comment/getReplyToComment.service.js";
 import { myComment } from "../../services/comment/myComment.service.js";
-import { ApiError } from "../../utils/Api/ApiError.js";
-import { ApiResponse } from "../../utils/Api/ApiResponse.js";
+import { ApiError } from "../../../utils/Api/ApiError.js";
+import { ApiResponse } from "../../../utils/Api/ApiResponse.js";
 import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
 
 const addCommentController = asyncHandler(async (req, res) => {

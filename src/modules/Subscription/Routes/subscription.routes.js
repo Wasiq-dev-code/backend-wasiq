@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { JWTVerify } from "../../middlewares/auth.middleware";
-import { verifyVideo } from "../../middlewares/videoSecurity.middleware";
-import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware";
+import { JWTVerify } from "../../../middlewares/auth.middleware";
+import { verifyVideo } from "../../../middlewares/videoSecurity.middleware";
+import { viewRateLimiter } from "../../../middlewares/rateLimiting.middleware";
 import {
   addSubscriptionToChannelController,
   channelSubscribeOthersController,
@@ -9,7 +9,7 @@ import {
   removeSubscriptionFromChannelController,
   subscriberCountController,
   subscriptionToggleController,
-} from "../controllers/subscription.controller";
+} from "../Controllers/subscription.controller.js";
 
 const subscriptionRouter = Router();
 

@@ -1,4 +1,4 @@
-import client from "../config/redis";
+import client from "../../config/redis";
 
 export const likeSyncProcessor = async (Job, done) => {
   try {

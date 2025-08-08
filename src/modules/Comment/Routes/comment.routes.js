@@ -8,7 +8,7 @@ import {
   getCommentByVideoController,
   getReplyToCommentController,
   myCommentController,
-} from "../controllers/comment.controller";
+} from "../Controllers/comment.controller.js";
 
 const commentRouter = Router();
 

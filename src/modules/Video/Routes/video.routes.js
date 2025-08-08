@@ -1,17 +1,17 @@
 import { Router } from "express";
-import { upload } from "../../middlewares/multer.middleware.js";
+import { upload } from "../../../middlewares/multer.middleware.js";
 import {
   deleteVideoController,
   getAllVideosController,
   getVideoByIdController,
   updateVideoController,
   videoUploaderController,
-} from "../controllers/Video.controller.js";
-import { JWTVerify } from "../../middlewares/auth.middleware.js";
-import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware.js";
-import { verifyVideo } from "../../middlewares/videoSecurity.middleware.js";
-import cacheMiddleware from "../../middlewares/cache.middleware.js";
-import trackVideoView from "../../middlewares/increaseViews.middleware.js";
+} from "../Controllers/Video.controller.js";
+import { JWTVerify } from "../../../middlewares/auth.middleware.js";
+import { viewRateLimiter } from "../../../middlewares/rateLimiting.middleware.js";
+import { verifyVideo } from "../../../middlewares/videoSecurity.middleware.js";
+import cacheMiddleware from "../../../middlewares/cache.middleware.js";
+import trackVideoView from "../../../middlewares/increaseViews.middleware.js";
 
 const videoRouter = Router();
 

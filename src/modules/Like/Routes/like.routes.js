@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { JWTVerify } from "../../middlewares/auth.middleware";
-import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware";
+import { JWTVerify } from "../../../middlewares/auth.middleware";
+import { viewRateLimiter } from "../../../middlewares/rateLimiting.middleware";
 import {
   isLikedByUserController,
   toggleLikeContoller,
@@ -8,7 +8,7 @@ import {
   totalVideoLikesController,
   likeAddedController,
   likedeleteController,
-} from "../controllers/like.controller";
+} from "../Controllers/like.controller.js";
 
 const likeRouter = Router();
 
