@@ -1,4 +1,4 @@
-import client from "../config/redis.js";
+import client from "../../config/redis.js";
 import { redisAvailable } from "../utils/checkRedisConnection.js";
 import { acquireLock } from "../utils/AquireLock.js";
 import { waitForData } from "../utils/waitForData.js";
