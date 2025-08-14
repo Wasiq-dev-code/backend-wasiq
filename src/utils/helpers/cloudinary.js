@@ -2,7 +2,7 @@
 
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import { ApiError } from "./ApiError.js";
+import { ApiError } from "../Api/ApiError.js";
 
 ///@param {cloudinary.config} is inbuilt method of cloudinary website
 
