@@ -1,5 +1,5 @@
-import client from "../../config/redis.js";
-import { TTL } from "../../constants.js";
+import client from "../config/redis.js";
+import { TTL } from "../constants.js";
 import { ApiError } from "../utils/ApiError";
 import { validateObjectId } from "../utils/validateObjectId.js";
 

@@ -1,4 +1,4 @@
-import client from "../../config/redis.js";
+import client from "../config/redis.js";
 import { Video } from "../models/Video.model.js";
 
 export const viewSyncProcessor = async (job, done) => {

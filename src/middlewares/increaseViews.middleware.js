@@ -1,6 +1,6 @@
-import client from "../../config/redis.js";
+import client from "../config/redis.js";
 import { ApiError } from "../utils/ApiError.js";
-import { TTL } from "../../constants.js";
+import { TTL } from "../constants.js";
 
 export const trackVideoView = async (req, _, next) => {
   try {
