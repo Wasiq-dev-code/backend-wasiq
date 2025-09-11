@@ -1,9 +1,15 @@
 import client from "../config/redis.js";
 import { ApiError } from "../utils/ApiError.js";
 import { TTL } from "../constants.js";
+import { redisAvailable } from "../utils/Cache/checkRedisConnection.js";
 
 export const trackVideoView = async (req, _, next) => {
   try {
+    if (redisAvailable === false) {
+      console.log("Redis down");
+      next();
+    }
+
     const { videoId } = req.params;
     const { ip } = req;
 
