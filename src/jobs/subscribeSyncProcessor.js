@@ -55,7 +55,7 @@ export const subscriberSyncProcessor = async (Job, done) => {
         }
       } catch (err) {
         if (err.code === 11000) {
-          console.log("⚠ Duplicate like(s) ignored");
+          console.log("⚠ Duplicate subscriber(s) ignored");
         } else {
           throw err;
         }
