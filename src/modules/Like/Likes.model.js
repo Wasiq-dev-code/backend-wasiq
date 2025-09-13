@@ -21,11 +21,20 @@ const likeSchema = new Schema(
   { timestamps: true }
 );
 
-likeSchema.index({ userliked: 1, video: 1 }, { unique: true });
-likeSchema.index({ userliked: 1, comment: 1 }, { unique: true });
-likeSchema.index({ userliked: 1 });
-likeSchema.index({ video: 1 });
-likeSchema.index({ comment: 1 });
+likeSchema.index({ userliked: 1, video: 1 }, { unique: true, sparse: true });
+likeSchema.index({ userliked: 1, comment: 1 }, { unique: true, sparse: true });
+
+likeSchema.pre("validate", function (next) {
+  if (this.video && this.comment) {
+    next(
+      new Error(
+        "Like can be associated with either a video or a comment, not both"
+      )
+    );
+  } else {
+    next();
+  }
+});
 
 likeSchema.statics.isLiked = async function (videoId, commentId, userId) {
   if (!videoId && !commentId) {
@@ -47,7 +56,7 @@ likeSchema.statics.createLike = async function (videoId, commentId, userId) {
   const newLike = await this.create({
     userliked: userId,
     ...(videoId && { video: videoId }),
-    ...(commentId && { video: commentId }),
+    ...(commentId && { comment: commentId }),
   });
 
   return newLike;
