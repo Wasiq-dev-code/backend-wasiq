@@ -17,7 +17,12 @@ export const viewSyncProcessor = async (job, done) => {
       // console.log(result);
       // console.log("result Data error");
       cursor = nextCursor;
-      keys.push(...matchedKeys);
+      if (matchedKeys > 0) {
+        keys.push(...matchedKeys);
+      } else {
+        console.log("⚠️ No keys found to sync.");
+        return done(); // graceful exit
+      }
     } while (cursor !== "0");
 
     let values = [];
