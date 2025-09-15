@@ -14,11 +14,19 @@ const likeRouter = Router();
 
 // Problem in Adding and Deleteting Routes
 likeRouter
-  .route("/Like/videoLikeAdded/:videoId")
+  .route("/Like/video/:videoId")
   .post(JWTVerify, viewRateLimiter, likeAddedController);
 
 likeRouter
-  .route("/Like/videoLikedelete/:videoId")
+  .route("/Like/comment/:commentId")
+  .post(JWTVerify, viewRateLimiter, likeAddedController);
+
+likeRouter
+  .route("/Like/video/:videoId")
+  .delete(JWTVerify, viewRateLimiter, likedeleteController);
+
+likeRouter
+  .route("/Like/comment/:commentId")
   .delete(JWTVerify, viewRateLimiter, likedeleteController);
 
 likeRouter
