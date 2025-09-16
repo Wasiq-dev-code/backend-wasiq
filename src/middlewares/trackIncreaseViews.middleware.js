@@ -1,5 +1,5 @@
 import client from "../config/redis.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/Api/ApiError.js";
 import { TTL } from "../constants.js";
 import { redisAvailable } from "../utils/Cache/checkRedisConnection.js";
 

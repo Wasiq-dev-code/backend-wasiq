@@ -1,6 +1,6 @@
-import { Subscription } from "../../models/Subscription.model.js";
-import { ApiError } from "../../utils/ApiError.js";
-import { validateObjectId } from "../../utils/validateObjectId.js";
+import { Subscription } from "./Subscription.model.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { validateObjectId } from "../../utils/helpers/validateObjectId.js";
 
 export const addSubscriptionToChannel = async ({ userId, channelId }) => {
   try {

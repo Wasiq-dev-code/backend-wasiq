@@ -1,13 +1,14 @@
 import client from "../config/redis.js";
-import { redisAvailable } from "../utils/checkRedisConnection.js";
-import { acquireLock } from "../utils/AquireLock.js";
-import { waitForData } from "../utils/waitForData.js";
-import { processData } from "../utils/processData.js";
-import { generateCacheKey } from "../utils/generateCacheKey.js";
-import { CacheMonitor } from "../utils/cacheMonitoring.js";
-import { checkMemoryLimits } from "../utils/checkMemoryLimits.js";
-import { ApiError } from "../utils/ApiError.js";
-import { getVideoViews } from "../utils/getVideoViews.js";
+import { ApiError } from "../utils/Api/ApiError.js";
+
+import { redisAvailable } from "../utils/Cache/checkRedisConnection.js";
+import { acquireLock } from "../utils/Cache/AquireLock.js";
+import { waitForData } from "../utils/Cache/waitForData.js";
+import { processData } from "../utils/Cache/processData.js";
+import { generateCacheKey } from "../utils/Cache/generateCacheKey.js";
+import { CacheMonitor } from "../utils/Cache/cacheMonitoring.js";
+import { checkMemoryLimits } from "../utils/Cache/checkMemoryLimits.js";
+import { getVideoViews } from "../utils/Cache/getVideoViews.js";
 
 const monitor = new CacheMonitor();
 

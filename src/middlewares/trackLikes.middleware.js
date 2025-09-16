@@ -1,6 +1,6 @@
 import client from "../config/redis.js";
-import { ApiError } from "../utils/ApiError";
-import { validateObjectId } from "../utils/validateObjectId.js";
+import { ApiError } from "../utils/Api/ApiError.js";
+import { validateObjectId } from "../utils/helpers/validateObjectId.js";
 import { redisAvailable } from "../utils/Cache/checkRedisConnection.js";
 import { ApiResponse } from "../utils/Api/ApiResponse.js";
 

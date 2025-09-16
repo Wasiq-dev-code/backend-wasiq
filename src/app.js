@@ -1,8 +1,8 @@
-import "./schedulers/snycViewScheduler.js";
+import "./config/snycViewScheduler.js";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { monitorRedis } from "./utils/checkRedisConnection.js";
+import monitorRedis from "./utils/Cache/checkRedisConnection.js";
 
 const app = express();
 
@@ -32,11 +32,14 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // import routes
-import router from "./routes/user.routes.js";
-import videoRouter from "./routes/video.routes.js";
+import router from "./modules/User/user.routes.js";
+import videoRouter from ".//modules/Video/video.routes.js";
+import likeRouter from "./modules/Like/like.routes.js";
+import commemtRouter from "./modules/Comment/comment.routes.js";
+import subscribeRouter from "./modules/Subscription/subscription.routes.js";
+
 import BasicAuth from "express-basic-auth";
 import serverAdapter from "./dashboard/bullDashboard.js";
-import { monitorRedis } from "./utils/checkRedisConnection.js";
 app.use(
   "/wasiq/admin/queue",
   BasicAuth({
@@ -48,6 +51,9 @@ app.use(
 
 app.use("/api", router);
 app.use("/api", videoRouter);
+app.use("/api", subscribeRouter);
+app.use("/api", commemtRouter);
+app.use("/api", likeRouter);
 
 app.use((res) => {
   res.status(404).json({ message: "Route not found" });

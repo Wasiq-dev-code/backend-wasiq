@@ -1,8 +1,8 @@
-import { User } from "../../models/User.model.js";
-import { ApiError } from "../../utils/ApiError.js";
-import { uploadOnCloudinary } from "../../utils/cloudinary.js";
-import { generateAcessAndRefreshAtoken } from "../../../utils/Tools/generatingJWTTokens.js";
 import jwt from "jsonwebtoken";
+import { User } from "../User.model.js";
+import { ApiError } from "../../../utils/Api/ApiError.js";
+import { uploadOnCloudinary } from "../../../utils/helpers/cloudinary.js";
+import { generateAcessAndRefreshAtoken } from "../../../utils/helpers/generatingJWTTokens.js";
 
 export const resgisterUser = async ({
   username,

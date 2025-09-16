@@ -1,9 +1,9 @@
-import { User } from "../../models/User.model.js";
-import { ApiError } from "../../utils/ApiError.js";
+import { User } from "../User.model.js";
+import { ApiError } from "../../../utils/Api/ApiError.js";
 import {
   deleteOnCloudinary,
   uploadOnCloudinary,
-} from "../../utils/cloudinary.js";
+} from "../../../utils/helpers/cloudinary.js";
 
 export const changeCurrentPassword = async ({
   user,

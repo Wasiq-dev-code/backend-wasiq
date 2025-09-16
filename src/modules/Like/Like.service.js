@@ -1,6 +1,6 @@
-import { ApiError } from "../../utils/ApiError.js";
-import { Like } from "../../models/Likes.model.js";
-import { validateObjectId } from "../../utils/validateObjectId.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { Like } from "./Likes.model.js";
+import { validateObjectId } from "../../utils/helpers/validateObjectId.js";
 
 export const likeAdded = async ({ videoId, userId, commentId }) => {
   try {

@@ -1,4 +1,4 @@
-import { getSortedQuery } from "./getSortedQuery.js";
+import { getSortedQuery } from "../helpers/getSortedQuery.js";
 import crypto from "crypto";
 
 export const generateCacheKey = (req, prefix) => {

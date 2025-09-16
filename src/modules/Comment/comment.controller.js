@@ -1,12 +1,14 @@
-import { addComment } from "../../services/comment/addComment.service.js";
-import { deleteComment } from "../../services/comment/deleteComment.service.js";
-import { editComment } from "../../services/comment/editComment.service.js";
-import { getCommentByVideo } from "../../services/comment/getCommentByVideo.service.js";
-import { getReplyToComment } from "../../services/comment/getReplyToComment.service.js";
-import { myComment } from "../../services/comment/myComment.service.js";
-import { ApiError } from "../../../utils/Api/ApiError.js";
+import {
+  addComment,
+  deleteComment,
+  editComment,
+  getCommentByVideo,
+  getReplyToComment,
+  myComment,
+} from "./Comment.service.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
 import { ApiResponse } from "../../../utils/Api/ApiResponse.js";
-import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
+import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
 
 const addCommentController = asyncHandler(async (req, res) => {
   try {

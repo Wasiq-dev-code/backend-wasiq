@@ -1,12 +1,14 @@
-import { isLikeByUser } from "../../services/like/isLikedByUser.service.js";
-import { toggleLike } from "../../services/like/toggleLike.service.js";
-import { totalCommentLikes } from "../../services/like/totalCommentLikes.service.js";
-import { totalVideoLikes } from "../../services/like/totalVideoLikes.service.js";
-import { likeAdded } from "../../services/like/videoLikeAdded.service.js";
-import { likeDelete } from "../../services/like/videoLikeDelete.service.js";
+import {
+  isLikeByUser,
+  toggleLike,
+  totalCommentLikes,
+  totalVideoLikes,
+  likeAdded,
+  likeDelete,
+} from "./Like.service.js";
 import { ApiError } from "../../../utils/Api/ApiError.js";
 import { ApiResponse } from "../../../utils/Api/ApiResponse.js";
-import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
+import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
 
 const likeAddedController = asyncHandler(async (req, res) => {
   try {

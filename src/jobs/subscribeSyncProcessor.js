@@ -1,4 +1,4 @@
-import client from "../config/redis";
+import client from "../config/redis.js";
 import { Subscription } from "../modules/Subscription/Subscription.model.js";
 
 export const subscriberSyncProcessor = async (Job, done) => {

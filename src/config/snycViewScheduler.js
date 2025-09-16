@@ -1,6 +1,6 @@
 // bullscheduler.js ya scheduler file me
 import viewSyncQueue from "./viewSyncQueue.js";
-import getRepeatableJobs from "../utils/getRepeatableJobs.js";
+import getRepeatableJobs from "../utils/Cache/getRepeatableJobs.js";
 
 getRepeatableJobs().then(() => {
   viewSyncQueue.add(

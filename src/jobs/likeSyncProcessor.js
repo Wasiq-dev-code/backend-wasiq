@@ -1,4 +1,4 @@
-import client from "../config/redis";
+import client from "../config/redis.js";
 import { Like } from "../modules/Like/Likes.model.js";
 
 export const likeSyncProcessor = async (Job, done) => {

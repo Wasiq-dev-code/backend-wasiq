@@ -1,6 +1,6 @@
-import { Comment } from "../../models/Comment.model.js";
-import { ApiError } from "../../utils/ApiError.js";
-import { validateObjectId } from "../../utils/validateObjectId.js";
+import { Comment } from "./Comment.model.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { validateObjectId } from "../../utils/helpers/validateObjectId.js";
 
 export const addComment = async ({ videoId, userId, content, commentId }) => {
   try {

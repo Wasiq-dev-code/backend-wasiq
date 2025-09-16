@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { JWTVerify } from "../../middlewares/auth.middleware";
-import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware";
+import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware.js";
 import {
   addCommentController,
   deleteCommentController,
@@ -8,7 +8,7 @@ import {
   getCommentByVideoController,
   getReplyToCommentController,
   myCommentController,
-} from "../Controllers/comment.controller.js";
+} from "./comment.controller.js";
 
 const commentRouter = Router();
 

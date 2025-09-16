@@ -1,6 +1,6 @@
-import { Video } from "../models/Video.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { Video } from "../modules/Video/Video.model.js";
+import { ApiError } from "../utils/Api/ApiError.js";
+import { asyncHandler } from "../utils/helpers/asyncHandler.js";
 
 export const verifyVideo = asyncHandler(async (req, _, next) => {
   try {
