@@ -1,6 +1,6 @@
 import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
-import { ApiError } from "../../../utils/Api/ApiError.js";
-import { ApiResponse } from "../../../utils/Api/ApiResponse.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 import {
   addSubscriptionToChannel,
   removeSubscriptionFromChannel,

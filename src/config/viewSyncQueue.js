@@ -1,5 +1,5 @@
 import Queue from "bull";
-import { viewSyncProcessor } from "../jobs/viewSyncProcessor";
+import { viewSyncProcessor } from "../jobs/viewSyncProcessor.js";
 
 const viewSyncQueue = new Queue("Sync-data-into-mongo", {
   redis: process.env.REDIS_URL,

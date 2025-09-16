@@ -1,10 +1,9 @@
-import { asyncHandler } from "../../utils/Tools/asyncHandler.js";
+import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
 import { ApiError } from "../../utils/Api/ApiError.js";
 import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 
 import {
   updateVideo,
-  deleteVideo,
   deleteVideo,
   getVideoById,
   getAllVideos,

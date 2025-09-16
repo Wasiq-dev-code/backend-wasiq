@@ -10,13 +10,12 @@ import {
 import {
   changeCurrentPassword,
   updateFields,
-  updateFields,
   changeAvatar,
   changeCoverImg,
   getUserChannelProfile,
   getUserHistory,
-  clearUserCache,
 } from "./Services/Profile.service.js";
+import { clearUserCache } from "../../utils/Cache/redisChachingKeyStructure.js";
 
 const registerUserController = asyncHandler(async (req, res) => {
   try {

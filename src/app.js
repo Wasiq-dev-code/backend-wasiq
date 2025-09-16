@@ -2,7 +2,7 @@ import "./config/snycViewScheduler.js";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import monitorRedis from "./utils/Cache/checkRedisConnection.js";
+import { monitorRedis } from "./utils/Cache/checkRedisConnection.js";
 
 const app = express();
 
@@ -39,7 +39,7 @@ import commemtRouter from "./modules/Comment/comment.routes.js";
 import subscribeRouter from "./modules/Subscription/subscription.routes.js";
 
 import BasicAuth from "express-basic-auth";
-import serverAdapter from "./dashboard/bullDashboard.js";
+import serverAdapter from "./config/bullDashboard.js";
 app.use(
   "/wasiq/admin/queue",
   BasicAuth({

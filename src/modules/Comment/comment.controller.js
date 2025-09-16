@@ -7,7 +7,7 @@ import {
   myComment,
 } from "./Comment.service.js";
 import { ApiError } from "../../utils/Api/ApiError.js";
-import { ApiResponse } from "../../../utils/Api/ApiResponse.js";
+import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
 
 const addCommentController = asyncHandler(async (req, res) => {

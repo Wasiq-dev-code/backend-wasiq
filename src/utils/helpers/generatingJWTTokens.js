@@ -1,5 +1,5 @@
-import { User } from "../../../models/User.model.js";
-import { ApiError } from "../../../utils/ApiError.js";
+import { User } from "../../modules/User/User.model.js";
+import { ApiError } from "../Api/ApiError.js";
 
 export const generateAcessAndRefreshAtoken = async (userId) => {
   try {

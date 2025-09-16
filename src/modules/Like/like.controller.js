@@ -6,8 +6,8 @@ import {
   likeAdded,
   likeDelete,
 } from "./Like.service.js";
-import { ApiError } from "../../../utils/Api/ApiError.js";
-import { ApiResponse } from "../../../utils/Api/ApiResponse.js";
+import { ApiError } from "../../utils/Api/ApiError.js";
+import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
 
 const likeAddedController = asyncHandler(async (req, res) => {
