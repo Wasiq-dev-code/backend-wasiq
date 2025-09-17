@@ -1,7 +1,8 @@
 import client from "../config/redis.js";
 import { Video } from "../modules/Video/Video.model.js";
 
-export const viewSyncProcessor = async (job, done) => {
+export const viewSyncProcessor = async (job) => {
+  console.log("Processing job:", job.data);
   try {
     const keys = [];
     let cursor = "0";
@@ -21,7 +22,7 @@ export const viewSyncProcessor = async (job, done) => {
         keys.push(...matchedKeys);
       } else {
         console.log("⚠️ No keys found to sync.");
-        return done(); // graceful exit
+        return { status: "no-keys" };
       }
     } while (cursor !== "0");
 
@@ -31,7 +32,7 @@ export const viewSyncProcessor = async (job, done) => {
       values = await client.mget(...keys);
     } else {
       console.log("⚠️ No keys found to sync.");
-      return done(); // graceful exit
+      return { status: "no-keys" };
     }
 
     const bulkOps = [];
@@ -64,12 +65,11 @@ export const viewSyncProcessor = async (job, done) => {
       await pipeline.exec();
     }
     console.log("Job initallize once");
-    const now = new Date();
+
     console.log(now);
 
-    done();
+    return { status: "ok", processedAt: new Date() };
   } catch (err) {
     console.error("Error syncing views:", err);
-    done(err);
   }
 };

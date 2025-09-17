@@ -1,4 +1,4 @@
-import "./config/snycViewScheduler.js";
+// import syncScheduler from "./config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -55,7 +55,7 @@ app.use("/api", subscribeRouter);
 app.use("/api", commemtRouter);
 app.use("/api", likeRouter);
 
-app.use((res) => {
+app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 

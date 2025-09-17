@@ -5,8 +5,12 @@ const client = new Redis({
   port: parseInt(process.env.REDIS_PORT),
   password: process.env.REDIS_PASSWORD,
 
+  tls: {
+    rejectUnauthorized: false, // Aiven ke TLS ke liye
+  },
+
   lazyConnect: true,
-  maxRetriesPerRequest: 5,
+  maxRetriesPerRequest: null,
   reconnectOnError: (err) => {
     console.warn("🔁 Reconnect on error:", err.message);
     return true;

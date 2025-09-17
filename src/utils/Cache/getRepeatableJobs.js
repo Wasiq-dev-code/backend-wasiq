@@ -1,10 +1,10 @@
-import viewSyncQueue from "../../config/viewSyncQueue.js";
+import { syncQueue } from "../../config/syncQueue.js";
 
 const getRepeatableJobs = async () => {
-  const jobs = await viewSyncQueue.getRepeatableJobs();
+  const jobs = await syncQueue.getRepeatableJobs();
 
   for (const job of jobs) {
-    await viewSyncQueue.removeRepeatableByKey(job.key);
+    await syncQueue.removeRepeatableByKey(job.key);
     console.log(`❌ Removed job: ${job.key}`);
   }
 

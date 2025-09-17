@@ -2,6 +2,8 @@ import "../dotenv.js";
 import app from "./app.js";
 import connectMongo from "./config/database/mongoose.config.js";
 
+import "./config/snycScheduler.js";
+
 const port = process.env.PORT || 3000;
 
 connectMongo()

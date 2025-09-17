@@ -1,15 +1,15 @@
 import { createBullBoard } from "@bull-board/api";
 
 import { ExpressAdapter } from "@bull-board/express";
-import { BullAdapter } from "@bull-board/api/bullAdapter.js";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter.js"; // 👈 use this
 
-import viewSyncQueue from "./viewSyncQueue.js";
+import { syncQueue } from "./syncQueue.js";
 
 const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath("/admin/queue");
+serverAdapter.setBasePath("/wasiq/admin/queue");
 
 createBullBoard({
-  queues: [new BullAdapter(viewSyncQueue)], // Use BullAdapter, not BullQueueAdapter
+  queues: [new BullMQAdapter(syncQueue)], // Use BullAdapter, not BullQueueAdapter
   serverAdapter,
 });
 
