@@ -5,7 +5,5 @@ import { redisJobConnection } from "../redisJobConnection.js";
 export const subscriberWorker = new Worker(
   "subscriber-Worker",
   subscriberSyncProcessorr,
-  {
-    redisJobConnection,
-  }
+  { connection: redisJobConnection }
 );

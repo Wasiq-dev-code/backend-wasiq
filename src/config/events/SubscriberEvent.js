@@ -3,7 +3,7 @@ import { redisJobConnection } from "../redisJobConnection.js";
 
 // Queue events (completed, failed, etc.)
 const subscriberEventQueue = new QueueEvents("subscriber-Queue-Events", {
-  redisJobConnection,
+  connection: redisJobConnection,
 });
 
 // Process jobs with error handling

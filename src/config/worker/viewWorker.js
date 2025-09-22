@@ -3,5 +3,5 @@ import { viewSyncProcessor } from "../../jobs/viewSyncProcessor.js";
 import { redisJobConnection } from "../redisJobConnection.js";
 
 export const likeWorker = new Worker("view-Worker", viewSyncProcessor, {
-  redisJobConnection,
+  connection: redisJobConnection,
 });
