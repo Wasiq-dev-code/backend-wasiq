@@ -1,10 +1,10 @@
 // bullscheduler.js
 import { likeSyncQueue } from "../queue/likeQueue.js"; // BullMQ queue
-import getRepeatableJobs from "../../utils/Cache/getRepeatableJobs.js";
+import { getRepeatableLikesJobs } from "../../utils/Cache/getRepeatableJobs.js";
 
 (async () => {
   // Pehle jo repeatable jobs already lage hue hain, wo check kar le
-  await getRepeatableJobs();
+  await getRepeatableLikesJobs();
 
   // Ab repeatable job add kar
   await likeSyncQueue.add(
