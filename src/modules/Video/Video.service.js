@@ -261,19 +261,27 @@ export const getVideoById = async ({ videoId }) => {
       },
 
       {
+        $addFields: {
+          owner: { $first: "$owner" },
+        },
+      },
+
+      {
         $lookup: {
           from: "subscriptions",
-          localField: "owner._id",
-          foreignField: "channel",
-          as: "totalSubscribers",
+          let: { ownerId: "$owner._id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$channel", "$$ownerId"] } } },
+            { $count: "count" },
+          ],
+          as: "owner.totalSubscribers",
         },
       },
 
       {
         $addFields: {
-          owner: { $first: "$owner" },
-          totalSubscribers: {
-            $size: "$totalSubscribers",
+          "owner.totalSubscribers": {
+            $ifNull: [{ $first: "$owner.totalSubscribers.count" }, 0],
           },
           uploadedAt: {
             $dateToString: {
