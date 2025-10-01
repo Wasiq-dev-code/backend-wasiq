@@ -27,9 +27,9 @@ const commentSchema = new mongoose.Schema(
   }
 );
 
-commentSchema.index({ commentedby: 1 });
-commentSchema.index({ commentedvideo: 1 });
+commentSchema.index({ commentedvideo: 1, parentcomment: 1 });
 commentSchema.index({ parentcomment: 1 });
+commentSchema.index({ commentedby: 1 });
 
 commentSchema.set("toJSON", {
   transform: (_, ret) => {
