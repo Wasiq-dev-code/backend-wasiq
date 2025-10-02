@@ -204,9 +204,12 @@ export const getUserChannelProfile = async ({ username }) => {
       {
         $lookup: {
           from: "subscriptions",
-          localField: "_id", //must read about
-          foreignField: "channel",
-          as: "Totalsubscribers",
+          let: { subscriberId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$channel", "$$subscriberId"] } } },
+            { $count: "count" },
+          ],
+          as: "subscribersCount",
         },
       },
       {
@@ -220,7 +223,7 @@ export const getUserChannelProfile = async ({ username }) => {
       {
         $addFields: {
           subscribersCount: {
-            $size: "$Totalsubscribers",
+            $ifNull: [{ $first: "$subscribersCount" }, 0],
           },
           subscribeToCount: {
             $size: "$SubscribeTo",
