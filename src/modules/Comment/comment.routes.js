@@ -5,7 +5,7 @@ import {
   addCommentController,
   deleteCommentController,
   editCommentController,
-  getCommentByVideoController,
+  getCommentsOfVideoController,
   getReplyToCommentController,
   myCommentController,
 } from "./comment.controller.js";
@@ -21,8 +21,8 @@ commentRouter
   .delete(JWTVerify, viewRateLimiter, deleteCommentController);
 
 commentRouter
-  .route("/Comment/getCommentByVideo/:videoId")
-  .get(viewRateLimiter, getCommentByVideoController);
+  .route("/Comment/getCommentsOfVideo/:videoId")
+  .get(viewRateLimiter, getCommentsOfVideoController);
 
 commentRouter
   .route("/Comment/getReplyToComment/:commentId")

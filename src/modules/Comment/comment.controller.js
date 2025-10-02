@@ -2,7 +2,7 @@ import {
   addComment,
   deleteComment,
   editComment,
-  getCommentByVideo,
+  getCommentsOfVideo,
   getReplyToComment,
   myComment,
 } from "./Comment.service.js";
@@ -52,17 +52,19 @@ const deleteCommentController = asyncHandler(async (req, res) => {
   }
 });
 
-const getCommentByVideoController = asyncHandler(async (req, res) => {
+const getCommentsOfVideoController = asyncHandler(async (req, res) => {
   try {
     const videoId = req.params?.videoId;
 
-    const comments = await getCommentByVideo({
+    const comments = await getCommentsOfVideo({
       videoId,
     });
 
     return res
       .status(201)
-      .json(new ApiResponse(201, comments, "all comments of videos"));
+      .json(
+        new ApiResponse(201, comments, "all comments and replies of video")
+      );
   } catch (error) {
     console.error(error.message || "server is not responding");
     throw new ApiError(500, "server is not responding");
@@ -125,7 +127,7 @@ const myCommentController = asyncHandler(async (req, res) => {
 export {
   addCommentController,
   deleteCommentController,
-  getCommentByVideoController,
+  getCommentsOfVideoController,
   getReplyToCommentController,
   editCommentController,
   myCommentController,

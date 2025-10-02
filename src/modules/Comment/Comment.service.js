@@ -1,6 +1,7 @@
 import { Comment } from "./Comment.model.js";
 import { ApiError } from "../../utils/Api/ApiError.js";
 import { validateObjectId } from "../../utils/helpers/validateObjectId.js";
+import mongoose from "mongoose";
 
 export const addComment = async ({ videoId, userId, content, commentId }) => {
   try {
@@ -72,16 +73,121 @@ export const deleteComment = async ({ commentId, userId }) => {
   }
 };
 
-export const getCommentByVideo = async ({ videoId }) => {
+export const getCommentsOfVideo = async ({ videoId }) => {
   try {
     if (!videoId) throw new ApiError(401, "videoId is not available");
 
     validateObjectId(videoId, "videoId");
 
-    const comment = await Comment.find({ commentedvideo: videoId });
-    if (!comment) throw new ApiError(404, "Comment not found");
+    const comments = Comment.aggregate([
+      {
+        $match: {
+          commentedvideo: new mongoose.Types.ObjectId(videoId),
+          parentcomment: null,
+        },
+      },
 
-    return comment;
+      {
+        $lookup: {
+          from: "users",
+          localField: "commentedby",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {
+              $project: {
+                username: 1,
+                avatar: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "likes",
+          let: { commentId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$comment", "$$commentId"],
+                },
+              },
+            },
+            { $count: "count" },
+          ],
+          as: "likes",
+        },
+      },
+
+      {
+        $addFields: {
+          owner: {
+            $first: "$owner",
+          },
+          likes: {
+            $ifNull: [{ $first: "$likes.count" }, 0],
+          },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "comments",
+          let: { parentId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$parentcomment", "$$parentId"] } } },
+
+            {
+              $lookup: {
+                from: "users",
+                localField: "commentedby",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                  {
+                    $project: {
+                      username: 1,
+                      avatar: 1,
+                    },
+                  },
+                ],
+              },
+            },
+
+            {
+              $lookup: {
+                from: "likes",
+                let: { replyId: "$_id" },
+                pipeline: [
+                  { $match: { $expr: { $eq: ["$comment", "$$replyId"] } } },
+                  { $count: "count" },
+                ],
+                as: "likes",
+              },
+            },
+
+            {
+              $addFields: {
+                owner: {
+                  $first: "$owner",
+                },
+                likes: {
+                  $ifNull: [{ $first: "$likes.count" }, 0],
+                },
+              },
+            },
+
+            { $limit: 3 },
+          ],
+          as: "replies",
+        },
+      },
+    ]);
+    if (!comments) throw new ApiError(404, "Comments not found");
+
+    return comments;
   } catch (error) {
     console.error(error, "server is not responding");
   }
