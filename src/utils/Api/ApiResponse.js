@@ -1,4 +1,4 @@
-/// @param {ApiResponse} handling manually response of api and returning success flag
+/// @param {ApiResponse} handling manual response of Api and return success flag
 
 class ApiResponse {
   constructor(statusCode, data = [], message = "Success") {
