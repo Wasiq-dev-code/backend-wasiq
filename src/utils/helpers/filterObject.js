@@ -5,7 +5,7 @@ const filterObject = (sourceObj, allowedFields) => {
     for (const key of allowedFields) {
       if (
         sourceObj[key] !== undefined &&
-        typeof sourceObj[key] === String &&
+        typeof sourceObj[key] === "string" &&
         sourceObj[key].trim() !== ""
       ) {
         update[key] = sourceObj[key].trim();
@@ -14,7 +14,7 @@ const filterObject = (sourceObj, allowedFields) => {
 
     return update;
   } catch (error) {
-    console("error is appeared", error);
+    console.log("error is appeared", error);
     return {};
   }
 };

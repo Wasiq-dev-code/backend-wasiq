@@ -1,4 +1,5 @@
 import { ApiError } from "../../utils/Api/ApiError";
+import { expect } from "@jest/globals";
 
 describe("ApiError", () => {
   test("should create an ApiError with default values", () => {
