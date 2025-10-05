@@ -7,9 +7,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
+    "jest": "^30.2.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3"
   },
@@ -31,5 +33,10 @@
     "mongoose": "^8.13.1",
     "mongoose-aggregate-paginate-v2": "^1.1.4",
     "multer": "^1.4.5-lts.2"
+  },
+  "jest":{
+    "testEnvironment":"node",
+    "roots": ["<rootDir>/src/tests"],
+    "transform": {}
   }
 }
