@@ -1,7 +1,7 @@
 import filterObject from "../../utils/helpers/filterObject";
 import { expect, test } from "@jest/globals";
 
-describe("Filter Object", () => {
+describe("FilterObject -- Unit Test", () => {
   test("Expecting to pass with an untrim strings", () => {
     const body = {
       id: 12,

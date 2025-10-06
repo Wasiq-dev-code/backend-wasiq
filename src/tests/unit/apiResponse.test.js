@@ -1,7 +1,7 @@
 import { ApiResponse } from "../../utils/Api/ApiResponse";
 import { expect } from "@jest/globals";
 
-describe("ApiResponse", () => {
+describe("ApiResponse -- Unit Test", () => {
   test("Should create an ApiResponse with default values", () => {
     const res = new ApiResponse(200);
 

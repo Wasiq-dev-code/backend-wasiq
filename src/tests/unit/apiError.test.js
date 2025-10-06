@@ -1,7 +1,7 @@
 import { ApiError } from "../../utils/Api/ApiError";
 import { expect } from "@jest/globals";
 
-describe("ApiError", () => {
+describe("ApiError -- Unit Test", () => {
   test("should create an ApiError with default values", () => {
     const err = new ApiError(500);
 
