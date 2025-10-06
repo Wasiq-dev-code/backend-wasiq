@@ -1,5 +1,5 @@
 import filterObject from "../../utils/helpers/filterObject";
-import { expect, test } from "@jest/globals";
+import { describe, expect, test } from "@jest/globals";
 
 describe("FilterObject -- Unit Test", () => {
   test("Expecting to pass with an untrim strings", () => {
