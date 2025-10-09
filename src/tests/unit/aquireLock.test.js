@@ -25,7 +25,7 @@ describe("AquireLock -- Unit Test", () => {
       "Lock:test",
       "1",
       "PX",
-      30 * 1000,
+      2 * 1000,
       "NX"
     );
   });
@@ -40,7 +40,7 @@ describe("AquireLock -- Unit Test", () => {
       "Lock:test",
       "1",
       "PX",
-      30 * 1000,
+      2 * 1000,
       "NX"
     );
   });
@@ -55,7 +55,7 @@ describe("AquireLock -- Unit Test", () => {
       "Lock:test",
       "1",
       "PX",
-      30 * 1000,
+      2 * 1000,
       "NX"
     );
   });
