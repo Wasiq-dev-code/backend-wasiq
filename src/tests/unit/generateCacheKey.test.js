@@ -1,48 +1,32 @@
-import { getSortedQuery } from "../../utils/helpers/getSortedQuery.js";
-import { describe, expect, test } from "@jest/globals";
+import { describe, test, expect } from "@jest/globals";
+import { generateCacheKey } from "../../utils/Cache/generateCacheKey.js";
 
 describe("GenerateCacheKey -- Unit Test", () => {
-  test("Expecting to sort an object to alphabetical string", () => {
-    const query = {
-      age: 10,
-      name: "wim",
-    };
+  test("Should generate same keys despite inorder strucutre of Query data", () => {
+    const req1 = { path: "/Video", query: { a: "1", b: "2" } };
+    const req2 = { path: "/Video", query: { b: "2", a: "1" } };
 
-    const result = getSortedQuery(query);
+    const key1 = generateCacheKey(req1, "cache");
+    const key2 = generateCacheKey(req2, "cache");
 
-    expect(result).toBe("age=10&name=wim");
+    expect(key1).toBe(key2);
   });
 
-  test("should handle single key object", () => {
-    const query = { z: 99 };
-    const result = getSortedQuery(query);
+  test("Should generate different keys for different query values", () => {
+    const req1 = { path: "/Video", query: { a: "1" } };
+    const req2 = { path: "/Video", query: { a: "2" } };
 
-    expect(result).toBe("z=99");
+    const key1 = generateCacheKey(req1, "cache");
+    const key2 = generateCacheKey(req2, "cache");
+
+    expect(key1).not.toBe(key2);
   });
 
-  test("should return empty string for empty object", () => {
-    const query = {};
-    const result = getSortedQuery(query);
+  test("Should handle empty query object", () => {
+    const req = { path: "/Video", query: {} };
+    const key = generateCacheKey(req, "cache");
 
-    expect(result).toBe("");
-  });
-
-  test("should handle numeric values correctly", () => {
-    const query = { b: 20, a: 10 };
-    const result = getSortedQuery(query);
-
-    expect(result).toBe("a=10&b=20");
-  });
-
-  test("should handle the object which has multiple type of data", () => {
-    const query = { b: 20, a: "madd" };
-    const result = getSortedQuery(query);
-
-    expect(result).toBe("a=madd&b=20");
-  });
-
-  test("should return empty string if query is null or undefined", () => {
-    expect(getSortedQuery(undefined)).toBe("");
-    expect(getSortedQuery(null)).toBe("");
+    expect(key.startsWith("cache")).toBe(true);
+    expect(key.length).toBeGreaterThan(10);
   });
 });
