@@ -44,7 +44,6 @@ describe("Redis Connection -- Unit Test", () => {
 
   test("should log lost/restored transitions", async () => {
     mockRedis.ping.mockRejectedValue(new Error("Redis err"));
-
     mockRedis.ping.mockResolvedValue("PONG");
 
     const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
@@ -60,19 +59,19 @@ describe("Redis Connection -- Unit Test", () => {
   });
 
   test("should clear interval on process signals", async () => {
-    const clearSpy = jest.spyOn(global, "clearInterval");
-    const processOnSpy = jest.spyOn(process, "on");
+    const clearSpy = jest
+      .spyOn(global, "clearInterval")
+      .mockImplementation(() => {});
+    const processOnSpy = jest.spyOn(process, "on").mockImplementation(() => {});
 
     monitorRedis();
 
     expect(processOnSpy).toHaveBeenCalledWith("SIGTERM", expect.any(Function));
     expect(processOnSpy).toHaveBeenCalledWith("SIGINT", expect.any(Function));
 
-    const handler = processOnSpy.mock.calls[0][1];
+    const handler = processOnSpy.mock.calls.find((c) => c[0] === "SIGTERM")[1];
     handler();
 
-    const intervalId = setInterval(() => {}, 1000);
     expect(clearSpy).toHaveBeenCalled();
-    clearInterval(intervalId);
   });
 });
