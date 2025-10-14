@@ -1,12 +1,33 @@
-export const CACHE_ERROR_CODES = {
-  REDIS_CONNECTION: "REDIS_001",
-  CACHE_SET: "CACHE_002",
-  CACHE_GET: "CACHE_003",
-  CACHE_DELETE: "CACHE_004",
-  LOCK_ACQUIRE: "CACHE_005",
-};
+/**
+ * @class ApiError
+ * @extends Error
+ * @classdesc An error object to return when result comes to negative
+ *
+ * @example
+ * // Usage Example!
+ * throw new ApiError(500, "server is not responding", [], "", null);
+ *
+ * Expecting Response!
+ *
+ *  {
+ *   "success": false,
+ *   "statusCode": 500,
+ *   "message": "server is not responding",
+ *   "error": [],
+ *   "data": null,
+ *   "errorCode": "USER_NOT_FOUND"
+ * }
+ */
 
 class ApiError extends Error {
+  /** Creates an instance of ApiError
+   *
+   * @param {number} statusCode - HTTP statusCode for representing the type of error(eg, 404, 401, 500).
+   * @param {string} message [message = "something went wrong"] - A human readable description of error.
+   * @param {Array|Object} error [error = []] - An Array or object for additional details.
+   * @param {string} stack [stack = ""] - A stack trace, Automatically generated if not defined.
+   * @param {String|null} errorCode - Optional custom application-specific error code (e.g., "USER_NOT_FOUND").
+   */
   constructor(
     statusCode,
     message = "something went wrong",
