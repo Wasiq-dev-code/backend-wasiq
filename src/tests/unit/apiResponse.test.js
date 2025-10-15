@@ -1,6 +1,12 @@
+/**
+ * @file ApiResponse.test.js
+ * @description Unit testing of a Response class for return the data to the client-side
+ */
+
 import { ApiResponse } from "../../utils/Api/ApiResponse";
 import { expect } from "@jest/globals";
 
+// Testing Apiresponse with default and custom values
 describe("ApiResponse -- Unit Test", () => {
   test("Should create an ApiResponse with default values", () => {
     const res = new ApiResponse(200);

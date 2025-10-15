@@ -1,6 +1,11 @@
+/**
+ * @file ApiError.test.js
+ * @description Unit testing of an error class for return to client when error occured
+ */
 import { ApiError } from "../../utils/Api/ApiError";
 import { describe, expect } from "@jest/globals";
 
+// Testing a default and custom behaviour of values
 describe("ApiError -- Unit Test", () => {
   test("should create an ApiError with default values", () => {
     const err = new ApiError(500);
