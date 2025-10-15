@@ -20,9 +20,9 @@
 
 class ApiResponse {
   /** Creates an instance of ApiResponse
-   * @param {Number} statusCode - HTTP status code representing the successful response (e.g., 200, 201).
-   * @param {Object|Array}  [data=[]] - A data giving to client side in the shape of object or array.
-   * @param {string} [message="Success"] - A human readable description of success response.
+   * @param {Number} statusCode - HTTP status code (e.g., 200, 201).
+   * @param {Object|Array}  [data=[]] - A data payload (object or array).
+   * @param {string} [message="Success"] - Human readable message.
    */
 
   constructor(statusCode, data = [], message = "Success") {

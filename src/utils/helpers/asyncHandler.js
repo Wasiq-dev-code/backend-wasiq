@@ -3,12 +3,3 @@ const asyncHandler = (fn) => (req, res, next) => {
 };
 
 export { asyncHandler };
-
-// const asyncHandler = (fn) => async (req, res, next) => {
-//   try {
-//     await fn(req, res, next);
-//   } catch (error) {
-//     console.log("err", error);
-//     next(error);
-//   }
-// };

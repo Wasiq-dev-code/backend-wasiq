@@ -8,8 +8,7 @@
  * throw new ApiError(500, "server is not responding", [], "", null);
  *
  * Expecting Response!
- *
- *  {
+ * {
  *   "success": false,
  *   "statusCode": 500,
  *   "message": "server is not responding",
@@ -23,7 +22,7 @@ class ApiError extends Error {
   /** Creates an instance of ApiError
    *
    * @param {number} statusCode - HTTP statusCode for representing the type of error(eg, 404, 401, 500).
-   * @param {string} message [message = "something went wrong"] - A human readable description of error.
+   * @param {string} message [message = "something went wrong"] - Human readable message.
    * @param {Array|Object} error [error = []] - An Array or object for additional details.
    * @param {string} stack [stack = ""] - A stack trace, Automatically generated if not defined.
    * @param {String|null} errorCode - Optional custom application-specific error code (e.g., "USER_NOT_FOUND").
