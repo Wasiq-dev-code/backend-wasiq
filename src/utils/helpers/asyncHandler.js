@@ -6,7 +6,6 @@
  * @returns {Function} - Express-Compatible Middleware. (req, res, next) => {}
  *
  * // Usage example:
- *
  * import {asycnHandler} from "/asycnHandler.js"
  *
  * router.get("/users", asyncHandler(async(req, res, next) => {
