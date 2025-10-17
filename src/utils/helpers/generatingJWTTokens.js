@@ -21,6 +21,7 @@ export const generateAcessAndRefreshAtoken = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
+    if (error instanceof ApiError) throw error;
     throw new ApiError(500, "something went wrong", error);
   }
 };
