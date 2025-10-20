@@ -1,7 +1,7 @@
 /**
  * @file redisJobConnection.js
  * @description Exports a secure and configurable Redis connection object.
- * Typically used by job queue systems such as BullMQ, Bull, or custom workers
+ * Typically used by job queue systems such as BullMQ
  * to establish a connection with a Redis instance.
  */
 
