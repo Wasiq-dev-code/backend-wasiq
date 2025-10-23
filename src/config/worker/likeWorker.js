@@ -1,3 +1,5 @@
+import "../events/likeEvent.js";
+
 import { Worker } from "bullmq";
 import { likeSyncProcessor } from "../../jobs/likeSyncProcessor.js";
 import { redisJobConnection } from "../redisJobConnection.js";

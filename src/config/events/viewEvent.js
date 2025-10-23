@@ -1,5 +1,5 @@
 /**
- * @module LikeQueueEvents
+ * @module ViewQueueEvents
  * @description
  * BullMQ **Queue Events** listener for the "View" queue.
  * This module monitors and logs key lifecycle events (`completed`, `failed`, `waiting`, and `active`)

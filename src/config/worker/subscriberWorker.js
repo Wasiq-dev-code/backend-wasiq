@@ -1,3 +1,5 @@
+import "../events/SubscriberEvent.js";
+
 import { Worker } from "bullmq";
 import { subscriberSyncProcessorr } from "../../jobs/subscribeSyncProcessor.js";
 import { redisJobConnection } from "../redisJobConnection.js";

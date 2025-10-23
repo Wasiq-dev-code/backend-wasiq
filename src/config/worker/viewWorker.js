@@ -1,3 +1,5 @@
+import "../events/viewEvent.js";
+
 import { Worker } from "bullmq";
 import { viewSyncProcessor } from "../../jobs/viewSyncProcessor.js";
 import { redisJobConnection } from "../redisJobConnection.js";
