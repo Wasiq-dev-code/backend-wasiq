@@ -25,7 +25,7 @@ import { redisJobConnection } from "../redisJobConnection.js";
  * ---
  *
  * @example
- * import { likeQueueEvents } from "./events/likeQueueEvents.js";
+ * import { likeQueueEvents } from "./events/likeEvents.js";
  *
  * // Events are automatically logged to the console:
  * // ✅ Job 123 completed: { result: "ok" }
