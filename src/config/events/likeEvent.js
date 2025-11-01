@@ -10,6 +10,7 @@
 
 import { QueueEvents } from "bullmq";
 import { redisJobConnection } from "../redisJobConnection.js";
+import { LIKE_QUEUE_NAME } from "../../constants.js";
 
 /**
  * @constant {QueueEvents} likeQueueEvents
@@ -34,7 +35,7 @@ import { redisJobConnection } from "../redisJobConnection.js";
  * // 🔄 Job 126 is active
  */
 
-const likeQueueEvents = new QueueEvents("like-Queue-Events", {
+const likeQueueEvents = new QueueEvents(LIKE_QUEUE_NAME, {
   connection: redisJobConnection,
 });
 

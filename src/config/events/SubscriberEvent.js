@@ -10,6 +10,7 @@
 
 import { QueueEvents } from "bullmq";
 import { redisJobConnection } from "../redisJobConnection.js";
+import { SUBSCRIBER_QUEUE_NAME } from "../../constants.js";
 
 /**
  * @constant {QueueEvents} likeQueueEvents
@@ -35,7 +36,7 @@ import { redisJobConnection } from "../redisJobConnection.js";
  */
 
 // Queue events (completed, failed, etc.)
-const subscriberEventQueue = new QueueEvents("subscriber-Queue-Events", {
+const subscriberEventQueue = new QueueEvents(SUBSCRIBER_QUEUE_NAME, {
   connection: redisJobConnection,
 });
 

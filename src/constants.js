@@ -7,3 +7,9 @@ export const TTL = {
   ONE_DAY: 60 * 60 * 24, // 1 day
   LIKES: 60 * 60 * 24 * 30, // 30 days
 };
+
+export const SUBSCRIBER_QUEUE_NAME = "Subscriber-Sync-Queue";
+
+export const LIKE_QUEUE_NAME = "like-Sync-Queue";
+
+export const VIEW_QUEUE_NAME = "View-Sync-Queue";
