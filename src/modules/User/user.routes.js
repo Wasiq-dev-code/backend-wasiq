@@ -24,7 +24,7 @@ const router = Router();
 
 // PUBLIC ROUTES
 router.route("/user/register").post(
-  uploadRateLimiter,
+  // uploadRateLimiter,
   upload.fields([
     {
       name: "avatar",

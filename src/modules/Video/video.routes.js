@@ -18,19 +18,19 @@ const videoRouter = Router();
 /// Public Routes
 videoRouter.route("/Videos").get(
   viewRateLimiter,
-  cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
-    bypassHeader: "x-bypass-cache",
-    compressData: false,
-  }),
+  // cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
+  //   bypassHeader: "x-bypass-cache",
+  //   compressData: false,
+  // }),
   getAllVideosController
 );
 videoRouter.route("/Video/:videoId").get(
   viewRateLimiter,
-  trackVideoView,
-  cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
-    bypassHeader: "x-bypass-cache",
-    compressData: false,
-  }),
+  // trackVideoView,
+  // cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
+  //   bypassHeader: "x-bypass-cache",
+  //   compressData: false,
+  // }),
   getVideoByIdController
 );
 

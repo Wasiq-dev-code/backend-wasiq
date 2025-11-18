@@ -2,11 +2,11 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { monitorRedis } from "./utils/Cache/checkRedisConnection.js";
+// import { monitorRedis } from "./utils/Cache/checkRedisConnection.js";
 
 const app = express();
 
-monitorRedis();
+// monitorRedis();
 
 app.set("trust proxy", false);
 
@@ -38,16 +38,16 @@ import likeRouter from "./modules/Like/like.routes.js";
 import commemtRouter from "./modules/Comment/comment.routes.js";
 import subscribeRouter from "./modules/Subscription/subscription.routes.js";
 
-import BasicAuth from "express-basic-auth";
-import serverAdapter from "./config/bullDashboard.js";
-app.use(
-  "/wasiq/admin/queue",
-  BasicAuth({
-    users: { admin: process.env.BASIC_AUTH_PASSWORD },
-    challenge: true,
-  }),
-  serverAdapter.getRouter()
-);
+// import BasicAuth from "express-basic-auth";
+// import serverAdapter from "./config/bullDashboard.js";
+// app.use(
+//   "/wasiq/admin/queue",
+//   BasicAuth({
+//     users: { admin: process.env.BASIC_AUTH_PASSWORD },
+//     challenge: true,
+//   }),
+//   serverAdapter.getRouter()
+// );
 
 app.use("/api", router);
 app.use("/api", videoRouter);

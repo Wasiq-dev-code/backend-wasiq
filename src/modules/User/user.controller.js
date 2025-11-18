@@ -34,11 +34,7 @@ const registerUserController = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(201, createdUser, "sucessful response"));
   } catch (error) {
-    console.error(
-      "Error while executing registerUserController method",
-      error?.stack || error
-    );
-    throw new ApiError(500, "server is down while creating user");
+    throw new ApiError(500, "server is down while creating user", error);
   }
 });
 
@@ -62,14 +58,14 @@ const loginUserController = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    try {
-      await clearUserCache(isLoggedIn?._id);
-    } catch (error) {
-      console.error(
-        "Error while caching user after login",
-        error?.stack || error
-      );
-    }
+    // try {
+    //   await clearUserCache(isLoggedIn?._id);
+    // } catch (error) {
+    //   console.error(
+    //     "Error while caching user after login",
+    //     error?.stack || error
+    //   );
+    // }
 
     return res
       .status(200)
@@ -104,14 +100,14 @@ const logoutUserController = asyncHandler(async (req, res) => {
     // sameSite: "strict",
   };
 
-  try {
-    await clearUserCache(req?.user?._id);
-  } catch (error) {
-    console.error(
-      "Error while caching user after logout",
-      error?.stack || error
-    );
-  }
+  // try {
+  //   await clearUserCache(req?.user?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching user after logout",
+  //     error?.stack || error
+  //   );
+  // }
 
   return res
     .status(200)
@@ -120,9 +116,12 @@ const logoutUserController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "logout user"));
 });
 
+// ...existing code...
 const generateAccessTokenController = asyncHandler(async (req, res) => {
   try {
     const { body, cookies } = req;
+
+    console.log(body.refreshToken);
 
     const { accessToken, newRefreshToken } = await generateAccessToken({
       body,
@@ -130,23 +129,24 @@ const generateAccessTokenController = asyncHandler(async (req, res) => {
     });
 
     if (!accessToken || !newRefreshToken) {
-      throw new ApiError(500, "error while creating tokens");
+      throw new ApiError(400, "error while creating tokens");
     }
 
     const option = {
       httpOnly: true,
       secure: true,
-      // sameSite: "strict",
     };
 
-    try {
-      await clearUserCache(req?.user?._id);
-    } catch (error) {
-      console.error(
-        "Error while caching after providing tokens",
-        error?.stack || error
-      );
-    }
+    console.log(accessToken, newRefreshToken);
+
+    // try {
+    //   await clearUserCache(req?.user?._id);
+    // } catch (error) {
+    //   console.error(
+    //     "Error while caching after providing tokens",
+    //     error?.stack || error
+    //   );
+    // }
 
     return res
       .status(200)

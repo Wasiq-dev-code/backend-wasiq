@@ -37,7 +37,11 @@ export const resgisterUser = async ({
 
     // upload both files to cloudinary if exist
 
-    const avatarUpload = await uploadOnCloudinary(avatarLocalPath);
+    const avatarUpload = await uploadOnCloudinary(avatarLocalPath).catch(
+      (err) => {
+        console.error("Avatar upload error", err);
+      }
+    );
     // console.log("avatarUpload", avatarUpload);
 
     if (!avatarUpload || !avatarUpload.url || !avatarUpload.public_id) {
@@ -47,7 +51,11 @@ export const resgisterUser = async ({
     // optional coverIMG
     let coverImgUpload = null;
     if (coverImgLocalPath) {
-      coverImgUpload = await uploadOnCloudinary(coverImgLocalPath);
+      coverImgUpload = await uploadOnCloudinary(coverImgLocalPath).catch(
+        (err) => {
+          console.error("Coverimg error", err);
+        }
+      );
     }
 
     // create user object-now put entry in db
@@ -106,9 +114,11 @@ export const loginUser = async ({ email, username, password }) => {
     const { accessToken, refreshToken } = await generateAcessAndRefreshAtoken(
       user._id
     );
+
     if (!accessToken || !refreshToken) {
       throw new ApiError(500, "error while fetching tokens");
     }
+
     // returning current object values accept password and refreshtoken
     const isLoggedIn = await User.findById(user._id).select(
       "-_id -password -refreshToken -avatar_publicId -coverImg_publicId"
@@ -154,14 +164,10 @@ export const logoutUser = async (userId) => {
 
 export const generateAccessToken = async ({ body, cookies }) => {
   try {
-    if (!body || !cookies) {
-      throw new ApiError(400, "Unauthorized request");
-    }
-
     const rawRefreshToken = cookies?.refreshToken || body?.refreshToken;
 
     if (!rawRefreshToken) {
-      throw new ApiError(401, "user is unauthorized");
+      throw new ApiError(401, "Refresh token missing");
     }
 
     const encodedRefreshToken = jwt.verify(
@@ -172,19 +178,15 @@ export const generateAccessToken = async ({ body, cookies }) => {
     const user = await User.findById(encodedRefreshToken._id);
 
     if (!user) {
-      throw new ApiError("false database Call");
+      throw new ApiError(404, "User not found");
     }
 
     if (rawRefreshToken !== user.refreshToken) {
-      throw new ApiError(401, "token is not matching");
+      throw new ApiError(401, "Refresh token mismatch");
     }
 
     const { accessToken, newRefreshToken } =
       await generateAcessAndRefreshAtoken(user._id);
-
-    if (!(accessToken || newRefreshToken)) {
-      throw new ApiError(500, "error while creating tokens");
-    }
 
     return { accessToken, newRefreshToken };
   } catch (error) {

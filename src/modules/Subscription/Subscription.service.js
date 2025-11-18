@@ -69,7 +69,7 @@ export const channelSubscribeOthers = async ({ channelId }) => {
     const count = await Subscription.countDocuments({ channel: channelId });
 
     if (!count) {
-      console.log("havent subscribe yet");
+      console.log("havent subscriber yet");
       return 0;
     }
 
