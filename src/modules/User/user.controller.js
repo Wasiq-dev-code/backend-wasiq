@@ -17,78 +17,67 @@ import {
 } from "./Services/Profile.service.js";
 import { clearUserCache } from "../../utils/Cache/redisChachingKeyStructure.js";
 
+// Authentication Controllers
 const registerUserController = asyncHandler(async (req, res) => {
-  try {
-    const { username, email, password, fullname } = req.body;
-    const { files } = req;
+  const { username, email, password, fullname } = req.body;
+  const { files } = req;
 
-    const createdUser = await resgisterUser({
-      username,
-      email,
-      password,
-      fullname,
-      files,
-    });
+  const createdUser = await resgisterUser({
+    username,
+    email,
+    password,
+    fullname,
+    files,
+  });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(201, createdUser, "sucessful response"));
-  } catch (error) {
-    throw new ApiError(500, "server is down while creating user", error);
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(201, createdUser, "sucessful response"));
 });
 
 const loginUserController = asyncHandler(async (req, res) => {
-  try {
-    const { email, username, password } = req.body;
+  const { email, username, password } = req.body;
 
-    const { isLoggedIn, accessToken, refreshToken } = await loginUser({
-      email,
-      username,
-      password,
-    });
+  const { isLoggedIn, accessToken, refreshToken } = await loginUser({
+    email,
+    username,
+    password,
+  });
 
-    if (!isLoggedIn || !accessToken || !refreshToken) {
-      throw new ApiError(500, "Error in user login method");
-    }
-
-    // adding cookies
-    const option = {
-      httpOnly: true,
-      secure: true,
-    };
-
-    // try {
-    //   await clearUserCache(isLoggedIn?._id);
-    // } catch (error) {
-    //   console.error(
-    //     "Error while caching user after login",
-    //     error?.stack || error
-    //   );
-    // }
-
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, option)
-      .cookie("refreshToken", refreshToken, option)
-      .json(
-        new ApiResponse(
-          200,
-          {
-            isLoggedIn,
-            accessToken,
-            refreshToken,
-          },
-          "successfull login user"
-        )
-      );
-  } catch (error) {
-    console.error(
-      "Error while executing loginUserController method",
-      error?.stack || error
-    );
-    throw new ApiError(500, "server is down while login user");
+  if (!isLoggedIn || !accessToken || !refreshToken) {
+    throw new ApiError(500, "Error in user login method");
   }
+
+  // adding cookies
+  const option = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  // try {
+  //   await clearUserCache(isLoggedIn?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching user after login",
+  //     error?.stack || error
+  //   );
+  // }
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, option)
+    .cookie("refreshToken", refreshToken, option)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          isLoggedIn,
+          accessToken,
+          refreshToken,
+        },
+        "successfull login user"
+      )
+    );
 });
 
 const logoutUserController = asyncHandler(async (req, res) => {
@@ -116,97 +105,74 @@ const logoutUserController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "logout user"));
 });
 
-// ...existing code...
 const generateAccessTokenController = asyncHandler(async (req, res) => {
-  try {
-    const { body, cookies } = req;
+  const { body, cookies } = req;
 
-    console.log(body.refreshToken);
+  // console.log(body.refreshToken);
 
-    const { accessToken, newRefreshToken } = await generateAccessToken({
-      body,
-      cookies,
-    });
+  const { accessToken, refreshToken } = await generateAccessToken({
+    body,
+    cookies,
+  });
 
-    if (!accessToken || !newRefreshToken) {
-      throw new ApiError(400, "error while creating tokens");
-    }
+  // if (!accessToken || !newRefreshToken) {
+  //   throw new ApiError(400, "error while creating tokens");
+  // }
 
-    const option = {
-      httpOnly: true,
-      secure: true,
-    };
+  const option = {
+    httpOnly: true,
+    secure: true,
+  };
 
-    console.log(accessToken, newRefreshToken);
+  // console.log(accessToken, RefreshToken);
 
-    // try {
-    //   await clearUserCache(req?.user?._id);
-    // } catch (error) {
-    //   console.error(
-    //     "Error while caching after providing tokens",
-    //     error?.stack || error
-    //   );
-    // }
+  // try {
+  //   await clearUserCache(req?.user?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching after providing tokens",
+  //     error?.stack || error
+  //   );
+  // }
 
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, option)
-      .cookie("refreshToken", newRefreshToken, option)
-      .json(
-        new ApiResponse(
-          200,
-          {
-            accessToken,
-            refreshToken: newRefreshToken,
-          },
-          "token generated successfully"
-        )
-      );
-  } catch (error) {
-    console.error(
-      "Error while executing generateAccessTokenController",
-      error?.stack || error
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, option)
+    .cookie("refreshToken", refreshToken, option)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          accessToken,
+        },
+        "token generated successfully"
+      )
     );
-    throw new ApiError(
-      500,
-      "Server is down due to generateAccessTokenController"
-    );
-  }
 });
 
+// Profile Controllers
 const changeCurrentPasswordController = asyncHandler(async (req, res) => {
-  try {
-    const { user } = req;
-    const { oldPassword, newPassword } = req.body;
+  const { user } = req;
+  const { oldPassword, newPassword } = req.body;
 
-    await changeCurrentPassword({
-      user,
-      oldPassword,
-      newPassword,
-    });
+  await changeCurrentPassword({
+    user,
+    oldPassword,
+    newPassword,
+  });
 
-    try {
-      await clearUserCache(req?.user?._id);
-    } catch (error) {
-      console.error(
-        "Error while caching after update password",
-        error?.stack || error
-      );
-    }
+  // try {
+  //   await clearUserCache(req?.user?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching after update password",
+  //     error?.stack || error
+  //   );
+  // }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "password is changed successfully"));
-  } catch (error) {
-    console.error(
-      "Error while executing changeCurrentPassword Controller",
-      error?.stack || error
-    );
-    throw new ApiError(
-      500,
-      "Server is down due to changeCurrentPassword Controller"
-    );
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "password is changed successfully"));
 });
 
 const getUserController = asyncHandler(async (req, res) => {
@@ -304,8 +270,6 @@ const changeCoverImgController = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Server is down due to changeCoverImgController");
   }
 });
-
-/// @param: Completed The Authentication Operations
 
 const getUserChannelProfileController = asyncHandler(async (req, res) => {
   try {

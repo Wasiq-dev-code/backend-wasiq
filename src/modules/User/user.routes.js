@@ -22,7 +22,7 @@ import {
 
 const router = Router();
 
-// PUBLIC ROUTES
+// Authentications Routes
 router.route("/user/register").post(
   // uploadRateLimiter,
   upload.fields([
@@ -39,23 +39,28 @@ router.route("/user/register").post(
 );
 
 router.route("/user/login").post(authRateLimiter, loginUserController);
+
 router
   .route("/user/refresh-token")
   .post(authRateLimiter, generateAccessTokenController);
 
-// PROTECTED ROUTES
 router
   .route("/user/logout")
   .post(JWTVerify, authRateLimiter, logoutUserController);
+
+// Profile Routes
 router
   .route("/user/change-password")
   .post(JWTVerify, authRateLimiter, changeCurrentPasswordController);
+
 router
   .route("/user/get-user")
   .get(JWTVerify, authRateLimiter, getUserController);
+
 router
   .route("/user/update-fields")
   .patch(JWTVerify, uploadRateLimiter, updateFieldsController);
+
 router
   .route("/user/change-avatar")
   .patch(
@@ -64,6 +69,7 @@ router
     upload.single("avatar"),
     changeAvatarController
   );
+
 router
   .route("/user/change-coverImg")
   .patch(
@@ -73,10 +79,10 @@ router
     changeCoverImgController
   );
 
-//PROTECTED CHANNEL AND HISTORY ROUTES
 router
   .route("/user/channel-profile/:username")
   .get(JWTVerify, viewRateLimiter, getUserChannelProfileController);
+
 router
   .route("/user/history")
   .get(JWTVerify, viewRateLimiter, getUserHistoryController);
