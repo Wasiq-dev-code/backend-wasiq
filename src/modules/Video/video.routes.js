@@ -10,8 +10,8 @@ import {
 import { JWTVerify } from "../../middlewares/auth.middleware.js";
 import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware.js";
 import { verifyVideo } from "../../middlewares/videoSecurity.middleware.js";
-import cacheMiddleware from "../../middlewares/cache.middleware.js";
-import trackVideoView from "../../middlewares/trackIncreaseViews.middleware.js";
+// import cacheMiddleware from "../../middlewares/cache.middleware.js";
+// import trackVideoView from "../../middlewares/trackIncreaseViews.middleware.js";
 
 const videoRouter = Router();
 

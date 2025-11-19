@@ -16,6 +16,7 @@ import {
   getUserHistory,
 } from "./Services/Profile.service.js";
 import { clearUserCache } from "../../utils/Cache/redisChachingKeyStructure.js";
+import { User } from "./User.model.js";
 
 // Authentication Controllers
 const registerUserController = asyncHandler(async (req, res) => {
@@ -176,142 +177,108 @@ const changeCurrentPasswordController = asyncHandler(async (req, res) => {
 });
 
 const getUserController = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select(
+    "-password -refreshToken -avatar_publicId -coverImg_publicId -__v"
+  );
   return res
     .status(200)
-    .json(new ApiResponse(200, req?.user, "user is successfully fetched"));
+    .json(new ApiResponse(200, user, "user is successfully fetched"));
 });
 
 const updateFieldsController = asyncHandler(async (req, res) => {
-  try {
-    const { fullname, email } = req.body;
+  const { fullname, email } = req.body;
+  const userId = req.user._id;
 
-    const user = await updateFields({
-      fullname,
-      email,
-    });
+  const user = await updateFields({
+    fullname,
+    email,
+    userId,
+  });
 
-    try {
-      await clearUserCache(user?._id);
-    } catch (error) {
-      console.error(
-        "Error while caching after update fields",
-        error?.stack || error
-      );
-    }
+  // try {
+  //   await clearUserCache(user?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching after update fields",
+  //     error?.stack || error
+  //   );
+  // }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, user, "fields change successfully"));
-  } catch (error) {
-    console.error(
-      "Error while executing updateFieldsController",
-      error?.stack || error
-    );
-    throw new ApiError(500, "Server is down due to updateFieldsController");
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "fields change successfully"));
 });
 
 const changeAvatarController = asyncHandler(async (req, res) => {
-  try {
-    const { file, user } = req;
+  const { file } = req;
+  const userId = req.user._id;
 
-    const userobj = await changeAvatar({
-      file,
-      user,
-    });
+  const userobj = await changeAvatar({
+    file,
+    userId,
+  });
 
-    try {
-      await clearUserCache(userobj?._id);
-    } catch (error) {
-      console.error(
-        "Error while caching user after avatar change",
-        error?.stack || error
-      );
-    }
+  // try {
+  //   await clearUserCache(userobj?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching user after avatar change",
+  //     error?.stack || error
+  //   );
+  // }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, userobj, "avatar changed successfully"));
-  } catch (error) {
-    console.error(
-      "Error while executing changeAvatarController",
-      error?.stack || error
-    );
-    throw new ApiError(500, "Server is down due to changeAvatarController");
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, userobj, "avatar changed successfully"));
 });
 
 const changeCoverImgController = asyncHandler(async (req, res) => {
-  try {
-    const { file, user } = req;
+  const { file } = req;
+  const userId = req.user.id;
 
-    const userobj = await changeCoverImg({
-      file,
-      user,
-    });
+  const userobj = await changeCoverImg({
+    file,
+    userId,
+  });
 
-    try {
-      await clearUserCache(userobj?._id);
-    } catch (error) {
-      console.error(
-        "Error while caching user after changing coverimage",
-        error?.stack || error
-      );
-    }
+  // try {
+  //   await clearUserCache(userobj?._id);
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching user after changing coverimage",
+  //     error?.stack || error
+  //   );
+  // }
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, userobj, "coverImage changed successfully"));
-  } catch (error) {
-    console.error(
-      "Error while executing changeCoverImgController",
-      error?.stack || error
-    );
-    throw new ApiError(500, "Server is down due to changeCoverImgController");
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, userobj, "coverImage changed successfully"));
 });
 
 const getUserChannelProfileController = asyncHandler(async (req, res) => {
-  try {
-    const { username } = req.params;
+  const { username } = req.params;
+  const userId = req.user._id;
 
-    const channel = await getUserChannelProfile({
-      username,
-    });
+  const channel = await getUserChannelProfile({
+    username,
+    userId,
+  });
 
-    return res
-      .status()
-      .json(new ApiResponse(200, channel[0], "channel is provided"));
-  } catch (error) {
-    console.error(
-      "Error while executing getUserChannelProfileController",
-      error?.stack || error
-    );
-    throw new ApiError(
-      500,
-      "Server is down due to getUserChannelProfileController"
-    );
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, channel[0], "channel fetched successfully"));
 });
 
 const getUserHistoryController = asyncHandler(async (req, res) => {
-  try {
-    const { user } = req;
+  const userId = req.user._id;
 
-    const userHistory = await getUserHistory({
-      user,
-    });
+  const userHistory = await getUserHistory({
+    userId,
+  });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, userHistory.watchHistory, "userWatchHistory"));
-  } catch (error) {
-    console.error(
-      "Error while executing getUserHistoryController",
-      error?.stack || error
-    );
-    throw new ApiError(500, "Server is down due to getUserHistoryController");
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, userHistory.watchHistory, "userWatchHistory"));
 });
 
 export {
