@@ -8,49 +8,15 @@ import {
   getVideoById,
   getAllVideos,
   videoUploader,
+  getAllMyVideos,
 } from "./Video.service.js";
 
-import {
-  clearVideoCache,
-  clearVideoListCache,
-} from "../../utils/Cache/redisChachingKeyStructure.js";
+// import {
+//   clearVideoCache,
+//   clearVideoListCache,
+// } from "../../utils/Cache/redisChachingKeyStructure.js";
 
-const videoUploaderController = asyncHandler(async (req, res) => {
-  try {
-    const { user, files } = req;
-    const { title, description } = req?.body;
-
-    const videoObj = await videoUploader({
-      user,
-      files,
-      title,
-      description,
-    });
-
-    try {
-      await clearVideoListCache();
-    } catch (error) {
-      console.error(
-        "Error while caching videolist in uploadingVideoController",
-        error?.stack || error
-      );
-    }
-
-    return res
-      .status(201)
-      .json(new ApiResponse(201, videoObj, "Video uploaded successfully"));
-  } catch (error) {
-    console.error(
-      "Occuring error while uploading video",
-      error?.stack || error
-    );
-    throw new ApiError(
-      error?.statusCode || 500,
-      error?.message || "Server is down"
-    );
-  }
-});
-
+// Publice Routes
 const getAllVideosController = asyncHandler(async (req, res) => {
   try {
     // console.log("giving response directly throw mongoose");
@@ -106,61 +72,82 @@ const getVideoByIdController = asyncHandler(async (req, res) => {
   }
 });
 
+// Authorized Routes
+const videoUploaderController = asyncHandler(async (req, res) => {
+  const { files } = req;
+  const { title, description } = req?.body;
+  const userId = req.user._id;
+
+  const videoObj = await videoUploader({
+    userId,
+    files,
+    title,
+    description,
+  });
+
+  // try {
+  //   await clearVideoListCache();
+  // } catch (error) {
+  //   console.error(
+  //     "Error while caching videolist in uploadingVideoController",
+  //     error?.stack || error
+  //   );
+  // }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, videoObj, "Video uploaded successfully"));
+});
+
 const deleteVideoController = asyncHandler(async (req, res) => {
-  try {
-    const { video } = req;
+  const video = req.video;
 
-    await Promise.all([
-      deleteVideo({ video }),
-      clearVideoCache(video?._id),
-      clearVideoListCache(),
-    ]);
+  // await Promise.all([
+  //   deleteVideo({ video }),
+  //   clearVideoCache(video?._id),
+  //   clearVideoListCache(),
+  // ]);
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "Sucessful to delete the video"));
-  } catch (error) {
-    console.error("Error on deleteVideo", {
-      video: req.video,
-      error: error?.stack || error,
-    });
-    throw new ApiError(
-      error?.statusCode || 500,
-      error?.message || "Failed to deleteVideo"
-    );
-  }
+  await deleteVideo({ video });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Sucessful to delete the video"));
 });
 
 const updateVideoController = asyncHandler(async (req, res) => {
-  try {
-    const { body, file, video } = req;
+  const { body, file, video } = req;
 
-    const updatedVideo = await updateVideo({
-      body,
-      file,
-      video,
-    });
+  // console.log(body, file, video);
 
-    await Promise.all([
-      clearVideoCache(updatedVideo?._id),
-      clearVideoListCache(),
-    ]).catch((Error) => {
-      throw new ApiError(500, "Error while chaching data");
-    });
+  const updatedVideo = await updateVideo({
+    body,
+    file,
+    video,
+  });
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, updatedVideo, "Successfully updated"));
-  } catch (error) {
-    console.error("Error on updateVideo", {
-      body: req.body,
-      error: error?.stack || error,
-    });
-    throw new ApiError(
-      error?.statusCode || 500,
-      error?.message || "Error while executing updateVideo Controller"
-    );
-  }
+  // await Promise.all([
+  //   clearVideoCache(updatedVideo?._id),
+  //   clearVideoListCache(),
+  // ]).catch((Error) => {
+  //   throw new ApiError(500, "Error while chaching data");
+  // });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedVideo, "Successfully updated"));
+});
+
+const getAllMyVideosController = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const allMyVideos = await getAllMyVideos({
+    userId,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allMyVideos, "Here all your videos"));
 });
 
 export {
@@ -169,4 +156,5 @@ export {
   getVideoByIdController,
   deleteVideoController,
   updateVideoController,
+  getAllMyVideosController,
 };

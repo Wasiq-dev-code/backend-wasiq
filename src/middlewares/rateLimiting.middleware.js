@@ -3,7 +3,7 @@ import rateLimit from "express-rate-limit";
 // Video views limiter
 export const viewRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 20, // 20 requests per IP
+  max: 5, // 20 requests per IP
   message: "Too many video requests. Please wait a minute.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -21,7 +21,7 @@ export const authRateLimiter = rateLimit({
 // Upload limiter
 export const uploadRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 2, // 2 uploads
+  max: 4, // 2 uploads
   message: "Upload limit reached. Please try again in an hour.",
   standardHeaders: true,
   legacyHeaders: false,

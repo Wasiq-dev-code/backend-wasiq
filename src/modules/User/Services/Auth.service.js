@@ -73,7 +73,7 @@ export const resgisterUser = async ({
 
   // Fetch user without sensitive fields
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -avatar_publicId -coverImg_publicId"
+    "-password -refreshToken" //-avatar_publicId -coverImg_publicId
   );
 
   if (!createdUser) {

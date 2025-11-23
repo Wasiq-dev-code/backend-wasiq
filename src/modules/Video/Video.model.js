@@ -11,10 +11,10 @@ const videoSchema = new Schema(
       type: String,
       required: true,
     },
-    videoFile_etag: {
-      type: String,
-      required: true,
-    },
+    // videoFile_etag: {
+    //   type: String,
+    //   required: true,
+    // },
     thumbnail: {
       type: String,
       required: true,
@@ -23,10 +23,10 @@ const videoSchema = new Schema(
       type: String,
       required: true,
     },
-    thumbnail_etag: {
-      type: String,
-      required: true,
-    },
+    // thumbnail_etag: {
+    //   type: String,
+    //   required: true,
+    // },
     title: {
       type: String,
       required: true,

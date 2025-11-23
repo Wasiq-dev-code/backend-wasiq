@@ -15,11 +15,13 @@ import {
   getUserChannelProfile,
   getUserHistory,
 } from "./Services/Profile.service.js";
-import { clearUserCache } from "../../utils/Cache/redisChachingKeyStructure.js";
+// import { clearUserCache } from "../../utils/Cache/redisChachingKeyStructure.js";
 import { User } from "./User.model.js";
 
 // Authentication Controllers
 const registerUserController = asyncHandler(async (req, res) => {
+  // console.log("Content-Type:", req.headers["content-type"]);
+  // console.log(req.body, req.files);
   const { username, email, password, fullname } = req.body;
   const { files } = req;
 

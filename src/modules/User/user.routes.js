@@ -22,9 +22,8 @@ import {
 
 const router = Router();
 
-// Authentications Routes
+// Authentication Routes
 router.route("/user/register").post(
-  // uploadRateLimiter,
   upload.fields([
     {
       name: "avatar",
@@ -35,6 +34,7 @@ router.route("/user/register").post(
       maxCount: 1,
     },
   ]),
+  uploadRateLimiter,
   registerUserController
 );
 

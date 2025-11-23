@@ -92,7 +92,7 @@ export const changeAvatar = async ({ file, userId }) => {
   }
 
   if (old_public_id) {
-    await deleteOnCloudinary(old_public_id);
+    await deleteOnCloudinary(old_public_id, "image");
   }
 
   const userObj = await User.findByIdAndUpdate(
@@ -147,7 +147,7 @@ export const changeCoverImg = async ({ file, userId }) => {
   }
 
   if (old_public_id) {
-    await deleteOnCloudinary(old_public_id);
+    await deleteOnCloudinary(old_public_id, "image");
   }
 
   const userObj = await User.findByIdAndUpdate(

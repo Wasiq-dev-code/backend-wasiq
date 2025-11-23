@@ -59,9 +59,12 @@ app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-app.use((err, res) => {
+app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Internal Server Error" });
+  return res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
 });
 
 export default app;

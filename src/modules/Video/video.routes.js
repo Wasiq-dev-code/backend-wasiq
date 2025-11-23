@@ -2,13 +2,17 @@ import { Router } from "express";
 import { upload } from "../../middlewares/multer.middleware.js";
 import {
   deleteVideoController,
+  getAllMyVideosController,
   getAllVideosController,
   getVideoByIdController,
   updateVideoController,
   videoUploaderController,
 } from "./Video.controller.js";
 import { JWTVerify } from "../../middlewares/auth.middleware.js";
-import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware.js";
+import {
+  viewRateLimiter,
+  uploadRateLimiter,
+} from "../../middlewares/rateLimiting.middleware.js";
 import { verifyVideo } from "../../middlewares/videoSecurity.middleware.js";
 // import cacheMiddleware from "../../middlewares/cache.middleware.js";
 // import trackVideoView from "../../middlewares/trackIncreaseViews.middleware.js";
@@ -16,7 +20,7 @@ import { verifyVideo } from "../../middlewares/videoSecurity.middleware.js";
 const videoRouter = Router();
 
 /// Public Routes
-videoRouter.route("/Videos").get(
+videoRouter.route("/videos").get(
   viewRateLimiter,
   // cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
   //   bypassHeader: "x-bypass-cache",
@@ -24,7 +28,12 @@ videoRouter.route("/Videos").get(
   // }),
   getAllVideosController
 );
-videoRouter.route("/Video/:videoId").get(
+
+videoRouter
+  .route("/video/myvideos")
+  .get(JWTVerify, viewRateLimiter, getAllMyVideosController);
+
+videoRouter.route("/video/:videoId").get(
   viewRateLimiter,
   // trackVideoView,
   // cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
@@ -35,8 +44,10 @@ videoRouter.route("/Video/:videoId").get(
 );
 
 /// Secure Routes
+
 videoRouter.route("/video/upload").post(
   JWTVerify,
+  uploadRateLimiter,
   upload.fields([
     { name: "videoFile", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 },
@@ -46,13 +57,14 @@ videoRouter.route("/video/upload").post(
 
 videoRouter
   .route("/video/delete/:videoId")
-  .delete(JWTVerify, verifyVideo, deleteVideoController);
+  .delete(JWTVerify, verifyVideo, uploadRateLimiter, deleteVideoController);
 
 videoRouter
   .route("/video/update/:videoId")
   .patch(
     JWTVerify,
     verifyVideo,
+    uploadRateLimiter,
     upload.single("thumbnail"),
     updateVideoController
   );

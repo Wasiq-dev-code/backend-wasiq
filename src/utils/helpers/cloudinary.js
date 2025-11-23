@@ -84,21 +84,27 @@ const uploadOnCloudinary = async (localFilePath) => {
  * Return Successfull reponse when surpassing and got no error.
  */
 
-const deleteOnCloudinary = async (deletefile) => {
+const deleteOnCloudinary = async (publicId, type) => {
   try {
-    if (!deletefile) return null;
+    // console.log("deleting =>", publicId);
 
-    const response = await cloudinary.uploader.destroy(deletefile);
+    const response = await cloudinary.uploader.destroy(publicId, {
+      resource_type: type,
+      invalidate: true,
+    });
 
-    if (response.result !== "ok") {
-      throw new ApiError(500, "error while deleting cloudinary file");
+    const result = response?.result;
+
+    // success cases
+    if (result === "ok" || result === "not_found" || result === undefined) {
+      return response;
     }
 
-    return response;
-  } catch (error) {
-    console.log("accuring error while deleting file on cloudinary");
-
-    return null;
+    // error case
+    throw new Error(response.error?.message || "Cloudinary delete failed");
+  } catch (err) {
+    console.log("delete error =>", JSON.stringify(err, null, 2));
+    throw err;
   }
 };
 

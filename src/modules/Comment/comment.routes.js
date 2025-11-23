@@ -11,9 +11,13 @@ import {
 } from "./comment.controller.js";
 
 const commentRouter = Router();
+// /:commentId
+commentRouter
+  .route("/Comment/addComment/:videoId")
+  .post(JWTVerify, viewRateLimiter, addCommentController);
 
 commentRouter
-  .route("/Comment/addComment/:videoId/:commentId")
+  .route("/Comment/addComment/:commentId")
   .post(JWTVerify, viewRateLimiter, addCommentController);
 
 commentRouter
