@@ -1,133 +1,27 @@
 import { ApiError } from "../../utils/Api/ApiError.js";
 import { Like } from "./Likes.model.js";
-import { validateObjectId } from "../../utils/helpers/validateObjectId.js";
 
-export const likeAdded = async ({ videoId, userId, commentId }) => {
-  try {
-    if (!videoId && !commentId) {
-      throw new ApiError(400, "Videoid or Commentid should available");
-    }
-
-    if (!userId) {
-      throw new ApiError(400, "Unauthorized Req");
-    }
-
-    if (videoId) validateObjectId(videoId, "Video ID");
-    if (commentId) validateObjectId(commentId, "Comment ID");
-
-    const liked = await Like.createLike(videoId, commentId, userId);
-
-    if (!liked) {
-      throw new ApiError(500, "Like is not added");
-    }
-
-    return true;
-  } catch (error) {
-    console.error(error);
-    throw new ApiError(500, "Server contain error at likeAdded service");
+export const toggleLike = async ({ type, id, userId }) => {
+  if (!id || !type) {
+    throw new ApiError(400, "Id and type are required");
   }
-};
 
-export const likeDelete = async ({ userId, videoId, commentId }) => {
-  try {
-    if (!videoId && !commentId) {
-      throw new ApiError(400, "Videoid or Commentid should available");
-    }
-
-    if (!userId) {
-      throw new ApiError(400, "Unauthorized Req");
-    }
-
-    if (videoId) validateObjectId(videoId, "Video ID");
-    if (commentId) validateObjectId(commentId, "Comment ID");
-
-    await Like.deletedLike(videoId, commentId, userId);
-
-    return true;
-  } catch (error) {
-    console.error(error);
-    throw new ApiError(500, "Server contain error at likeAdded service");
+  if (!["video", "comment"].includes(type)) {
+    throw new ApiError(400, "The type can be either 'video' or 'comment'");
   }
-};
 
-export const isLikeByUser = async ({ videoId, commentId, userId }) => {
-  try {
-    if (!userId) {
-      throw new ApiError(401, "Unauthorized request");
-    }
+  const query = { userliked: userId };
 
-    if (!videoId && !commentId) {
-      throw new ApiError(401, "Error in params");
-    }
+  if (type === "video") query.video = id;
+  if (type === "comment") query.comment = id;
 
-    if (videoId) validateObjectId(videoId, "Video ID");
-    if (commentId) validateObjectId(commentId, "Comment ID");
+  const existing = await Like.findLike(query);
 
-    const LikePresented = await Like.isLiked(videoId, commentId, userId);
-
-    return LikePresented;
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
+  if (existing) {
+    await Like.deleteLikeById(existing._id);
+    return { liked: false };
   }
-};
 
-export const totalCommentLikes = async ({ commentId }) => {
-  try {
-    if (!commentId) {
-      throw new ApiError(400, "Comment ID is required");
-    }
-
-    validateObjectId(commentId, "Comment ID");
-
-    const likeCount = await Like.countDocuments({ comment: commentId });
-
-    return likeCount;
-  } catch (error) {
-    console.error(error.message || "Error in totalCommentLikes");
-    throw new ApiError(500, "Server error while counting comment likes");
-  }
-};
-
-export const totalVideoLikes = async ({ videoId }) => {
-  try {
-    if (!videoId) {
-      throw new ApiError(400, "Video ID is required");
-    }
-
-    validateObjectId(videoId, "Video ID");
-
-    const likeCount = await Like.countDocuments({ video: videoId });
-
-    return likeCount;
-  } catch (error) {
-    console.error(error.message || "Error in totalVideoLikes");
-    throw new ApiError(500, "Server error while counting Video likes");
-  }
-};
-
-export const toggleLike = async ({ videoId, commentId, userId }) => {
-  try {
-    if (!userId) {
-      throw new ApiError(401, "Unauthorized request");
-    }
-
-    if (!videoId && !commentId) {
-      throw new ApiError(401, "Error in params");
-    }
-
-    if (videoId) validateObjectId(videoId, "Video ID");
-    if (commentId) validateObjectId(commentId, "Comment ID");
-
-    const LikePresented = await Like.isLiked(videoId, commentId, userId);
-
-    !LikePresented
-      ? await Like.create(...query)
-      : await Like.findByIdAndDelete(...query);
-
-    return true;
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
-  }
+  await Like.createLike(query);
+  return { liked: true };
 };

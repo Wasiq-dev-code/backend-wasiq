@@ -35,7 +35,7 @@ app.use(cookieParser());
 import router from "./modules/User/user.routes.js";
 import videoRouter from ".//modules/Video/video.routes.js";
 import likeRouter from "./modules/Like/like.routes.js";
-import commemtRouter from "./modules/Comment/comment.routes.js";
+import commentRouter from "./modules/Comment/comment.routes.js";
 import subscribeRouter from "./modules/Subscription/subscription.routes.js";
 
 // import BasicAuth from "express-basic-auth";
@@ -52,7 +52,7 @@ import subscribeRouter from "./modules/Subscription/subscription.routes.js";
 app.use("/api", router);
 app.use("/api", videoRouter);
 app.use("/api", subscribeRouter);
-app.use("/api", commemtRouter);
+app.use("/api", commentRouter);
 app.use("/api", likeRouter);
 
 app.use((req, res) => {

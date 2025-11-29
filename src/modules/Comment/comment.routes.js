@@ -4,10 +4,7 @@ import { viewRateLimiter } from "../../middlewares/rateLimiting.middleware.js";
 import {
   addCommentController,
   deleteCommentController,
-  editCommentController,
   getCommentsOfVideoController,
-  getReplyToCommentController,
-  myCommentController,
 } from "./comment.controller.js";
 
 const commentRouter = Router();
@@ -17,7 +14,7 @@ commentRouter
   .post(JWTVerify, viewRateLimiter, addCommentController);
 
 commentRouter
-  .route("/Comment/addComment/:commentId")
+  .route("/Comment/addComment/:videoId/:commentId")
   .post(JWTVerify, viewRateLimiter, addCommentController);
 
 commentRouter
@@ -27,17 +24,5 @@ commentRouter
 commentRouter
   .route("/Comment/getCommentsOfVideo/:videoId")
   .get(viewRateLimiter, getCommentsOfVideoController);
-
-commentRouter
-  .route("/Comment/getReplyToComment/:commentId")
-  .get(viewRateLimiter, getReplyToCommentController);
-
-commentRouter
-  .route("/Comment/editComment/:videoId/:commentId")
-  .patch(JWTVerify, viewRateLimiter, editCommentController);
-
-commentRouter
-  .route("/Comment/myComment")
-  .get(JWTVerify, viewRateLimiter, myCommentController);
 
 export default commentRouter;

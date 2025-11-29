@@ -137,7 +137,7 @@ export const getVideoById = async ({ videoId }) => {
       {
         $lookup: {
           from: "likes",
-          let: { fetchVideoId: "$_Id" },
+          let: { fetchVideoId: "$_id" },
           pipeline: [
             { $match: { $expr: { $eq: ["$video", "$$fetchVideoId"] } } },
             {
@@ -155,7 +155,7 @@ export const getVideoById = async ({ videoId }) => {
           },
 
           likes: {
-            $ifNull: [{ $first: "$Likes.count" }, 0],
+            $ifNull: [{ $first: "$likes.count" }, 0],
           },
           uploadedAt: {
             $dateToString: {

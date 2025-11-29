@@ -1,110 +1,16 @@
-import {
-  isLikeByUser,
-  toggleLike,
-  totalCommentLikes,
-  totalVideoLikes,
-  likeAdded,
-  likeDelete,
-} from "./Like.service.js";
-import { ApiError } from "../../utils/Api/ApiError.js";
+import { toggleLike } from "./Like.service.js";
 import { ApiResponse } from "../../utils/Api/ApiResponse.js";
 import { asyncHandler } from "../../utils/helpers/asyncHandler.js";
 
-const likeAddedController = asyncHandler(async (req, res) => {
-  try {
-    const { videoId, commentId } = req?.params;
+const toggleLikeController = asyncHandler(async (req, res) => {
+  const { type, id } = req.body;
+  const userId = req.user._id;
 
-    const userId = req.user._id;
+  const result = await toggleLike({ type, id, userId });
 
-    const likeDone = await likeAdded({ videoId, userId, commentId });
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, likeDone, "Liked Successfully Done"));
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
-  }
-});
-
-const likedeleteController = asyncHandler(async (req, res) => {
-  try {
-    const { videoId, commentId } = req?.params;
-    const userId = req?.user?._id;
-
-    await likeDelete({ userId, videoId, commentId });
-
-    return res.status(200).json(new ApiResponse(200, "videoLiked deleted"));
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
-  }
-});
-
-const isLikedByUserController = asyncHandler(async (req, res) => {
-  try {
-    const { videoId, commentId } = req?.params;
-    const userId = req?.user?._id;
-
-    const likePresented = await isLikeByUser({ videoId, commentId, userId });
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, likePresented, likePresented ? "liked" : "no like")
-      );
-  } catch (error) {
-    console.error(error.message || "server is not responding");
-    throw new ApiError(500, "server is not responding");
-  }
-});
-
-const totalCommentLikesController = asyncHandler(async (req, res) => {
-  try {
-    const { commentId } = req?.params;
-
-    const commentLikes = await totalCommentLikes({ commentId });
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, commentLikes, "Total Comment Likes"));
-  } catch (error) {
-    console.error(error.message || "Error in totalCommentLikesController");
-    throw new ApiError(500, "Server error while counting comment likes");
-  }
-});
-
-const totalVideoLikesController = asyncHandler(async (req, res) => {
-  try {
-    const { videoId } = req?.params;
-
-    const videoLikes = await totalVideoLikes({ videoId });
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, videoLikes, "Total Video Likes"));
-  } catch (error) {
-    console.error(error.message || "Error in totalVideoLikesController");
-    throw new ApiError(500, "Server error while counting Video likes");
-  }
-});
-
-const toggleLikeContoller = asyncHandler(async (req, res) => {
-  const { videoId, commentId } = req?.params;
-  const userId = req?.user?._id;
-
-  const toggleLikes = await toggleLike({ videoId, commentId, userId });
-
-  return res
+  res
     .status(200)
-    .json(new ApiResponse(200, toggleLikes, "operation successfull"));
+    .json(new ApiResponse(200, result, result.liked ? "Liked" : "Unliked"));
 });
 
-export {
-  likeAddedController,
-  likedeleteController,
-  isLikedByUserController,
-  totalCommentLikesController,
-  totalVideoLikesController,
-  toggleLikeContoller,
-};
+export { toggleLikeController };
