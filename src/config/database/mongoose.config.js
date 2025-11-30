@@ -27,11 +27,19 @@ import { dbName } from "../../constants.js";
 
 const connectMongo = async () => {
   try {
-    console.log("🔍 Using URI:", MONGO_URI ? "Found ✅" : "Not Found ❌");
+    console.log(
+      "🔍 Using URI:",
+      process.env.MONGO_URI ? "Found ✅" : "Not Found ❌"
+    );
+
+    if (!process.env.MONGO_URI) {
+      throw new Error("❌ MONGO_URI environment variable is not set!");
+    }
 
     const connectionInstance = await mongoose.connect(
       `${process.env.MONGO_URI}/${dbName}`
     );
+
     if (connectionInstance?.connection?.host) {
       console.log("MongoDB connected:", connectionInstance.connection.host);
     }
