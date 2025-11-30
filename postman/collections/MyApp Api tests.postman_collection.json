@@ -1,0 +1,1003 @@
+{
+	"info": {
+		"_postman_id": "55e3919d-acd8-4007-b763-62b666575fdf",
+		"name": "MyApp Api tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43901652"
+	},
+	"item": [
+		{
+			"name": "Auth Route Tests",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"pm.environment.set(\"accessToken\", res.data.accessToken);\r",
+									"pm.environment.set(\"username\", res.data.isLoggedIn.username);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"asmagullay@gmail.com\",\r\n  \"password\": \"asma\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "Asma",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "AsmaGullay@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "asma",
+									"type": "text"
+								},
+								{
+									"key": "fullname",
+									"value": "AsmaGullay",
+									"type": "text"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "postman-cloud:///1f0bf431-d942-4ed0-b150-4a146fc59619"
+								},
+								{
+									"key": "coverImg",
+									"type": "file",
+									"src": "postman-cloud:///1f0bf432-9734-46a0-a8de-484c6e4da390"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.unset(\"accessToken\");\r",
+									"pm.environment.unset(\"username\");\r",
+									"pm.environment.unset(\"videoIds\")\r",
+									"pm.environment.unset(\"currentVideoId\")\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTEzYWY3NGZkODNhYTg1ZGU2NmY1MTQiLCJpYXQiOjE3NjMwMDcyNjYsImV4cCI6MTc2Mzg3MTI2Nn0.Yf2obt8PxwDb8jch7YXre8nfkloIPbIb9SqJSyS4O9g\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refreshtoken route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const cookies = pm.cookies.toObject();\r",
+									"if (cookies.refreshToken) {\r",
+									"    pm.environment.set(\"refreshToken\", cookies.refreshToken);\r",
+									"}\r",
+									"const res = pm.response.json();\r",
+									"pm.environment.set(\"accessToken\", res.data.accessToken);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/refresh-token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "1, You have to register first, with your own data to make an account.\n\n2, Login after register the account, script will asign important data in environtment variables and your access and refresh token in cookies.\n\n3, When your access token expired you can call Refreshtoken route, it will give you new access token as in environment variable on the behalf of refresh token, but refresh token will not be asign in environment variable.\n\n4, Logout runs script to delete cookies, and unset all important data from environment variable to make everthing fresh for new users."
+		},
+		{
+			"name": "Profile Route Tests",
+			"item": [
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldPassword\": \"wasiq\",\r\n    \"newPassword\": \"wasiq123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/change-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/get-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"get-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateFields",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accesstoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullname\": \"AsmaGullay\",\r\n    \"email\": \"AsmaGullay@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/update-fields",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"update-fields"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Avatar",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accesstoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "postman-cloud:///1f0c57e9-e2d1-4070-8ade-ae1c05384cdc"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/change-avatar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"change-avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change CoverImage",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accesstoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "coverImg",
+									"type": "file",
+									"src": "postman-cloud:///1f0c57e9-e2d1-4070-8ade-ae1c05384cdc"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/change-coverImg",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"change-coverImg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/channel-profile/{{username}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"channel-profile",
+								"{{username}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User History",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"history"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "1, You can change password.\n\n2, It will return your profile.\n\n3, It will update your fields.\n\n4, Your avatar will be change.\n\n5, Your cover image will be change.\n\n6, It will get you the profile of the channel,\n\n7, It will get you the history of the videos that this user watched before."
+		},
+		{
+			"name": "Video Route Tests",
+			"item": [
+				{
+					"name": "Video Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"const id = res.data._id;  \r",
+									"\r",
+									"let arr = JSON.parse(pm.environment.get(\"videoIds\") || \"[]\");\r",
+									"if (!arr.includes(id)) arr.push(id);\r",
+									"\r",
+									"pm.environment.set(\"videoIds\", JSON.stringify(arr));\r",
+									"pm.environment.set(\"currentVideoId\", id);\r",
+									"console.log(\"Saved Video ID:\", id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Zoo Video",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Old Zoo video Wasiq hehe",
+									"type": "text"
+								},
+								{
+									"key": "videoFile",
+									"type": "file",
+									"src": "postman-cloud:///1f0c5a95-b1fa-41f0-affe-718c730c7ed5"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "postman-cloud:///1f0c57e9-e2d1-4070-8ade-ae1c05384cdc"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/video/upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"video",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Video Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const id = pm.environment.get(\"currentVideoId\")\r",
+									"let arr = JSON.parse(pm.environment.get(\"videoIds\") || [])\r",
+									"\r",
+									"arr = arr.filter(v => v !== id)\r",
+									"\r",
+									"if(arr.length === 0) {\r",
+									"    pm.environment.unset(\"videoIds\")\r",
+									"    pm.environment.unset(\"currentVideoId\");\r",
+									"} else {\r",
+									"    pm.environment.set(\"videoIds\", JSON.stringify(arr));\r",
+									"    pm.environment.set(\"currentVideoId\", arr[arr.length - 1]);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{base_url}}/api/video/delete/{{currentVideoId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"video",
+								"delete",
+								"{{currentVideoId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Video Update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Zoo ",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Old Zoo ",
+									"type": "text"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "postman-cloud:///1f0c57e6-6484-4990-9eaf-8410314c4b3f"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/video/update/{{currentVideoId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"video",
+								"update",
+								"{{currentVideoId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Public Videos Home",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/videos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"videos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Public Video By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/video/692259c40aae07c51ce0c7b2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"video",
+								"692259c40aae07c51ce0c7b2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My Videos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"const videos = res.data;  \r",
+									"\r",
+									"pm.environment.unset(\"videoIds\");\r",
+									"\r",
+									"let arr = [];\r",
+									"videos.forEach(v => arr.push(v._id));\r",
+									"\r",
+									"pm.environment.set(\"videoIds\", JSON.stringify(arr));\r",
+									"\r",
+									"pm.environment.set(\"currentVideoId\", arr[arr.length - 1]);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/video/myvideos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"video",
+								"myvideos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comment Route Tests",
+			"item": [
+				{
+					"name": "Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"Unbelivable keep work\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Comment/addComment/692259c40aae07c51ce0c7b2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Comment",
+								"addComment",
+								"692259c40aae07c51ce0c7b2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Video Comments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/Comment/getCommentsOfVideo/692259c40aae07c51ce0c7b2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Comment",
+								"getCommentsOfVideo",
+								"692259c40aae07c51ce0c7b2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Comment Reply",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"Unbelivable mind blowing\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Comment/addComment/692259c40aae07c51ce0c7b2/692425765055b0a1f3da64a2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Comment",
+								"addComment",
+								"692259c40aae07c51ce0c7b2",
+								"692425765055b0a1f3da64a2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Comment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Comment/deleteComment/692425765055b0a1f3da64a2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Comment",
+								"deleteComment",
+								"692425765055b0a1f3da64a2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Like Route Tests",
+			"item": [
+				{
+					"name": "Video Like/Unlike",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"video\",\r\n    \"id\": \"692259c40aae07c51ce0c7b2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/like",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Comment Like/Unlike",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\" :\"comment\",\r\n    \"id\": \"6924257b5055b0a1f3da64a5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/like",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"like"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscription Route Tests",
+			"item": [
+				{
+					"name": "Channel Subscribe/Unsubscribe",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscribe/subscriptionToggle/692258ad0aae07c51ce0c7a7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscribe",
+								"subscriptionToggle",
+								"692258ad0aae07c51ce0c7a7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Subscribe To Others Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscribe/channelSubscribeOthers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscribe",
+								"channelSubscribeOthers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Any Channel Subscribers Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscribe/subscriberCount/692258ad0aae07c51ce0c7a7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscribe",
+								"subscriberCount",
+								"692258ad0aae07c51ce0c7a7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

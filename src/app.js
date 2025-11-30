@@ -10,12 +10,14 @@ const app = express();
 
 app.set("trust proxy", false);
 
+// Api open for any client.
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
+
 app.use(
   express.json({
     limit: "100kb",
