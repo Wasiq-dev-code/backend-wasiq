@@ -27,6 +27,8 @@ import { dbName } from "../../constants.js";
 
 const connectMongo = async () => {
   try {
+    console.log("🔍 Using URI:", MONGO_URI ? "Found ✅" : "Not Found ❌");
+
     const connectionInstance = await mongoose.connect(
       `${process.env.MONGO_URI}/${dbName}`
     );
