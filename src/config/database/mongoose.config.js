@@ -27,7 +27,6 @@ import { dbName } from "../../constants.js";
 
 const connectMongo = async () => {
   try {
-    console.log(">>> Railway ENV MONGODB_URI =", process.env.MONGO_URI);
     const connectionInstance = await mongoose.connect(
       `${process.env.MONGO_URI}/${dbName}`
     );
