@@ -27,24 +27,6 @@ import { dbName } from "../../constants.js";
 
 const connectMongo = async () => {
   try {
-    // 🔍 DEBUG: Print ALL environment variables
-    console.log("=== ALL ENVIRONMENT VARIABLES ===");
-    console.log(JSON.stringify(process.env, null, 2));
-    console.log("=== END ===");
-
-    // 🔍 DEBUG: Specifically check MONGO variables
-    console.log("🔍 MONGO_URI:", process.env.MONGO_URI);
-    console.log("🔍 MONGODB_URI:", process.env.MONGODB_URI);
-    console.log(
-      "🔍 All MONGO keys:",
-      Object.keys(process.env).filter((k) => k.includes("MONGO"))
-    );
-
-    console.log(
-      "🔍 Using URI:",
-      process.env.MONGO_URI ? "Found ✅" : "Not Found ❌"
-    );
-
     if (!process.env.MONGO_URI) {
       throw new Error("❌ MONGO_URI environment variable is not set!");
     }
