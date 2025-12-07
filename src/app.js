@@ -2,21 +2,38 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import xssClean from "xss-clean";
+import mongoSanitize from "express-mongo-sanitize";
+import hpp from "hpp";
 // import { monitorRedis } from "./utils/Cache/checkRedisConnection.js";
 
 const app = express();
-
 // monitorRedis();
 
-app.set("trust proxy", false);
+app.set("trust proxy", 1);
 
-// Api open for any client.
+// Security Headers
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+
+// Cors
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
+
+// Prevent NoSQL Injection
+app.use(mongoSanitize());
+
+// Prevent malicious code from client-side
+app.use(xssClean());
 
 app.use(
   express.json({
@@ -29,6 +46,8 @@ app.use(
     extended: true,
   })
 );
+
+app.use(hpp());
 
 app.use(express.static("public"));
 app.use(cookieParser());
