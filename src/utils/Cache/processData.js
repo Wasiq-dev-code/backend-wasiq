@@ -29,6 +29,7 @@
  * console.log(plain);
  * Output: {"userId":"123","name":"Ali"}
  */
+
 export const processData = {
   compress: (data, compressData) => {
     return compressData

@@ -3,8 +3,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import xssClean from "xss-clean";
-import mongoSanitize from "express-mongo-sanitize";
+// import xssClean from "xss-clean";
+// import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 // import { monitorRedis } from "./utils/Cache/checkRedisConnection.js";
 
@@ -30,10 +30,10 @@ app.use(
 );
 
 // Prevent NoSQL Injection
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 // Prevent malicious code from client-side
-app.use(xssClean());
+// app.use(xssClean());
 
 app.use(
   express.json({

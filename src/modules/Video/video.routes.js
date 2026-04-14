@@ -14,7 +14,7 @@ import {
   uploadRateLimiter,
 } from "../../middlewares/rateLimiting.middleware.js";
 import { verifyVideo } from "../../middlewares/videoSecurity.middleware.js";
-// import cacheMiddleware from "../../middlewares/cache.middleware.js";
+import cacheMiddleware from "../../middlewares/cache.middleware.js";
 // import trackVideoView from "../../middlewares/trackIncreaseViews.middleware.js";
 
 const videoRouter = Router();
@@ -22,10 +22,10 @@ const videoRouter = Router();
 /// Public Routes
 videoRouter.route("/videos").get(
   viewRateLimiter,
-  // cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
-  //   bypassHeader: "x-bypass-cache",
-  //   compressData: false,
-  // }),
+  cacheMiddleware("videosList", process.env.CACHE_DURATIONS_VIDEO_LIST, {
+    bypassHeader: "x-bypass-cache",
+    compressData: true,
+  }),
   getAllVideosController
 );
 
@@ -36,10 +36,10 @@ videoRouter
 videoRouter.route("/video/:videoId").get(
   viewRateLimiter,
   // trackVideoView,
-  // cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
-  //   bypassHeader: "x-bypass-cache",
-  //   compressData: false,
-  // }),
+  cacheMiddleware("Video", process.env.CACHE_DURATIONS_VIDEO, {
+    bypassHeader: "x-bypass-cache",
+    compressData: true,
+  }),
   getVideoByIdController
 );
 
